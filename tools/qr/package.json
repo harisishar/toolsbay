@@ -1,0 +1,32 @@
+{
+  "name": "@tools/qr",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build:vendor": "node scripts/vendor.mjs",
+    "build:css": "tailwindcss -i src/styles.css -o public/styles.css --minify",
+    "build:js": "esbuild src/client/qr.ts src/client/barcode.ts --bundle --minify --format=esm --outdir=public/js",
+    "build": "pnpm build:vendor && pnpm build:css && pnpm build:js",
+    "dev": "pnpm build && wrangler dev",
+    "deploy": "pnpm build && wrangler deploy",
+    "typecheck": "tsc --noEmit && tsc -p tsconfig.client.json --noEmit",
+    "check": "node --test"
+  },
+  "dependencies": {
+    "hono": "^4.8.0"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20250712.0",
+    "@fontsource/chakra-petch": "^5.2.0",
+    "@fontsource/ibm-plex-sans": "^5.2.0",
+    "@tailwindcss/cli": "^4.1.0",
+    "@types/qrcode": "^1.5.6",
+    "alpinejs": "^3.14.0",
+    "esbuild": "^0.28.0",
+    "jsbarcode": "^3.12.0",
+    "qrcode": "^1.5.4",
+    "tailwindcss": "^4.1.0",
+    "typescript": "^5.9.0",
+    "wrangler": "^4.26.0"
+  }
+}

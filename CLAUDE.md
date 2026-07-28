@@ -29,6 +29,9 @@ subdomain. Full brief, including the tool list and the traffic/revenue rationale
 - **A tool is not done until its SEO is done.** Server-rendered `<title>`/meta/canonical,
   schema.org JSON-LD, Open Graph, sitemap + robots entries. Use the `/seo-geo` skill.
 - Use the `/frontend-design` skill for UI work. Modern and clean, not decorative.
+- **Every plan updates `@task/todo.md`.** Whenever a plan is created or changed, write it into
+  `task/todo.md` as checkboxes and tick them off as work lands. That file is the single source of
+  truth for what is planned, in progress, and done.
 
 ## Layout
 

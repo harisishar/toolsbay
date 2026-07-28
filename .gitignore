@@ -4,3 +4,7 @@ dist/
 .dev.vars
 *.log
 .DS_Store
+tools/*/public/styles.css
+tools/*/public/js/
+tools/*/public/vendor/
+tools/*/public/fonts/

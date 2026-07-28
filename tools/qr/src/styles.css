@@ -1,0 +1,86 @@
+@import 'tailwindcss';
+
+@font-face {
+  font-family: 'Chakra Petch';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/chakra-petch-700.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'IBM Plex Sans';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/plex-sans-400.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'IBM Plex Sans';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('/fonts/plex-sans-600.woff2') format('woff2');
+}
+
+@theme {
+  --font-display: 'Chakra Petch', ui-sans-serif, sans-serif;
+  --font-sans: 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif;
+  --color-ink: #101314;
+  --color-ink-soft: #3d4645;
+  --color-paper: #f6f8f6;
+  --color-line: #dbe2dd;
+  --color-accent: #00b569;
+  --color-accent-deep: #007142;
+}
+
+[x-cloak] {
+  display: none !important;
+}
+
+/* QR-module motif: faint pixel grid behind the hero */
+.module-grid {
+  background-image:
+    linear-gradient(to right, color-mix(in srgb, var(--color-ink) 6%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in srgb, var(--color-ink) 6%, transparent) 1px, transparent 1px);
+  background-size: 24px 24px;
+  mask-image: linear-gradient(to bottom, black 0%, transparent 92%);
+}
+
+.field {
+  @apply w-full rounded-md border border-line bg-white px-3 py-2 text-[15px] text-ink placeholder:text-ink-soft/50 focus:border-accent focus:ring-2 focus:ring-accent/25 focus:outline-none;
+}
+.field-label {
+  @apply mb-1 block text-[13px] font-semibold tracking-wide text-ink-soft;
+}
+.btn-primary,
+.btn-ghost {
+  @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-md px-4 py-2 text-sm font-semibold transition-colors;
+}
+.btn-primary {
+  @apply bg-ink text-white hover:bg-accent-deep;
+}
+.btn-ghost {
+  @apply border border-line bg-white text-ink hover:border-accent hover:text-accent-deep;
+}
+.prose-tool {
+  @apply max-w-none text-[15px] leading-7 text-ink-soft;
+}
+.prose-tool h2 {
+  @apply font-display mt-10 mb-3 text-xl text-ink;
+}
+.prose-tool p {
+  @apply mb-4;
+}
+.prose-tool ol,
+.prose-tool ul {
+  @apply mb-4 list-decimal pl-6;
+}
+.prose-tool ul {
+  @apply list-disc;
+}
+.prose-tool li {
+  @apply mb-1;
+}
+.prose-tool a {
+  @apply text-accent-deep underline decoration-accent/40 underline-offset-2 hover:decoration-accent;
+}
