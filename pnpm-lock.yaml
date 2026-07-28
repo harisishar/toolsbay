@@ -15,8 +15,60 @@ importers:
         specifier: ^5.9.0
         version: 5.9.3
 
+  packages/seo:
+    devDependencies:
+      typescript:
+        specifier: ^5.9.0
+        version: 5.9.3
+
+  tools/image:
+    dependencies:
+      '@claudetools/seo':
+        specifier: workspace:*
+        version: link:../../packages/seo
+      hono:
+        specifier: ^4.8.0
+        version: 4.12.32
+    devDependencies:
+      '@cloudflare/workers-types':
+        specifier: ^4.20250712.0
+        version: 4.20260702.1
+      '@fontsource/bricolage-grotesque':
+        specifier: ^5.2.0
+        version: 5.3.0
+      '@fontsource/instrument-sans':
+        specifier: ^5.2.0
+        version: 5.3.0
+      '@tailwindcss/cli':
+        specifier: ^4.1.0
+        version: 4.3.3
+      alpinejs:
+        specifier: ^3.14.0
+        version: 3.15.12
+      esbuild:
+        specifier: ^0.28.0
+        version: 0.28.1
+      fflate:
+        specifier: ^0.8.2
+        version: 0.8.3
+      heic-to:
+        specifier: ^1.1.0
+        version: 1.5.2
+      tailwindcss:
+        specifier: ^4.1.0
+        version: 4.3.3
+      typescript:
+        specifier: ^5.9.0
+        version: 5.9.3
+      wrangler:
+        specifier: ^4.26.0
+        version: 4.114.0(@cloudflare/workers-types@4.20260702.1)
+
   tools/qr:
     dependencies:
+      '@claudetools/seo':
+        specifier: workspace:*
+        version: link:../../packages/seo
       hono:
         specifier: ^4.8.0
         version: 4.12.32
@@ -269,11 +321,17 @@ packages:
     cpu: [x64]
     os: [win32]
 
+  '@fontsource/bricolage-grotesque@5.3.0':
+    resolution: {integrity: sha512-MdOVb/5in11IfN/IQJOExMuu6AroCIQbirl0yX7NUvKk+h0HYIKfGaVAXRS/gCPil4aFxWhjZnOw28tUwv7tFw==}
+
   '@fontsource/chakra-petch@5.3.0':
     resolution: {integrity: sha512-QZvbM/q2R6n1pg2x+TJPftZmBNS+ADU37L4Z4L/6UJIz+JZ/SRaEf8usPFRiP7Ht28sIideMu/Bm1SnGlSrwNw==}
 
   '@fontsource/ibm-plex-sans@5.3.0':
     resolution: {integrity: sha512-CbE4CbbEEZJX860XyUiRpsksXIQR8Rp2XDva2VO53NJox9tVNtusrysd2x5YkUEY3ErQ66W1IiiQL8/wihhw5w==}
+
+  '@fontsource/instrument-sans@5.3.0':
+    resolution: {integrity: sha512-QwXc4hb/px3XvSPS2CPAOgey8nyrQFxgxrmXQQ+pN+P51hKdAcchxpg8rSbjANFfPu6VKXhDqkVDucXMZ9CM5g==}
 
   '@img/colour@1.1.0':
     resolution: {integrity: sha512-Td76q7j57o/tLVdgS746cYARfSyxk8iEfRxewL9h4OMzYhbW4TAcppl0mT4eyqXddh6L/jwoM75mo7ixa/pCeQ==}
@@ -732,6 +790,9 @@ packages:
     engines: {node: '>=18'}
     hasBin: true
 
+  fflate@0.8.3:
+    resolution: {integrity: sha512-tbZNuJrLwGUp3zshBtdy4W+ORxZuIh8a5ilyIEQDC5rY1f3U20JMry0Ll3WBzU58EZKsEuJFXhb5gwv8CsPvgA==}
+
   fill-range@7.1.1:
     resolution: {integrity: sha512-YsGpe3WHLK8ZYi4tWDg2Jy3ebRz2rXowDxnld4bkQB00cc/1Zw9AWnC0i9ztDJitivtQvaI9KaLyKrc+hBW0yg==}
     engines: {node: '>=8'}
@@ -751,6 +812,9 @@ packages:
 
   graceful-fs@4.2.11:
     resolution: {integrity: sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ==}
+
+  heic-to@1.5.2:
+    resolution: {integrity: sha512-8Fns+lZHAWmz5U5IUxDeXKwIf3foBoKNPLxxFY4B0MkLjNuomEIHCoDbDE+x/llFK3NCEO1cu4+n3iUKY+Svmw==}
 
   hono@4.12.32:
     resolution: {integrity: sha512-XcuyW9qE2kJn07PkecMOBd5Vq/hMy7mmGw+idz1yblbg9N17ijJODrvPkn7/dwL3Kulj8LcRJ69DLOWf91dRUg==}
@@ -1152,9 +1216,13 @@ snapshots:
   '@esbuild/win32-x64@0.28.1':
     optional: true
 
+  '@fontsource/bricolage-grotesque@5.3.0': {}
+
   '@fontsource/chakra-petch@5.3.0': {}
 
   '@fontsource/ibm-plex-sans@5.3.0': {}
+
+  '@fontsource/instrument-sans@5.3.0': {}
 
   '@img/colour@1.1.0': {}
 
@@ -1525,6 +1593,8 @@ snapshots:
       '@esbuild/win32-ia32': 0.28.1
       '@esbuild/win32-x64': 0.28.1
 
+  fflate@0.8.3: {}
+
   fill-range@7.1.1:
     dependencies:
       to-regex-range: 5.0.1
@@ -1540,6 +1610,8 @@ snapshots:
   get-caller-file@2.0.5: {}
 
   graceful-fs@4.2.11: {}
+
+  heic-to@1.5.2: {}
 
   hono@4.12.32: {}
 

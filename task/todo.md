@@ -24,10 +24,10 @@ no deploy).
 
 ## Phase 2 — tools/image
 
-- [ ] Scaffold package
-- [ ] Compress / resize / convert / crop (Canvas), HEIC decode (WASM), batch drag-drop
-- [ ] Programmatic format-pair pages (/jpg-to-png, /heic-to-jpg, …)
-- [ ] SEO baseline + verify + commit
+- [x] Scaffold package
+- [x] Compress / resize / convert / crop (Canvas), HEIC decode (WASM), batch drag-drop
+- [x] Programmatic format-pair pages (/jpg-to-png, /heic-to-jpg, …)
+- [x] SEO baseline + verify + commit
 
 ## Phase 3 — tools/pdf (client-side)
 

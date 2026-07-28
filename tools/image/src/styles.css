@@ -1,0 +1,85 @@
+@import 'tailwindcss';
+
+@font-face {
+  font-family: 'Bricolage Grotesque';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/bricolage-700.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Instrument Sans';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/instrument-400.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Instrument Sans';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('/fonts/instrument-600.woff2') format('woff2');
+}
+
+@theme {
+  --font-display: 'Bricolage Grotesque', ui-sans-serif, sans-serif;
+  --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
+  --color-night: #0d0e12;
+  --color-panel: #16181f;
+  --color-line: #272b36;
+  --color-fog: #e8e9ee;
+  --color-mist: #9aa0af;
+  --color-ember: #ff6b4a;
+  --color-ember-deep: #e04f2f;
+  --color-mint: #3ecf8e;
+}
+
+[x-cloak] {
+  display: none !important;
+}
+
+.halo {
+  background:
+    radial-gradient(600px 300px at 20% -10%, color-mix(in srgb, var(--color-ember) 14%, transparent), transparent 70%),
+    radial-gradient(500px 260px at 85% -20%, color-mix(in srgb, var(--color-mint) 8%, transparent), transparent 70%);
+}
+
+.field {
+  @apply w-full rounded-md border border-line bg-night px-3 py-2 text-[15px] text-fog placeholder:text-mist/50 focus:border-ember focus:ring-2 focus:ring-ember/25 focus:outline-none;
+}
+.field-label {
+  @apply mb-1 block text-[13px] font-semibold tracking-wide text-mist;
+}
+.btn-primary,
+.btn-ghost {
+  @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-md px-4 py-2 text-sm font-semibold transition-colors;
+}
+.btn-primary {
+  @apply bg-ember text-night hover:bg-ember-deep hover:text-white;
+}
+.btn-ghost {
+  @apply border border-line bg-panel text-fog hover:border-ember hover:text-ember;
+}
+.prose-tool {
+  @apply max-w-none text-[15px] leading-7 text-mist;
+}
+.prose-tool h2 {
+  @apply font-display mt-10 mb-3 text-xl text-fog;
+}
+.prose-tool p {
+  @apply mb-4;
+}
+.prose-tool ol,
+.prose-tool ul {
+  @apply mb-4 list-decimal pl-6;
+}
+.prose-tool ul {
+  @apply list-disc;
+}
+.prose-tool li {
+  @apply mb-1;
+}
+.prose-tool a {
+  @apply text-ember underline decoration-ember/40 underline-offset-2 hover:decoration-ember;
+}
