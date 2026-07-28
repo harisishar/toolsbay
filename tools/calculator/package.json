@@ -1,0 +1,30 @@
+{
+  "name": "@tools/calculator",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build:vendor": "node scripts/vendor.mjs",
+    "build:css": "tailwindcss -i src/styles.css -o public/styles.css --minify",
+    "build:js": "rm -rf public/js && esbuild src/client/app.ts --bundle --minify --format=esm --outdir=public/js",
+    "build": "pnpm build:vendor && pnpm build:css && pnpm build:js",
+    "dev": "pnpm build && wrangler dev",
+    "deploy": "pnpm build && wrangler deploy",
+    "typecheck": "tsc --noEmit && tsc -p tsconfig.client.json --noEmit",
+    "check": "node --test"
+  },
+  "dependencies": {
+    "hono": "^4.8.0",
+    "@claudetools/seo": "workspace:*"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20250712.0",
+    "@fontsource/familjen-grotesk": "^5.2.0",
+    "@fontsource/source-sans-3": "^5.2.0",
+    "@tailwindcss/cli": "^4.1.0",
+    "alpinejs": "^3.14.0",
+    "esbuild": "^0.28.0",
+    "tailwindcss": "^4.1.0",
+    "typescript": "^5.9.0",
+    "wrangler": "^4.26.0"
+  }
+}

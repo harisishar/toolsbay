@@ -21,6 +21,43 @@ importers:
         specifier: ^5.9.0
         version: 5.9.3
 
+  tools/calculator:
+    dependencies:
+      '@claudetools/seo':
+        specifier: workspace:*
+        version: link:../../packages/seo
+      hono:
+        specifier: ^4.8.0
+        version: 4.12.32
+    devDependencies:
+      '@cloudflare/workers-types':
+        specifier: ^4.20250712.0
+        version: 4.20260702.1
+      '@fontsource/familjen-grotesk':
+        specifier: ^5.2.0
+        version: 5.3.0
+      '@fontsource/source-sans-3':
+        specifier: ^5.2.0
+        version: 5.3.0
+      '@tailwindcss/cli':
+        specifier: ^4.1.0
+        version: 4.3.3
+      alpinejs:
+        specifier: ^3.14.0
+        version: 3.15.12
+      esbuild:
+        specifier: ^0.28.0
+        version: 0.28.1
+      tailwindcss:
+        specifier: ^4.1.0
+        version: 4.3.3
+      typescript:
+        specifier: ^5.9.0
+        version: 5.9.3
+      wrangler:
+        specifier: ^4.26.0
+        version: 4.114.0(@cloudflare/workers-types@4.20260702.1)
+
   tools/image:
     dependencies:
       '@claudetools/seo':
@@ -395,6 +432,9 @@ packages:
   '@fontsource/chakra-petch@5.3.0':
     resolution: {integrity: sha512-QZvbM/q2R6n1pg2x+TJPftZmBNS+ADU37L4Z4L/6UJIz+JZ/SRaEf8usPFRiP7Ht28sIideMu/Bm1SnGlSrwNw==}
 
+  '@fontsource/familjen-grotesk@5.3.0':
+    resolution: {integrity: sha512-Kh6DXwAtw+kyvCSpiOI3wss/LvOJtJJRl9NTf9YpYpmcpsZ5BGQLTF9nVm9TUmnpLTe4z3iyAcvnLfsQgQR0lg==}
+
   '@fontsource/fraunces@5.3.0':
     resolution: {integrity: sha512-LEHTOBiZufQzAvnAe2rZ8ZknbDS28Q9kzwb0L+gZJEmjLGr8hhZ/5NuHXwDuHBWhVXYoiGGXmrb0H6Ko/RrHTg==}
 
@@ -406,6 +446,9 @@ packages:
 
   '@fontsource/public-sans@5.3.0':
     resolution: {integrity: sha512-kjODI0S3zdv0mBYCIQ8TbBayaiqszpc2UbhJiO3bjIqVVXzcWfHSt2o3WBCLOY3juaGaQoy4MoWCcgmfI5hCuA==}
+
+  '@fontsource/source-sans-3@5.3.0':
+    resolution: {integrity: sha512-VrWixSgF93kOVSEkwjs9ImnAbxrBew4PgcnaJYEitG9TyJSwxjFUNJIgzB1XFP/acyAWcTDg7+sWe7JI8LTB9w==}
 
   '@img/colour@1.1.0':
     resolution: {integrity: sha512-Td76q7j57o/tLVdgS746cYARfSyxk8iEfRxewL9h4OMzYhbW4TAcppl0mT4eyqXddh6L/jwoM75mo7ixa/pCeQ==}
@@ -1693,6 +1736,8 @@ snapshots:
 
   '@fontsource/chakra-petch@5.3.0': {}
 
+  '@fontsource/familjen-grotesk@5.3.0': {}
+
   '@fontsource/fraunces@5.3.0': {}
 
   '@fontsource/ibm-plex-sans@5.3.0': {}
@@ -1700,6 +1745,8 @@ snapshots:
   '@fontsource/instrument-sans@5.3.0': {}
 
   '@fontsource/public-sans@5.3.0': {}
+
+  '@fontsource/source-sans-3@5.3.0': {}
 
   '@img/colour@1.1.0': {}
 

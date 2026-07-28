@@ -45,11 +45,11 @@ no deploy).
 
 ## Phase 5 — tools/calculator
 
-- [ ] Scaffold package
-- [ ] ~40 core calculators (data-driven pages, assert self-checks per module)
-- [ ] Malaysia: KWSP/EPF, SOCSO+EIS, PCB (MTD), take-home salary
-- [ ] Country salary-after-tax: US, UK, SG, AU, IN, DE, CA, JP
-- [ ] Per-calculator SEO pages + verify + commit
+- [x] Scaffold package
+- [x] ~40 core calculators (data-driven pages, assert self-checks per module)
+- [x] Malaysia: KWSP/EPF, SOCSO+EIS, PCB (MTD), take-home salary
+- [x] Country salary-after-tax: US, UK, SG, AU, IN, DE, CA, JP
+- [x] Per-calculator SEO pages + verify + commit
 
 ## Phase 6 — SEO/AEO/GEO sweep
 

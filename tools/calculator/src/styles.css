@@ -1,0 +1,67 @@
+@import 'tailwindcss';
+
+@font-face {
+  font-family: 'Familjen Grotesk';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/familjen-700.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Source Sans 3';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/source-sans-400.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Source Sans 3';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('/fonts/source-sans-600.woff2') format('woff2');
+}
+
+@theme {
+  --font-display: 'Familjen Grotesk', ui-sans-serif, sans-serif;
+  --font-sans: 'Source Sans 3', ui-sans-serif, system-ui, sans-serif;
+  --color-navy: #14213d;
+  --color-navy-soft: #40506e;
+  --color-paper: #f8f7f2;
+  --color-panel: #ffffff;
+  --color-line: #e2ded2;
+  --color-amber: #e8a20c;
+  --color-amber-deep: #b57d05;
+}
+
+[x-cloak] {
+  display: none !important;
+}
+
+.grid-dots {
+  background-image: radial-gradient(color-mix(in srgb, var(--color-navy) 10%, transparent) 1px, transparent 1px);
+  background-size: 20px 20px;
+  mask-image: linear-gradient(to bottom, black, transparent 90%);
+}
+
+.field {
+  @apply w-full rounded-md border border-line bg-panel px-3 py-2 text-[15px] text-navy placeholder:text-navy-soft/50 focus:border-amber focus:ring-2 focus:ring-amber/25 focus:outline-none;
+}
+.field-label {
+  @apply mb-1 block text-[13px] font-semibold tracking-wide text-navy-soft;
+}
+.btn-primary {
+  @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-md bg-navy px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-amber-deep;
+}
+.prose-tool {
+  @apply max-w-none text-[15px] leading-7 text-navy-soft;
+}
+.prose-tool h2 {
+  @apply font-display mt-10 mb-3 text-xl text-navy;
+}
+.prose-tool p {
+  @apply mb-4;
+}
+.prose-tool a {
+  @apply text-amber-deep underline decoration-amber/40 underline-offset-2;
+}
