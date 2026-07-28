@@ -7,17 +7,20 @@
     "build:css": "tailwindcss -i src/styles.css -o public/styles.css --minify",
     "build:js": "rm -rf public/js && esbuild src/client/app.ts --bundle --minify --format=esm --splitting --outdir=public/js",
     "build": "pnpm build:vendor && pnpm build:css && pnpm build:js",
-    "dev": "pnpm build && wrangler dev",
+    "dev": "pnpm build && wrangler dev --enable-containers=false",
+    "dev:containers": "pnpm build && wrangler dev",
     "deploy": "pnpm build && wrangler deploy",
     "typecheck": "tsc --noEmit && tsc -p tsconfig.client.json --noEmit",
     "check": "node --test"
   },
   "dependencies": {
-    "hono": "^4.8.0",
-    "@claudetools/seo": "workspace:*"
+    "@claudetools/seo": "workspace:*",
+    "hono": "^4.8.0"
   },
   "devDependencies": {
     "@cantoo/pdf-lib": "^2.5.0",
+    "@cloudflare/containers": "^0.3.7",
+    "@cloudflare/puppeteer": "^1.2.0",
     "@cloudflare/workers-types": "^4.20250712.0",
     "@fontsource/caveat": "^5.2.0",
     "@fontsource/fraunces": "^5.2.0",

@@ -39,9 +39,9 @@ no deploy).
 
 ## Phase 4 — tools/pdf (server path, approved exception)
 
-- [ ] HTML→PDF via Browser Rendering binding (URL validation, no internal hosts)
-- [ ] Container (LibreOffice + ocrmypdf + qpdf): PDF↔Office, OCR, PDF/A, Repair
-- [ ] Size caps + content-type validation at Worker boundary, stream-through, commit
+- [x] HTML→PDF via Browser Rendering binding (URL validation, no internal hosts)
+- [x] Container (LibreOffice + ocrmypdf + qpdf): PDF↔Office, OCR, PDF/A, Repair
+- [x] Size caps + content-type validation at Worker boundary, stream-through, commit
 
 ## Phase 5 — tools/calculator
 

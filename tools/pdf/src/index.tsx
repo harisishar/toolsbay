@@ -1,5 +1,8 @@
 import { Hono } from 'hono';
+import { api, Converter } from './api.js';
 import { Layout } from './layout.js';
+
+export { Converter };
 import { Hero, FaqSection, ToolBody } from './components.js';
 import { TOOLS, CATEGORIES } from './content.js';
 import { SITE, webAppJsonLd, faqJsonLd, sitemapXml } from './seo.js';
@@ -118,8 +121,8 @@ engine that streams files through without storing them.
 ${TOOLS.map((t) => `- ${origin}/${t.slug}: ${t.desc}`).join('\n')}`);
 });
 
-// Server-path conversion endpoints land in Phase 4; respond honestly until then.
-app.all('/api/*', (c) => c.text('This conversion endpoint is not deployed yet.', 501));
+// Approved server path: HTML→PDF (Browser Rendering) + Office/OCR/PDF-A/Repair (Container).
+app.route('/', api);
 
 app.notFound((c) =>
   c.html(
