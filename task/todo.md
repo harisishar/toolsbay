@@ -53,5 +53,14 @@ no deploy).
 
 ## Phase 6 — SEO/AEO/GEO sweep
 
-- [ ] Run /seo-geo per tool, act on findings
-- [ ] Final verify: sitemaps, robots, llms.txt, JSON-LD across all four tools
+- [x] Run /seo-geo per tool, act on findings
+- [x] Final verify: sitemaps, robots, llms.txt, JSON-LD across all four tools
+
+## Deferred (needs user input or deploy)
+
+- [ ] Buy apex domain → fill wrangler.jsonc routes (all four tools) and deploy
+- [ ] Deploy pdf Worker with Container + Browser Rendering; validate /api/convert/* end-to-end
+      (needs Docker or CI build — no Docker on this machine)
+- [ ] og:image artwork per tool (needs brand decision; OG tags ship without images for now)
+- [ ] Optional per brief: dynamic QR codes (needs KV), currency converter (needs live FX rates)
+- [ ] AdSense/ad slots once domains + traffic exist

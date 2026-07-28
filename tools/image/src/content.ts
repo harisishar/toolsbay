@@ -43,7 +43,7 @@ export const SOURCES: Record<string, SourceMeta> = {
   avif: {
     label: 'AVIF',
     long: 'AVIF images',
-    blurb: 'AVIF is the newest web format — tiny files, but patchy support in editors and older software',
+    blurb: 'AVIF makes tiny files, but many editors and older apps cannot open it',
     alpha: true,
   },
   gif: {

@@ -5,7 +5,7 @@ import { Layout } from './layout.js';
 export { Converter };
 import { Hero, FaqSection, ToolBody } from './components.js';
 import { TOOLS, CATEGORIES } from './content.js';
-import { SITE, webAppJsonLd, faqJsonLd, sitemapXml } from './seo.js';
+import { SITE, webAppJsonLd, faqJsonLd, sitemapXml, robotsTxt } from './seo.js';
 
 const app = new Hono();
 const originOf = (url: string) => new URL(url).origin;
@@ -104,10 +104,7 @@ app.get('/sitemap.xml', (c) => {
   });
 });
 
-app.get('/robots.txt', (c) => {
-  const origin = originOf(c.req.url);
-  return c.text(`User-agent: *\nAllow: /\nDisallow: /api/\n\nSitemap: ${origin}/sitemap.xml`);
-});
+app.get('/robots.txt', (c) => c.text(robotsTxt(originOf(c.req.url), { disallow: ['/api/'] })));
 
 app.get('/llms.txt', (c) => {
   const origin = originOf(c.req.url);

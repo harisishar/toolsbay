@@ -3,10 +3,11 @@ import {
   articleJsonLd as article,
   faqJsonLd,
   sitemapXml,
+  robotsTxt,
   type Faq,
 } from '@claudetools/seo';
 
-export { faqJsonLd, sitemapXml };
+export { faqJsonLd, sitemapXml, robotsTxt };
 export type { Faq };
 
 export const SITE = {

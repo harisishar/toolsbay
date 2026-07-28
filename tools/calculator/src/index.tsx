@@ -2,7 +2,7 @@ import { Hono } from 'hono';
 import { Layout } from './layout.tsx';
 import { ALL_CALCS, CALC_BY_SLUG, CATEGORIES } from './lib/calcs/index.ts';
 import type { Calc, Input } from './lib/calc-types.ts';
-import { SITE, webAppJsonLd, faqJsonLd, sitemapXml } from './seo.ts';
+import { SITE, webAppJsonLd, faqJsonLd, sitemapXml, robotsTxt } from './seo.ts';
 
 const app = new Hono();
 const originOf = (url: string) => new URL(url).origin;
@@ -219,10 +219,7 @@ app.get('/sitemap.xml', (c) => {
   });
 });
 
-app.get('/robots.txt', (c) => {
-  const origin = originOf(c.req.url);
-  return c.text(`User-agent: *\nAllow: /\n\nSitemap: ${origin}/sitemap.xml`);
-});
+app.get('/robots.txt', (c) => c.text(robotsTxt(originOf(c.req.url))));
 
 app.get('/llms.txt', (c) => {
   const origin = originOf(c.req.url);

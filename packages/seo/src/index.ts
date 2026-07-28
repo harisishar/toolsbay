@@ -53,6 +53,31 @@ export function articleJsonLd(o: {
   };
 }
 
+// Explicitly welcome AI search crawlers (GEO): being listed by name is the
+// recommended signal even though `*` already allows them.
+export function robotsTxt(origin: string, opts?: { disallow?: string[] }) {
+  const dis = (opts?.disallow ?? []).map((d) => `Disallow: ${d}`).join("\n");
+  return `User-agent: *
+Allow: /
+${dis ? dis + "\n" : ""}
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+Sitemap: ${origin}/sitemap.xml`;
+}
+
 export function sitemapXml(origin: string, paths: string[]) {
   return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">

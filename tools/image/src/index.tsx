@@ -11,7 +11,7 @@ import {
   Hero,
 } from './components.js';
 import { PAIRS, TOOL_FAQ, SOURCES, TARGETS } from './content.js';
-import { SITE, webAppJsonLd, faqJsonLd, sitemapXml, type Faq } from './seo.js';
+import { SITE, webAppJsonLd, faqJsonLd, sitemapXml, robotsTxt, type Faq } from './seo.js';
 
 const app = new Hono();
 const originOf = (url: string) => new URL(url).origin;
@@ -301,10 +301,7 @@ app.get('/sitemap.xml', (c) => {
   return c.body(sitemapXml(origin, paths), 200, { 'Content-Type': 'application/xml' });
 });
 
-app.get('/robots.txt', (c) => {
-  const origin = originOf(c.req.url);
-  return c.text(`User-agent: *\nAllow: /\n\nSitemap: ${origin}/sitemap.xml`);
-});
+app.get('/robots.txt', (c) => c.text(robotsTxt(originOf(c.req.url))));
 
 app.get('/llms.txt', (c) => {
   const origin = originOf(c.req.url);

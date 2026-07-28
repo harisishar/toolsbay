@@ -2,10 +2,11 @@ import {
   webAppJsonLd as webApp,
   articleJsonLd as article,
   faqJsonLd,
+  robotsTxt,
   type Faq,
 } from "@claudetools/seo";
 
-export { faqJsonLd };
+export { faqJsonLd, robotsTxt };
 export type { Faq };
 
 export const SITE = {

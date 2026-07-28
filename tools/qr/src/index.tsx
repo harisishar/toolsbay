@@ -2,7 +2,7 @@ import { Hono } from 'hono';
 import { Layout } from './layout.js';
 import { Generator, FaqSection } from './generator.js';
 import { QR_TYPES, PAYMENT_GUIDES } from './content.js';
-import { SITE, webAppJsonLd, faqJsonLd, articleJsonLd } from './seo.js';
+import { SITE, webAppJsonLd, faqJsonLd, articleJsonLd, robotsTxt } from './seo.js';
 
 const app = new Hono();
 
@@ -274,13 +274,7 @@ ${paths.map((p) => `  <url><loc>${origin}${p}</loc></url>`).join('\n')}
   return c.body(xml, 200, { 'Content-Type': 'application/xml' });
 });
 
-app.get('/robots.txt', (c) => {
-  const origin = originOf(c.req.url);
-  return c.text(`User-agent: *
-Allow: /
-
-Sitemap: ${origin}/sitemap.xml`);
-});
+app.get('/robots.txt', (c) => c.text(robotsTxt(originOf(c.req.url))));
 
 app.get('/llms.txt', (c) => {
   const origin = originOf(c.req.url);
