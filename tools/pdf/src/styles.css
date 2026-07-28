@@ -1,0 +1,90 @@
+@import 'tailwindcss';
+
+@font-face {
+  font-family: 'Fraunces';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/fraunces-700.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Public Sans';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/public-sans-400.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Public Sans';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('/fonts/public-sans-600.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Caveat';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/caveat-700.woff2') format('woff2');
+}
+
+@theme {
+  --font-display: 'Fraunces', ui-serif, Georgia, serif;
+  --font-sans: 'Public Sans', ui-sans-serif, system-ui, sans-serif;
+  --color-cream: #faf6ee;
+  --color-panel: #ffffff;
+  --color-line: #e6ddcc;
+  --color-ink: #221c15;
+  --color-muted: #6f6759;
+  --color-brick: #b3402a;
+  --color-brick-deep: #8c2f1e;
+  --color-moss: #4e7a52;
+}
+
+[x-cloak] {
+  display: none !important;
+}
+
+.paper-edge {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    color-mix(in srgb, var(--color-brick) 8%, transparent) 0 10px,
+    transparent 10px 20px
+  );
+}
+
+.field {
+  @apply w-full rounded-md border border-line bg-panel px-3 py-2 text-[15px] text-ink placeholder:text-muted/60 focus:border-brick focus:ring-2 focus:ring-brick/20 focus:outline-none;
+}
+.field-label {
+  @apply mb-1 block text-[13px] font-semibold tracking-wide text-muted;
+}
+.btn-primary,
+.btn-ghost {
+  @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-md px-4 py-2 text-sm font-semibold transition-colors;
+}
+.btn-primary {
+  @apply bg-brick text-white hover:bg-brick-deep;
+}
+.btn-ghost {
+  @apply border border-line bg-panel text-ink hover:border-brick hover:text-brick-deep;
+}
+.tool-card {
+  @apply rounded-lg border border-line bg-panel p-4 transition-colors hover:border-brick;
+}
+.prose-tool {
+  @apply max-w-none text-[15px] leading-7 text-muted;
+}
+.prose-tool h2 {
+  @apply font-display mt-10 mb-3 text-xl text-ink;
+}
+.prose-tool p {
+  @apply mb-4;
+}
+.prose-tool a {
+  @apply text-brick-deep underline decoration-brick/40 underline-offset-2;
+}
+.sig-font {
+  font-family: 'Caveat', cursive;
+}

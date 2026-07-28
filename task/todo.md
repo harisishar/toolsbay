@@ -31,11 +31,11 @@ no deploy).
 
 ## Phase 3 — tools/pdf (client-side)
 
-- [ ] Scaffold package
-- [ ] pdf-lib features: merge, split, rotate, organize, page numbers, watermark, crop, jpg→pdf
-- [ ] pdf.js features: pdf→jpg, extract images, compare, pdf→markdown/text
-- [ ] Combined: compress, edit, sign, redact, forms, protect/unlock, scan-to-pdf
-- [ ] SEO baseline + verify + commit
+- [x] Scaffold package
+- [x] pdf-lib features: merge, split, rotate, organize, page numbers, watermark, crop, jpg→pdf
+- [x] pdf.js features: pdf→jpg, extract images, compare, pdf→markdown/text
+- [x] Combined: compress, edit, sign, redact, forms, protect/unlock, scan-to-pdf
+- [x] SEO baseline + verify + commit
 
 ## Phase 4 — tools/pdf (server path, approved exception)
 

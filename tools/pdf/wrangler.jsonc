@@ -1,0 +1,11 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "pdf",
+  "main": "src/index.tsx",
+  "compatibility_date": "2026-07-22",
+  "assets": {
+    "directory": "./public",
+  },
+  // TODO: custom domain route when apex domain exists, e.g.
+  // "routes": [{ "pattern": "pdf.<domain>", "custom_domain": true }]
+}
