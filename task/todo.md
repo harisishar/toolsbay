@@ -78,10 +78,10 @@ no deploy).
 
 - [x] .github/workflows/deploy-pdf.yml — CI builds the container image (GH runners have
       Docker) and deploys; Workers Builds can't build containers, no CF remote image build
-- [ ] User: create Cloudflare API token (Edit Cloudflare Workers template + Containers Edit),
-      add as repo secret CLOUDFLARE_API_TOKEN on harisishar/claudetools
-- [ ] Trigger first run (gh workflow run deploy-pdf.yml), watch until green
-- [ ] Validate pdf /api/convert/* end-to-end after deploy
+- [x] User: create Cloudflare API token (Edit Cloudflare Workers template + Containers Edit),
+      add as repo secret CLOUDFLARE_API_TOKEN on harisishar/toolsbay
+- [x] Trigger first run (gh workflow run deploy-pdf.yml), watch until green
+- [x] Validate pdf /api/convert/* end-to-end: word-to-pdf returned a valid PDF (200, %PDF-1.6)
 - [ ] og:image artwork per tool (needs brand decision; OG tags ship without images for now)
 - [ ] Optional per brief: dynamic QR codes (needs KV), currency converter (needs live FX rates)
 - [ ] AdSense/ad slots once domains + traffic exist
