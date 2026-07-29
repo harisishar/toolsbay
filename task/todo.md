@@ -74,8 +74,13 @@ no deploy).
       pending — Browser Rendering URL→PDF and client-side tools live)
 - [x] Verify: 200 + correct canonical on each subdomain, www 301→apex, workers.dev disabled
 
-## Deferred (needs user input or deploy)
+## pdf container via GitHub Actions (2026-07-29)
 
+- [x] .github/workflows/deploy-pdf.yml — CI builds the container image (GH runners have
+      Docker) and deploys; Workers Builds can't build containers, no CF remote image build
+- [ ] User: create Cloudflare API token (Edit Cloudflare Workers template + Containers Edit),
+      add as repo secret CLOUDFLARE_API_TOKEN on harisishar/claudetools
+- [ ] Trigger first run (gh workflow run deploy-pdf.yml), watch until green
 - [ ] Validate pdf /api/convert/* end-to-end after deploy
 - [ ] og:image artwork per tool (needs brand decision; OG tags ship without images for now)
 - [ ] Optional per brief: dynamic QR codes (needs KV), currency converter (needs live FX rates)
