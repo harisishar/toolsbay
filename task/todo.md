@@ -102,10 +102,13 @@ no deploy).
 
 - [x] /privacy-policy on all four tools (shared copy in @claudetools/seo, tool-accurate
       server-path disclosure for pdf) + footer privacy emphasis + sitemap entries (2026-07-29)
+- [x] /privacy-policy on hub (toolsbay.app) — same shared copy, footer link, sitemap entry;
+      deployed and verified live (2026-07-29)
 
 ## html-to-pdf 422 fix (2026-07-29)
 
 - [x] tools/pdf/src/api.ts: reuse Browser Rendering sessions (sessions()+connect, launch keep_alive fallback) — root cause of "every URL fails" (new-browsers/min cap)
 - [x] launch/connect failure → 429 "Converter is busy" instead of 422/500; log real errors in both catches
 - [x] Render on networkidle0 timeout instead of failing; normal Chrome UA to dodge bot blocks
-- [ ] Build pdf worker, push → CI deploy, verify with rapid-fire curl + heavy page
+- [x] Build pdf worker, push → CI deploy, verify with rapid-fire curl + heavy page
+      (6 concurrent → all 200 %PDF; nytimes.com → 200, 6.7MB PDF in 26s)
