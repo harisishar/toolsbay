@@ -1,33 +1,33 @@
-import { Hono } from 'hono';
-import { Layout } from './layout.tsx';
-import { ALL_CALCS, CALC_BY_SLUG, CATEGORIES } from './lib/calcs/index.ts';
-import type { Calc, Input } from './lib/calc-types.ts';
-import { SITE, webAppJsonLd, faqJsonLd, sitemapXml, robotsTxt } from './seo.ts';
-import { privacySections, PRIVACY_UPDATED } from '@claudetools/seo';
+import { Hono } from "hono";
+import { AD_SLOTS } from "@claudetools/seo";
+import { AdSlot, Layout } from "./layout.tsx";
+import { ALL_CALCS, CALC_BY_SLUG, CATEGORIES } from "./lib/calcs/index.ts";
+import type { Calc, Input } from "./lib/calc-types.ts";
+import { SITE, webAppJsonLd, faqJsonLd, sitemapXml, robotsTxt } from "./seo.ts";
+import { privacySections, PRIVACY_UPDATED } from "@claudetools/seo";
 
 function privacyLd(origin: string) {
   return {
-    '@context': 'https://schema.org',
-    '@type': 'WebPage',
+    "@context": "https://schema.org",
+    "@type": "WebPage",
     name: `Privacy Policy — ${SITE.name}`,
-    url: origin + '/privacy-policy',
+    url: origin + "/privacy-policy",
     dateModified: PRIVACY_UPDATED,
   };
 }
 
-
 const app = new Hono();
 const originOf = (url: string) => new URL(url).origin;
 
-app.use('*', async (c, next) => {
+app.use("*", async (c, next) => {
   await next();
-  if (c.res.headers.get('content-type')?.includes('text/html')) {
-    c.res.headers.set('Cache-Control', 'public, max-age=600');
+  if (c.res.headers.get("content-type")?.includes("text/html")) {
+    c.res.headers.set("Cache-Control", "public, max-age=600");
   }
 });
 
 function InputField({ i }: { i: Input }) {
-  if (i.type === 'select') {
+  if (i.type === "select") {
     return (
       <label>
         <span class="field-label">{i.label}</span>
@@ -39,13 +39,22 @@ function InputField({ i }: { i: Input }) {
       </label>
     );
   }
-  const type = i.type === 'date' ? 'date' : i.type === 'time' ? 'time' : i.type === 'text' ? 'text' : 'number';
-  if (i.key === '_n') return <input type="hidden" x-model="v._n" />;
+  const type =
+    i.type === "date"
+      ? "date"
+      : i.type === "time"
+        ? "time"
+        : i.type === "text"
+          ? "text"
+          : "number";
+  if (i.key === "_n") return <input type="hidden" x-model="v._n" />;
   return (
     <label>
       <span class="field-label">
         {i.label}
-        {i.suffix ? <span class="ml-1 text-navy-soft/70">({i.suffix})</span> : null}
+        {i.suffix ? (
+          <span class="ml-1 text-navy-soft/70">({i.suffix})</span>
+        ) : null}
       </span>
       <input
         type={type}
@@ -53,7 +62,7 @@ function InputField({ i }: { i: Input }) {
         x-model={`v.${i.key}`}
         min={i.min}
         max={i.max}
-        step={i.step ?? (type === 'number' ? 'any' : undefined)}
+        step={i.step ?? (type === "number" ? "any" : undefined)}
       />
     </label>
   );
@@ -69,7 +78,7 @@ function CalcWidget({ calc }: { calc: Calc }) {
       <div class="rounded-lg border border-line bg-panel p-5">
         <div class="grid gap-4 sm:grid-cols-2">
           {calc.inputs.map((i) => (
-            <div class={i.half ? '' : 'sm:col-span-2'}>
+            <div class={i.half ? "" : "sm:col-span-2"}>
               <InputField i={i} />
             </div>
           ))}
@@ -80,29 +89,52 @@ function CalcWidget({ calc }: { calc: Calc }) {
           </button>
         )}
       </div>
-      <aside class="rounded-lg border border-line bg-navy p-5 text-white lg:sticky lg:top-6">
-        <h2 class="font-display mb-3 text-sm tracking-wide text-white/70 uppercase">Results</h2>
-        <dl class="space-y-2.5">
-          <template x-for="row in rows">
-            <div class="flex items-baseline justify-between gap-3 border-b border-white/10 pb-2">
-              <dt class="text-sm text-white/70" x-text="row.label" />
-              <dd
-                class="text-right font-semibold break-all"
-                x-bind:class="row.strong && 'text-amber text-xl'"
-                x-text="row.value"
-              />
-            </div>
-          </template>
-        </dl>
-        <p x-cloak x-show="note" class="mt-3 text-xs leading-5 text-white/60" x-text="note" />
+      <aside class="lg:sticky lg:top-6">
+        <div class="rounded-lg border border-line bg-navy p-5 text-white">
+          <h2 class="font-display mb-3 text-sm tracking-wide text-white/70 uppercase">
+            Results
+          </h2>
+          <dl class="space-y-2.5">
+            <template x-for="row in rows">
+              <div class="flex items-baseline justify-between gap-3 border-b border-white/10 pb-2">
+                <dt class="text-sm text-white/70" x-text="row.label" />
+                <dd
+                  class="text-right font-semibold break-all"
+                  x-bind:class="row.strong && 'text-amber text-xl'"
+                  x-text="row.value"
+                />
+              </div>
+            </template>
+          </dl>
+          <p
+            x-cloak
+            x-show="note"
+            class="mt-3 text-xs leading-5 text-white/60"
+            x-text="note"
+          />
+        </div>
+        <AdSlot
+          slot={AD_SLOTS.rail}
+          class="mt-6 hidden min-h-[250px] lg:block"
+        />
       </aside>
-      <div x-cloak x-show="table" class="overflow-x-auto rounded-lg border border-line bg-panel p-5 lg:col-span-2">
-        <h2 class="font-display mb-3 text-lg" x-text="table?.title || 'Schedule'" />
+      <div
+        x-cloak
+        x-show="table"
+        class="overflow-x-auto rounded-lg border border-line bg-panel p-5 lg:col-span-2"
+      >
+        <h2
+          class="font-display mb-3 text-lg"
+          x-text="table?.title || 'Schedule'"
+        />
         <table class="w-full min-w-[480px] text-sm">
           <thead>
             <tr>
               <template x-for="h in table?.headers">
-                <th class="border-b border-line pb-2 text-left font-semibold text-navy-soft" x-text="h" />
+                <th
+                  class="border-b border-line pb-2 text-left font-semibold text-navy-soft"
+                  x-text="h"
+                />
               </template>
             </tr>
           </thead>
@@ -110,7 +142,10 @@ function CalcWidget({ calc }: { calc: Calc }) {
             <template x-for="r in table?.rows">
               <tr>
                 <template x-for="cell in r">
-                  <td class="border-b border-line/60 py-1.5 pr-4" x-text="cell" />
+                  <td
+                    class="border-b border-line/60 py-1.5 pr-4"
+                    x-text="cell"
+                  />
                 </template>
               </tr>
             </template>
@@ -121,7 +156,7 @@ function CalcWidget({ calc }: { calc: Calc }) {
   );
 }
 
-app.get('/', (c) => {
+app.get("/", (c) => {
   const origin = originOf(c.req.url);
   const desc = `${ALL_CALCS.length}+ free online calculators: loans, mortgages, BMI, salary after tax for Malaysia and 8 countries, dates, math and more. Instant results, no sign-up.`;
   return c.html(
@@ -130,7 +165,9 @@ app.get('/', (c) => {
       desc={desc}
       path="/"
       origin={origin}
-      jsonLd={[webAppJsonLd(origin, '/', `${SITE.name} — ${SITE.tagline}`, desc)]}
+      jsonLd={[
+        webAppJsonLd(origin, "/", `${SITE.name} — ${SITE.tagline}`, desc),
+      ]}
     >
       <div class="grid-dots border-b border-line bg-panel">
         <div class="mx-auto max-w-5xl px-4 py-12">
@@ -138,9 +175,9 @@ app.get('/', (c) => {
             Every calculator you need, in one place
           </h1>
           <p class="mt-3 max-w-2xl text-[15px] leading-7 text-navy-soft">
-            {ALL_CALCS.length} free calculators for money, health, dates and math — including
-            Malaysia KWSP/PCB salary tools and take-home pay for 8 countries. Everything runs
-            instantly in your browser.
+            {ALL_CALCS.length} free calculators for money, health, dates and
+            math — including Malaysia KWSP/PCB salary tools and take-home pay
+            for 8 countries. Everything runs instantly in your browser.
           </p>
         </div>
       </div>
@@ -156,7 +193,7 @@ app.get('/', (c) => {
                 >
                   <span class="block font-semibold">{t.name}</span>
                   <span class="mt-1 block text-[13px] leading-5 text-navy-soft">
-                    {t.desc.split('.')[0]}.
+                    {t.desc.split(".")[0]}.
                   </span>
                 </a>
               ))}
@@ -171,19 +208,28 @@ app.get('/', (c) => {
 for (const calc of ALL_CALCS) {
   app.get(`/${calc.slug}`, (c) => {
     const origin = originOf(c.req.url);
-    const related = ALL_CALCS.filter((t) => t.category === calc.category && t.slug !== calc.slug).slice(0, 6);
+    const related = ALL_CALCS.filter(
+      (t) => t.category === calc.category && t.slug !== calc.slug,
+    ).slice(0, 6);
     return c.html(
       <Layout
         title={calc.title}
         desc={calc.desc}
         path={`/${calc.slug}`}
         origin={origin}
-        jsonLd={[webAppJsonLd(origin, `/${calc.slug}`, calc.name, calc.desc), faqJsonLd(calc.faq)]}
+        jsonLd={[
+          webAppJsonLd(origin, `/${calc.slug}`, calc.name, calc.desc),
+          faqJsonLd(calc.faq),
+        ]}
       >
         <div class="grid-dots border-b border-line bg-panel">
           <div class="mx-auto max-w-5xl px-4 py-10">
-            <h1 class="font-display max-w-2xl text-3xl leading-tight sm:text-4xl">{calc.name}</h1>
-            <p class="mt-3 max-w-2xl text-[15px] leading-7 text-navy-soft">{calc.intro}</p>
+            <h1 class="font-display max-w-2xl text-3xl leading-tight sm:text-4xl">
+              {calc.name}
+            </h1>
+            <p class="mt-3 max-w-2xl text-[15px] leading-7 text-navy-soft">
+              {calc.intro}
+            </p>
           </div>
         </div>
         <div class="mx-auto max-w-5xl px-4 py-8">
@@ -191,14 +237,18 @@ for (const calc of ALL_CALCS) {
           <div class="max-w-3xl">
             {calc.faq.length > 0 && (
               <section class="mt-12">
-                <h2 class="font-display mb-4 text-xl">Frequently asked questions</h2>
+                <h2 class="font-display mb-4 text-xl">
+                  Frequently asked questions
+                </h2>
                 <div class="space-y-2">
                   {calc.faq.map((f) => (
                     <details class="rounded-md border border-line bg-panel px-4 py-3">
                       <summary class="cursor-pointer text-[15px] font-semibold marker:text-amber">
                         {f.q}
                       </summary>
-                      <p class="mt-2 text-[15px] leading-7 text-navy-soft">{f.a}</p>
+                      <p class="mt-2 text-[15px] leading-7 text-navy-soft">
+                        {f.a}
+                      </p>
                     </details>
                   ))}
                 </div>
@@ -224,11 +274,13 @@ for (const calc of ALL_CALCS) {
   });
 }
 
-
-app.get('/privacy-policy', (c) => {
+app.get("/privacy-policy", (c) => {
   const origin = originOf(c.req.url);
   const desc = `How ${SITE.name} handles your data: numbers, salaries and dates you enter are processed in your browser and are never uploaded. No accounts, no tracking by us.`;
-  const sections = privacySections({ siteName: SITE.name, what: 'numbers, salaries and dates you enter' });
+  const sections = privacySections({
+    siteName: SITE.name,
+    what: "numbers, salaries and dates you enter",
+  });
   return c.html(
     <Layout
       title={`Privacy Policy — ${SITE.name}`}
@@ -239,23 +291,26 @@ app.get('/privacy-policy', (c) => {
     >
       <div class="grid-dots border-b border-line bg-panel">
         <div class="mx-auto max-w-3xl px-4 py-10">
-          <h1 class="font-display text-3xl leading-tight sm:text-4xl">Privacy Policy</h1>
+          <h1 class="font-display text-3xl leading-tight sm:text-4xl">
+            Privacy Policy
+          </h1>
           <p class="mt-3 text-[15px] leading-7 text-navy-soft">
-            Privacy here is not a policy promise — it is how the product is built: every
-            calculation runs in your browser and your numbers never reach our servers.
+            Privacy here is not a policy promise — it is how the product is
+            built: every calculation runs in your browser and your numbers never
+            reach our servers.
           </p>
         </div>
       </div>
       <div class="mx-auto max-w-3xl px-4 py-8">
         <article class="prose-tool">
-        {sections.map((s) => (
-          <section>
-            <h2>{s.h}</h2>
-            {s.body.map((p) => (
-              <p>{p}</p>
-            ))}
-          </section>
-        ))}
+          {sections.map((s) => (
+            <section>
+              <h2>{s.h}</h2>
+              {s.body.map((p) => (
+                <p>{p}</p>
+              ))}
+            </section>
+          ))}
           <p class="text-sm">Last updated: {PRIVACY_UPDATED}</p>
         </article>
       </div>
@@ -263,16 +318,24 @@ app.get('/privacy-policy', (c) => {
   );
 });
 
-app.get('/sitemap.xml', (c) => {
+app.get("/sitemap.xml", (c) => {
   const origin = originOf(c.req.url);
-  return c.body(sitemapXml(origin, ['/', ...ALL_CALCS.map((t) => `/${t.slug}`), '/privacy-policy']), 200, {
-    'Content-Type': 'application/xml',
-  });
+  return c.body(
+    sitemapXml(origin, [
+      "/",
+      ...ALL_CALCS.map((t) => `/${t.slug}`),
+      "/privacy-policy",
+    ]),
+    200,
+    {
+      "Content-Type": "application/xml",
+    },
+  );
 });
 
-app.get('/robots.txt', (c) => c.text(robotsTxt(originOf(c.req.url))));
+app.get("/robots.txt", (c) => c.text(robotsTxt(originOf(c.req.url))));
 
-app.get('/llms.txt', (c) => {
+app.get("/llms.txt", (c) => {
   const origin = originOf(c.req.url);
   return c.text(`# ${SITE.name} — ${SITE.tagline}
 
@@ -281,7 +344,7 @@ Includes Malaysia KWSP/EPF, SOCSO/EIS, PCB and take-home salary tools, plus sala
 estimators for the US, UK, Singapore, Australia, India, Germany, Canada and Japan.
 
 ## Calculators
-${ALL_CALCS.map((t) => `- ${origin}/${t.slug}: ${t.desc}`).join('\n')}`);
+${ALL_CALCS.map((t) => `- ${origin}/${t.slug}: ${t.desc}`).join("\n")}`);
 });
 
 app.notFound((c) =>

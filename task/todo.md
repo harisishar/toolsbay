@@ -84,7 +84,18 @@ no deploy).
 - [x] Validate pdf /api/convert/* end-to-end: word-to-pdf returned a valid PDF (200, %PDF-1.6)
 - [ ] og:image artwork per tool (needs brand decision; OG tags ship without images for now)
 - [ ] Optional per brief: dynamic QR codes (needs KV), currency converter (needs live FX rates)
-- [ ] AdSense/ad slots once domains + traffic exist
+- [x] AdSense/ad slots once domains + traffic exist → see "AdSense placement" below
+
+## AdSense placement (manual units only, Auto ads off — no popups/overlays)
+
+- [x] `packages/seo/src/ads.ts`: ADSENSE_CLIENT (ca-pub-4725551882364441) + AD_SLOTS (unit IDs still placeholders)
+- [x] `public/ads.txt` in all 5 workers (served at each subdomain root by Workers Assets)
+- [x] 4 layouts: async adsbygoogle script in head + AdSlot component + content-bottom slot between main and footer (min-h reserved, zero CLS)
+- [x] Desktop rail (300×250 area, `hidden lg:block`) under sticky aside: calculator results panel + QR preview
+- [x] Hub: ads.txt only, no ad units (clean brand page)
+- [x] Build all workers green
+- [ ] User dashboard: Auto ads OFF for toolsbay.app; create 2 display units; paste slot IDs into `packages/seo/src/ads.ts`; enable GDPR consent message (Privacy & messaging)
+- [ ] Deploy all 5 workers + verify ads.txt live
 
 ## Post-launch additions
 

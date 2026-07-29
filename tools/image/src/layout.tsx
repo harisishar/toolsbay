@@ -1,6 +1,33 @@
-import type { Child } from 'hono/jsx';
-import { SITE } from './seo.js';
-import { PAIRS } from './content.js';
+import type { Child } from "hono/jsx";
+import { ADSENSE_CLIENT, AD_SLOTS } from "@claudetools/seo";
+import { SITE } from "./seo.js";
+import { PAIRS } from "./content.js";
+
+// Manual AdSense unit inside a height-reserved container (no CLS). The push is
+// skipped when the slot is display:none (mobile rail) to avoid availableWidth=0 errors.
+export function AdSlot({ slot, class: cls }: { slot: string; class?: string }) {
+  return (
+    <div class={cls}>
+      <p class="mb-1 text-[10px] tracking-widest text-mist uppercase">
+        Advertisement
+      </p>
+      <ins
+        class="adsbygoogle"
+        style="display:block"
+        data-ad-client={ADSENSE_CLIENT}
+        data-ad-slot={slot}
+        data-ad-format="auto"
+        data-full-width-responsive="true"
+      />
+      <script
+        dangerouslySetInnerHTML={{
+          __html:
+            "(function(){var i=document.currentScript.previousElementSibling;if(i&&i.offsetParent){(adsbygoogle=window.adsbygoogle||[]).push({});}})();",
+        }}
+      />
+    </div>
+  );
+}
 
 type LayoutProps = {
   title: string;
@@ -12,13 +39,20 @@ type LayoutProps = {
 };
 
 const TOOLS = [
-  ['/compress-image', 'Compress Image'],
-  ['/resize-image', 'Resize Image'],
-  ['/crop-image', 'Crop Image'],
-  ['/image-converter', 'Convert Image'],
+  ["/compress-image", "Compress Image"],
+  ["/resize-image", "Resize Image"],
+  ["/crop-image", "Crop Image"],
+  ["/image-converter", "Convert Image"],
 ] as const;
 
-export function Layout({ title, desc, path, origin, jsonLd = [], children }: LayoutProps) {
+export function Layout({
+  title,
+  desc,
+  path,
+  origin,
+  jsonLd = [],
+  children,
+}: LayoutProps) {
   const canonical = origin + path;
   return (
     <html lang="en">
@@ -38,6 +72,11 @@ export function Layout({ title, desc, path, origin, jsonLd = [], children }: Lay
         <meta name="twitter:title" content={title} />
         <meta name="twitter:description" content={desc} />
         <link rel="stylesheet" href="/styles.css" />
+        <script
+          async
+          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`}
+          crossorigin="anonymous"
+        />
         {jsonLd.map((ld) => (
           <script
             type="application/ld+json"
@@ -49,7 +88,10 @@ export function Layout({ title, desc, path, origin, jsonLd = [], children }: Lay
         <header class="border-b border-line">
           <div class="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
             <a href="/" class="font-display text-lg tracking-tight">
-              <span aria-hidden="true" class="mr-2 inline-block h-3 w-3 rounded-sm bg-ember" />
+              <span
+                aria-hidden="true"
+                class="mr-2 inline-block h-3 w-3 rounded-sm bg-ember"
+              />
               {SITE.name}
             </a>
             <nav class="flex items-center gap-5 text-sm font-semibold text-mist">
@@ -65,6 +107,10 @@ export function Layout({ title, desc, path, origin, jsonLd = [], children }: Lay
           </div>
         </header>
         <main>{children}</main>
+        <AdSlot
+          slot={AD_SLOTS.contentBottom}
+          class="mx-auto mt-16 min-h-[110px] max-w-3xl px-4"
+        />
         <footer class="mt-16 border-t border-line">
           <div class="mx-auto grid max-w-5xl gap-8 px-4 py-10 text-sm sm:grid-cols-3">
             <div>
@@ -80,12 +126,14 @@ export function Layout({ title, desc, path, origin, jsonLd = [], children }: Lay
               </ul>
             </div>
             <div>
-              <h2 class="font-display mb-3 text-sm text-fog">Popular conversions</h2>
+              <h2 class="font-display mb-3 text-sm text-fog">
+                Popular conversions
+              </h2>
               <ul class="grid grid-cols-2 gap-x-4 gap-y-1.5 text-mist">
                 {PAIRS.slice(0, 12).map((p) => (
                   <li>
                     <a href={`/${p.slug}`} class="hover:text-ember">
-                      {p.h1.replace(' Converter', '')}
+                      {p.h1.replace(" Converter", "")}
                     </a>
                   </li>
                 ))}
@@ -94,9 +142,13 @@ export function Layout({ title, desc, path, origin, jsonLd = [], children }: Lay
             <div class="text-mist">
               <h2 class="font-display mb-3 text-sm text-fog">{SITE.name}</h2>
               <p class="leading-6">
-                Free image tools that run entirely in your browser. No uploads, no accounts, no
-                watermarks — your photos never leave your device.{' '}
-                <a href="/privacy-policy" class="font-semibold text-fog hover:text-ember">
+                Free image tools that run entirely in your browser. No uploads,
+                no accounts, no watermarks — your photos never leave your
+                device.{" "}
+                <a
+                  href="/privacy-policy"
+                  class="font-semibold text-fog hover:text-ember"
+                >
                   Read our privacy policy
                 </a>
                 .

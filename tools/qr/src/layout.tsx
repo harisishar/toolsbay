@@ -1,6 +1,33 @@
-import type { Child } from 'hono/jsx';
-import { QR_TYPES, PAYMENT_GUIDES } from './content.js';
-import { SITE } from './seo.js';
+import type { Child } from "hono/jsx";
+import { ADSENSE_CLIENT, AD_SLOTS } from "@claudetools/seo";
+import { QR_TYPES, PAYMENT_GUIDES } from "./content.js";
+import { SITE } from "./seo.js";
+
+// Manual AdSense unit inside a height-reserved container (no CLS). The push is
+// skipped when the slot is display:none (mobile rail) to avoid availableWidth=0 errors.
+export function AdSlot({ slot, class: cls }: { slot: string; class?: string }) {
+  return (
+    <div class={cls}>
+      <p class="mb-1 text-[10px] tracking-widest text-ink-soft uppercase">
+        Advertisement
+      </p>
+      <ins
+        class="adsbygoogle"
+        style="display:block"
+        data-ad-client={ADSENSE_CLIENT}
+        data-ad-slot={slot}
+        data-ad-format="auto"
+        data-full-width-responsive="true"
+      />
+      <script
+        dangerouslySetInnerHTML={{
+          __html:
+            "(function(){var i=document.currentScript.previousElementSibling;if(i&&i.offsetParent){(adsbygoogle=window.adsbygoogle||[]).push({});}})();",
+        }}
+      />
+    </div>
+  );
+}
 
 type LayoutProps = {
   title: string;
@@ -11,7 +38,14 @@ type LayoutProps = {
   children: Child;
 };
 
-export function Layout({ title, desc, path, origin, jsonLd = [], children }: LayoutProps) {
+export function Layout({
+  title,
+  desc,
+  path,
+  origin,
+  jsonLd = [],
+  children,
+}: LayoutProps) {
   const canonical = origin + path;
   return (
     <html lang="en">
@@ -31,6 +65,11 @@ export function Layout({ title, desc, path, origin, jsonLd = [], children }: Lay
         <meta name="twitter:title" content={title} />
         <meta name="twitter:description" content={desc} />
         <link rel="stylesheet" href="/styles.css" />
+        <script
+          async
+          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`}
+          crossorigin="anonymous"
+        />
         {jsonLd.map((ld) => (
           <script
             type="application/ld+json"
@@ -42,7 +81,10 @@ export function Layout({ title, desc, path, origin, jsonLd = [], children }: Lay
         <header class="border-b border-line bg-white">
           <div class="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
             <a href="/" class="font-display text-lg tracking-tight">
-              <span aria-hidden="true" class="mr-2 inline-block h-3 w-3 bg-accent" />
+              <span
+                aria-hidden="true"
+                class="mr-2 inline-block h-3 w-3 bg-accent"
+              />
               {SITE.name}
             </a>
             <nav class="flex items-center gap-5 text-sm font-semibold text-ink-soft">
@@ -59,6 +101,10 @@ export function Layout({ title, desc, path, origin, jsonLd = [], children }: Lay
           </div>
         </header>
         <main>{children}</main>
+        <AdSlot
+          slot={AD_SLOTS.contentBottom}
+          class="mx-auto mt-16 min-h-[110px] max-w-3xl px-4"
+        />
         <footer class="mt-16 border-t border-line bg-white">
           <div class="mx-auto grid max-w-5xl gap-8 px-4 py-10 text-sm sm:grid-cols-3">
             <div>
@@ -74,7 +120,9 @@ export function Layout({ title, desc, path, origin, jsonLd = [], children }: Lay
               </ul>
             </div>
             <div>
-              <h2 class="font-display mb-3 text-sm text-ink">Payment QR guides</h2>
+              <h2 class="font-display mb-3 text-sm text-ink">
+                Payment QR guides
+              </h2>
               <ul class="space-y-1.5 text-ink-soft">
                 {PAYMENT_GUIDES.map((g) => (
                   <li>
@@ -93,9 +141,13 @@ export function Layout({ title, desc, path, origin, jsonLd = [], children }: Lay
             <div class="text-ink-soft">
               <h2 class="font-display mb-3 text-sm text-ink">{SITE.name}</h2>
               <p class="leading-6">
-                Free static QR codes, generated entirely in your browser. No sign-up, no
-                watermark, no expiry — your data never touches a server.{' '}
-                <a href="/privacy-policy" class="font-semibold text-ink hover:text-accent-deep">
+                Free static QR codes, generated entirely in your browser. No
+                sign-up, no watermark, no expiry — your data never touches a
+                server.{" "}
+                <a
+                  href="/privacy-policy"
+                  class="font-semibold text-ink hover:text-accent-deep"
+                >
                   Read our privacy policy
                 </a>
                 .
@@ -103,7 +155,10 @@ export function Layout({ title, desc, path, origin, jsonLd = [], children }: Lay
             </div>
           </div>
         </footer>
-        <script type="module" src={path.startsWith('/barcode') ? '/js/barcode.js' : '/js/qr.js'} />
+        <script
+          type="module"
+          src={path.startsWith("/barcode") ? "/js/barcode.js" : "/js/qr.js"}
+        />
         <script defer src="/vendor/alpine.min.js" />
       </body>
     </html>

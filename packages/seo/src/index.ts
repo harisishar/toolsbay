@@ -1,4 +1,5 @@
 // Shared schema.org JSON-LD builders used by every tool site.
+export { ADSENSE_CLIENT, AD_SLOTS } from "./ads.ts";
 export {
   privacySections,
   PRIVACY_UPDATED,

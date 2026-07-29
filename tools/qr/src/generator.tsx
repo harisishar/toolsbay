@@ -1,16 +1,22 @@
-import type { Faq } from './seo.js';
-import { QR_TYPES, type Field, type QrType } from './content.js';
+import { AD_SLOTS } from "@claudetools/seo";
+import type { Faq } from "./seo.js";
+import { QR_TYPES, type Field, type QrType } from "./content.js";
+import { AdSlot } from "./layout.js";
 
 function FieldInput({ f }: { f: Field }) {
-  if (f.input === 'textarea') {
+  if (f.input === "textarea") {
     return (
-      <label class={f.half ? '' : 'block'}>
+      <label class={f.half ? "" : "block"}>
         <span class="field-label">{f.label}</span>
-        <textarea class="field min-h-24" x-model={f.model} placeholder={f.placeholder ?? ''} />
+        <textarea
+          class="field min-h-24"
+          x-model={f.model}
+          placeholder={f.placeholder ?? ""}
+        />
       </label>
     );
   }
-  if (f.input === 'select') {
+  if (f.input === "select") {
     return (
       <label>
         <span class="field-label">{f.label}</span>
@@ -22,10 +28,14 @@ function FieldInput({ f }: { f: Field }) {
       </label>
     );
   }
-  if (f.input === 'checkbox') {
+  if (f.input === "checkbox") {
     return (
       <label class="flex h-full items-center gap-2 pt-5 text-sm font-semibold text-ink-soft">
-        <input type="checkbox" class="h-4 w-4 accent-accent" x-model={f.model} />
+        <input
+          type="checkbox"
+          class="h-4 w-4 accent-accent"
+          x-model={f.model}
+        />
         {f.label}
       </label>
     );
@@ -33,7 +43,12 @@ function FieldInput({ f }: { f: Field }) {
   return (
     <label>
       <span class="field-label">{f.label}</span>
-      <input type="text" class="field" x-model={f.model} placeholder={f.placeholder ?? ''} />
+      <input
+        type="text"
+        class="field"
+        x-model={f.model}
+        placeholder={f.placeholder ?? ""}
+      />
     </label>
   );
 }
@@ -50,11 +65,11 @@ export function Generator({ active }: { active: QrType }) {
           {QR_TYPES.map((t) => (
             <a
               href={`/${t.slug}`}
-              aria-current={t.type === active.type ? 'page' : undefined}
+              aria-current={t.type === active.type ? "page" : undefined}
               class={
                 t.type === active.type
-                  ? 'rounded-md bg-ink px-3 py-1.5 text-sm font-semibold text-white'
-                  : 'rounded-md border border-line bg-white px-3 py-1.5 text-sm font-semibold text-ink-soft hover:border-accent hover:text-accent-deep'
+                  ? "rounded-md bg-ink px-3 py-1.5 text-sm font-semibold text-white"
+                  : "rounded-md border border-line bg-white px-3 py-1.5 text-sm font-semibold text-ink-soft hover:border-accent hover:text-accent-deep"
               }
             >
               {t.label}
@@ -65,7 +80,7 @@ export function Generator({ active }: { active: QrType }) {
         <div class="rounded-lg border border-line bg-white p-5">
           <div class="grid gap-4 sm:grid-cols-2">
             {active.fields.map((f) => (
-              <div class={f.half ? '' : 'sm:col-span-2'}>
+              <div class={f.half ? "" : "sm:col-span-2"}>
                 <FieldInput f={f} />
               </div>
             ))}
@@ -110,7 +125,13 @@ export function Generator({ active }: { active: QrType }) {
       <aside class="lg:sticky lg:top-6">
         <div class="rounded-lg border border-line bg-white p-5">
           <div class="flex min-h-[280px] items-center justify-center rounded-md border border-dashed border-line bg-paper p-4">
-            <canvas x-ref="canvas" x-show="payload" width="320" height="320" class="max-w-full" />
+            <canvas
+              x-ref="canvas"
+              x-show="payload"
+              width="320"
+              height="320"
+              class="max-w-full"
+            />
             <p x-show="!payload" class="px-6 text-center text-sm text-ink-soft">
               Fill in the form and your QR code appears here instantly.
             </p>
@@ -148,6 +169,10 @@ export function Generator({ active }: { active: QrType }) {
             Static code · never expires · generated locally
           </p>
         </div>
+        <AdSlot
+          slot={AD_SLOTS.rail}
+          class="mt-6 hidden min-h-[250px] lg:block"
+        />
       </aside>
     </div>
   );

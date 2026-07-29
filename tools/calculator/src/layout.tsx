@@ -1,6 +1,33 @@
-import type { Child } from 'hono/jsx';
-import { SITE } from './seo.ts';
-import { ALL_CALCS, CATEGORIES } from './lib/calcs/index.ts';
+import type { Child } from "hono/jsx";
+import { ADSENSE_CLIENT, AD_SLOTS } from "@claudetools/seo";
+import { SITE } from "./seo.ts";
+import { ALL_CALCS, CATEGORIES } from "./lib/calcs/index.ts";
+
+// Manual AdSense unit inside a height-reserved container (no CLS). The push is
+// skipped when the slot is display:none (mobile rail) to avoid availableWidth=0 errors.
+export function AdSlot({ slot, class: cls }: { slot: string; class?: string }) {
+  return (
+    <div class={cls}>
+      <p class="mb-1 text-[10px] tracking-widest text-navy-soft uppercase">
+        Advertisement
+      </p>
+      <ins
+        class="adsbygoogle"
+        style="display:block"
+        data-ad-client={ADSENSE_CLIENT}
+        data-ad-slot={slot}
+        data-ad-format="auto"
+        data-full-width-responsive="true"
+      />
+      <script
+        dangerouslySetInnerHTML={{
+          __html:
+            "(function(){var i=document.currentScript.previousElementSibling;if(i&&i.offsetParent){(adsbygoogle=window.adsbygoogle||[]).push({});}})();",
+        }}
+      />
+    </div>
+  );
+}
 
 type LayoutProps = {
   title: string;
@@ -11,7 +38,14 @@ type LayoutProps = {
   children: Child;
 };
 
-export function Layout({ title, desc, path, origin, jsonLd = [], children }: LayoutProps) {
+export function Layout({
+  title,
+  desc,
+  path,
+  origin,
+  jsonLd = [],
+  children,
+}: LayoutProps) {
   const canonical = origin + path;
   return (
     <html lang="en">
@@ -31,6 +65,11 @@ export function Layout({ title, desc, path, origin, jsonLd = [], children }: Lay
         <meta name="twitter:title" content={title} />
         <meta name="twitter:description" content={desc} />
         <link rel="stylesheet" href="/styles.css" />
+        <script
+          async
+          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`}
+          crossorigin="anonymous"
+        />
         {jsonLd.map((ld) => (
           <script
             type="application/ld+json"
@@ -42,17 +81,29 @@ export function Layout({ title, desc, path, origin, jsonLd = [], children }: Lay
         <header class="border-b border-line bg-panel">
           <div class="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
             <a href="/" class="font-display text-lg tracking-tight">
-              <span aria-hidden="true" class="mr-2 inline-block h-3 w-3 rounded-full bg-amber" />
+              <span
+                aria-hidden="true"
+                class="mr-2 inline-block h-3 w-3 rounded-full bg-amber"
+              />
               {SITE.name}
             </a>
             <nav class="flex items-center gap-5 text-sm font-semibold text-navy-soft">
-              <a href="/malaysia-salary-calculator" class="hidden hover:text-amber-deep sm:inline">
+              <a
+                href="/malaysia-salary-calculator"
+                class="hidden hover:text-amber-deep sm:inline"
+              >
                 Malaysia Salary
               </a>
-              <a href="/loan-calculator" class="hidden hover:text-amber-deep sm:inline">
+              <a
+                href="/loan-calculator"
+                class="hidden hover:text-amber-deep sm:inline"
+              >
                 Loan
               </a>
-              <a href="/bmi-calculator" class="hidden hover:text-amber-deep sm:inline">
+              <a
+                href="/bmi-calculator"
+                class="hidden hover:text-amber-deep sm:inline"
+              >
                 BMI
               </a>
               <a href="/#all" class="hover:text-amber-deep">
@@ -62,6 +113,10 @@ export function Layout({ title, desc, path, origin, jsonLd = [], children }: Lay
           </div>
         </header>
         <main>{children}</main>
+        <AdSlot
+          slot={AD_SLOTS.contentBottom}
+          class="mx-auto mt-16 min-h-[110px] max-w-3xl px-4"
+        />
         <footer class="mt-16 border-t border-line bg-panel">
           <div class="mx-auto grid max-w-5xl gap-8 px-4 py-10 text-sm sm:grid-cols-3">
             {CATEGORIES.map((cat) => (
@@ -83,9 +138,16 @@ export function Layout({ title, desc, path, origin, jsonLd = [], children }: Lay
           </div>
           <div class="border-t border-line">
             <p class="mx-auto max-w-5xl px-4 py-4 text-xs leading-5 text-navy-soft">
-              {SITE.name} calculators run entirely in your browser — your numbers never leave
-              your device (<a href="/privacy-policy" class="font-semibold text-navy hover:text-amber-deep">privacy policy</a>).
-              Results are estimates, not financial, tax, medical or legal advice.
+              {SITE.name} calculators run entirely in your browser — your
+              numbers never leave your device (
+              <a
+                href="/privacy-policy"
+                class="font-semibold text-navy hover:text-amber-deep"
+              >
+                privacy policy
+              </a>
+              ). Results are estimates, not financial, tax, medical or legal
+              advice.
             </p>
           </div>
         </footer>
