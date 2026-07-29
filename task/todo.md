@@ -58,15 +58,25 @@ no deploy).
 
 ## Bugfixes
 
-- [ ] Crop tool blank canvas: paint() measured clientWidth while x-show still hid the panel
+- [x] Crop tool blank canvas: paint() measured clientWidth while x-show still hid the panel
       (scale 0 → 0×0 canvas) + p-4 padding skewing pointer coords — fixed in
       tools/image/src/client/app.ts, verify in browser
 
+## Domain launch: toolsbay.app (2026-07-29)
+
+- [x] Custom domain routes in all four wrangler.jsonc (calc./image./pdf./qr.toolsbay.app,
+      custom_domain: true, workers_dev: false)
+- [x] New tools/hub Worker: apex landing page on toolsbay.app + www→apex 301, robots/sitemap,
+      WebSite + ItemList JSON-LD
+- [x] wrangler login (auth expired — user interactive step)
+- [x] Deploy calculator, image, qr, hub Workers
+- [x] Deploy pdf Worker with --containers-rollout=none (no Docker; container conversions
+      pending — Browser Rendering URL→PDF and client-side tools live)
+- [x] Verify: 200 + correct canonical on each subdomain, www 301→apex, workers.dev disabled
+
 ## Deferred (needs user input or deploy)
 
-- [ ] Buy apex domain → fill wrangler.jsonc routes (all four tools) and deploy
-- [ ] Deploy pdf Worker with Container + Browser Rendering; validate /api/convert/* end-to-end
-      (needs Docker or CI build — no Docker on this machine)
+- [ ] Validate pdf /api/convert/* end-to-end after deploy
 - [ ] og:image artwork per tool (needs brand decision; OG tags ship without images for now)
 - [ ] Optional per brief: dynamic QR codes (needs KV), currency converter (needs live FX rates)
 - [ ] AdSense/ad slots once domains + traffic exist

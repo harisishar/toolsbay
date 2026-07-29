@@ -1,0 +1,60 @@
+@import "tailwindcss";
+
+@font-face {
+  font-family: "Bricolage Grotesque";
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url("/fonts/bricolage-800.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Instrument Sans";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/instrument-400.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Instrument Sans";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("/fonts/instrument-600.woff2") format("woff2");
+}
+
+@theme {
+  --font-display: "Bricolage Grotesque", ui-sans-serif, sans-serif;
+  --font-sans: "Instrument Sans", ui-sans-serif, system-ui, sans-serif;
+  --color-ink: #1a1f2b;
+  --color-ink-soft: #4b5265;
+  --color-paper: #f7f4ec;
+  --color-line: #ddd7c8;
+  --color-calc: #e08914;
+  --color-image: #c2417f;
+  --color-pdf: #cf4531;
+  --color-qr: #009a5a;
+}
+
+/* Faint ledger ruling behind the page — the "bay chart" motif */
+.chart-bg {
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent,
+    transparent 47px,
+    color-mix(in srgb, var(--color-line) 55%, transparent) 48px
+  );
+}
+
+/* Tool row hover: arrow slides, accent bar grows */
+.tool-row .arrow {
+  transition: transform 0.2s ease;
+}
+.tool-row:hover .arrow {
+  transform: translateX(6px);
+}
+.tool-row .bar {
+  transition: width 0.25s ease;
+}
+.tool-row:hover .bar {
+  width: 3.5rem;
+}

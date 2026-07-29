@@ -1,0 +1,26 @@
+{
+  "name": "@tools/hub",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build:vendor": "node scripts/vendor.mjs",
+    "build:css": "tailwindcss -i src/styles.css -o public/styles.css --minify",
+    "build": "pnpm build:vendor && pnpm build:css",
+    "dev": "pnpm build && wrangler dev",
+    "deploy": "pnpm build && wrangler deploy",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@claudetools/seo": "workspace:*",
+    "hono": "^4.8.0"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20250712.0",
+    "@fontsource/bricolage-grotesque": "^5.2.0",
+    "@fontsource/instrument-sans": "^5.2.0",
+    "@tailwindcss/cli": "^4.1.0",
+    "tailwindcss": "^4.1.0",
+    "typescript": "^5.9.0",
+    "wrangler": "^4.26.0"
+  }
+}

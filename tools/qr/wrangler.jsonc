@@ -6,6 +6,6 @@
   "assets": {
     "directory": "./public",
   },
-  // TODO: custom domain route when apex domain exists, e.g.
-  // "routes": [{ "pattern": "qr.<domain>", "custom_domain": true }]
+  "workers_dev": false,
+  "routes": [{ "pattern": "qr.toolsbay.app", "custom_domain": true }],
 }

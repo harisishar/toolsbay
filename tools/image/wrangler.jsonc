@@ -4,8 +4,8 @@
   "main": "src/index.tsx",
   "compatibility_date": "2026-07-22",
   "assets": {
-    "directory": "./public"
-  }
-  // TODO: custom domain route when apex domain exists, e.g.
-  // "routes": [{ "pattern": "image.<domain>", "custom_domain": true }]
+    "directory": "./public",
+  },
+  "workers_dev": false,
+  "routes": [{ "pattern": "image.toolsbay.app", "custom_domain": true }],
 }

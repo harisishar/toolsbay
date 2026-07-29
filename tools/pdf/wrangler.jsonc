@@ -5,7 +5,7 @@
   "compatibility_date": "2026-07-22",
   "compatibility_flags": ["nodejs_compat"],
   "assets": {
-    "directory": "./public"
+    "directory": "./public",
   },
   // Approved server path (CLAUDE.md exception): Browser Rendering for URL→PDF,
   // a Container (LibreOffice + ocrmypdf + qpdf) for the hard conversions.
@@ -14,13 +14,13 @@
     {
       "class_name": "Converter",
       "image": "./container/Dockerfile",
-      "max_instances": 2
-    }
+      "max_instances": 2,
+    },
   ],
   "durable_objects": {
-    "bindings": [{ "name": "CONVERTER", "class_name": "Converter" }]
+    "bindings": [{ "name": "CONVERTER", "class_name": "Converter" }],
   },
-  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["Converter"] }]
-  // TODO: custom domain route when apex domain exists, e.g.
-  // "routes": [{ "pattern": "pdf.<domain>", "custom_domain": true }]
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["Converter"] }],
+  "workers_dev": false,
+  "routes": [{ "pattern": "pdf.toolsbay.app", "custom_domain": true }],
 }
