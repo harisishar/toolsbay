@@ -95,7 +95,11 @@ export function Layout({ title, desc, path, origin, jsonLd = [], children }: Lay
               <h2 class="font-display mb-3 text-sm text-fog">{SITE.name}</h2>
               <p class="leading-6">
                 Free image tools that run entirely in your browser. No uploads, no accounts, no
-                watermarks — your photos never leave your device.
+                watermarks — your photos never leave your device.{' '}
+                <a href="/privacy-policy" class="font-semibold text-fog hover:text-ember">
+                  Read our privacy policy
+                </a>
+                .
               </p>
             </div>
           </div>

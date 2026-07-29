@@ -3,6 +3,18 @@ import { Layout } from './layout.js';
 import { Generator, FaqSection } from './generator.js';
 import { QR_TYPES, PAYMENT_GUIDES } from './content.js';
 import { SITE, webAppJsonLd, faqJsonLd, articleJsonLd, robotsTxt } from './seo.js';
+import { privacySections, PRIVACY_UPDATED } from '@claudetools/seo';
+
+function privacyLd(origin: string) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: `Privacy Policy — ${SITE.name}`,
+    url: origin + '/privacy-policy',
+    dateModified: PRIVACY_UPDATED,
+  };
+}
+
 
 const app = new Hono();
 
@@ -237,7 +249,8 @@ for (const g of PAYMENT_GUIDES) {
             <h1 class="font-display text-3xl leading-tight sm:text-4xl">{g.h1}</h1>
           </div>
         </div>
-        <article class="prose-tool mx-auto max-w-3xl px-4 py-8">
+        <div class="mx-auto max-w-3xl px-4 py-8">
+        <article class="prose-tool">
           {g.sections.map((s) => (
             <section>
               <h2>{s.h}</h2>
@@ -250,14 +263,52 @@ for (const g of PAYMENT_GUIDES) {
             Need a general-purpose code instead? Use the free{' '}
             <a href="/">QR code generator</a> — it runs entirely in your browser.
           </p>
-        </article>
-        <div class="mx-auto max-w-3xl px-4">
+          </article>
           <FaqSection faq={g.faq} />
         </div>
       </Layout>,
     );
   });
 }
+
+
+app.get('/privacy-policy', (c) => {
+  const origin = originOf(c.req.url);
+  const desc = `How ${SITE.name} handles your data: QR codes, barcodes and everything you type into them are processed in your browser and are never uploaded. No accounts, no tracking by us.`;
+  const sections = privacySections({ siteName: SITE.name, what: 'QR codes, barcodes and everything you type into them' });
+  return c.html(
+    <Layout
+      title={`Privacy Policy — ${SITE.name}`}
+      desc={desc}
+      path="/privacy-policy"
+      origin={origin}
+      jsonLd={[privacyLd(origin)]}
+    >
+      <div class="module-grid border-b border-line bg-white">
+        <div class="mx-auto max-w-3xl px-4 py-10">
+          <h1 class="font-display text-3xl leading-tight sm:text-4xl">Privacy Policy</h1>
+          <p class="mt-3 text-[15px] leading-7 text-ink-soft">
+            Privacy here is not a policy promise — it is how the product is built: your data is
+            processed in your browser and never reaches our servers.
+          </p>
+        </div>
+      </div>
+      <div class="mx-auto max-w-3xl px-4 py-8">
+        <article class="prose-tool">
+        {sections.map((s) => (
+          <section>
+            <h2>{s.h}</h2>
+            {s.body.map((p) => (
+              <p>{p}</p>
+            ))}
+          </section>
+        ))}
+          <p class="text-sm">Last updated: {PRIVACY_UPDATED}</p>
+        </article>
+      </div>
+    </Layout>,
+  );
+});
 
 app.get('/sitemap.xml', (c) => {
   const origin = originOf(c.req.url);
@@ -266,6 +317,7 @@ app.get('/sitemap.xml', (c) => {
     ...QR_TYPES.map((t) => `/${t.slug}`),
     '/barcode-generator',
     ...PAYMENT_GUIDES.map((g) => `/${g.slug}`),
+    '/privacy-policy',
   ];
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">

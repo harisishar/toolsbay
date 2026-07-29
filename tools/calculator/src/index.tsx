@@ -3,6 +3,18 @@ import { Layout } from './layout.tsx';
 import { ALL_CALCS, CALC_BY_SLUG, CATEGORIES } from './lib/calcs/index.ts';
 import type { Calc, Input } from './lib/calc-types.ts';
 import { SITE, webAppJsonLd, faqJsonLd, sitemapXml, robotsTxt } from './seo.ts';
+import { privacySections, PRIVACY_UPDATED } from '@claudetools/seo';
+
+function privacyLd(origin: string) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: `Privacy Policy — ${SITE.name}`,
+    url: origin + '/privacy-policy',
+    dateModified: PRIVACY_UPDATED,
+  };
+}
+
 
 const app = new Hono();
 const originOf = (url: string) => new URL(url).origin;
@@ -212,9 +224,48 @@ for (const calc of ALL_CALCS) {
   });
 }
 
+
+app.get('/privacy-policy', (c) => {
+  const origin = originOf(c.req.url);
+  const desc = `How ${SITE.name} handles your data: numbers, salaries and dates you enter are processed in your browser and are never uploaded. No accounts, no tracking by us.`;
+  const sections = privacySections({ siteName: SITE.name, what: 'numbers, salaries and dates you enter' });
+  return c.html(
+    <Layout
+      title={`Privacy Policy — ${SITE.name}`}
+      desc={desc}
+      path="/privacy-policy"
+      origin={origin}
+      jsonLd={[privacyLd(origin)]}
+    >
+      <div class="grid-dots border-b border-line bg-panel">
+        <div class="mx-auto max-w-3xl px-4 py-10">
+          <h1 class="font-display text-3xl leading-tight sm:text-4xl">Privacy Policy</h1>
+          <p class="mt-3 text-[15px] leading-7 text-navy-soft">
+            Privacy here is not a policy promise — it is how the product is built: every
+            calculation runs in your browser and your numbers never reach our servers.
+          </p>
+        </div>
+      </div>
+      <div class="mx-auto max-w-3xl px-4 py-8">
+        <article class="prose-tool">
+        {sections.map((s) => (
+          <section>
+            <h2>{s.h}</h2>
+            {s.body.map((p) => (
+              <p>{p}</p>
+            ))}
+          </section>
+        ))}
+          <p class="text-sm">Last updated: {PRIVACY_UPDATED}</p>
+        </article>
+      </div>
+    </Layout>,
+  );
+});
+
 app.get('/sitemap.xml', (c) => {
   const origin = originOf(c.req.url);
-  return c.body(sitemapXml(origin, ['/', ...ALL_CALCS.map((t) => `/${t.slug}`)]), 200, {
+  return c.body(sitemapXml(origin, ['/', ...ALL_CALCS.map((t) => `/${t.slug}`), '/privacy-policy']), 200, {
     'Content-Type': 'application/xml',
   });
 });

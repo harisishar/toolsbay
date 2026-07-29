@@ -1,4 +1,9 @@
 // Shared schema.org JSON-LD builders used by every tool site.
+export {
+  privacySections,
+  PRIVACY_UPDATED,
+  type PrivacySection,
+} from "./privacy.ts";
 
 export type Faq = { q: string; a: string };
 

@@ -6,6 +6,18 @@ export { Converter };
 import { Hero, FaqSection, ToolBody } from './components.js';
 import { TOOLS, CATEGORIES } from './content.js';
 import { SITE, webAppJsonLd, faqJsonLd, sitemapXml, robotsTxt } from './seo.js';
+import { privacySections, PRIVACY_UPDATED } from '@claudetools/seo';
+
+function privacyLd(origin: string) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: `Privacy Policy — ${SITE.name}`,
+    url: origin + '/privacy-policy',
+    dateModified: PRIVACY_UPDATED,
+  };
+}
+
 
 const app = new Hono();
 const originOf = (url: string) => new URL(url).origin;
@@ -97,9 +109,43 @@ for (const tool of TOOLS) {
   });
 }
 
+
+app.get('/privacy-policy', (c) => {
+  const origin = originOf(c.req.url);
+  const desc = `How ${SITE.name} handles your data: PDFs are processed in your browser; marked server-side conversions are streamed through and never stored. No accounts, no tracking.`;
+  const sections = privacySections({ siteName: SITE.name, what: 'PDF documents', serverPath: true });
+  return c.html(
+    <Layout
+      title={`Privacy Policy — ${SITE.name}`}
+      desc={desc}
+      path="/privacy-policy"
+      origin={origin}
+      jsonLd={[privacyLd(origin)]}
+    >
+      <Hero
+        h1="Privacy Policy"
+        intro="Privacy here is not a policy promise — it is how the product is built: nearly every tool processes your PDFs in your browser, and the few server-side conversions stream files through without ever storing them."
+      />
+      <div class="mx-auto max-w-3xl px-4 py-8">
+        <article class="prose-tool">
+        {sections.map((s) => (
+          <section>
+            <h2>{s.h}</h2>
+            {s.body.map((p) => (
+              <p>{p}</p>
+            ))}
+          </section>
+        ))}
+          <p class="text-sm">Last updated: {PRIVACY_UPDATED}</p>
+        </article>
+      </div>
+    </Layout>,
+  );
+});
+
 app.get('/sitemap.xml', (c) => {
   const origin = originOf(c.req.url);
-  return c.body(sitemapXml(origin, ['/', ...TOOLS.map((t) => `/${t.slug}`)]), 200, {
+  return c.body(sitemapXml(origin, ['/', ...TOOLS.map((t) => `/${t.slug}`), '/privacy-policy']), 200, {
     'Content-Type': 'application/xml',
   });
 });

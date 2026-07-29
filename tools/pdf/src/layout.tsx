@@ -83,7 +83,11 @@ export function Layout({ title, desc, path, origin, jsonLd = [], children }: Lay
             <p class="mx-auto max-w-5xl px-4 py-4 text-xs leading-5 text-muted">
               {SITE.name} — free PDF tools. Everything that can run in your browser does; the few
               conversions that need a document engine are streamed through our server and never
-              stored.
+              stored.{' '}
+              <a href="/privacy-policy" class="font-semibold text-ink hover:text-brick-deep">
+                Read our privacy policy
+              </a>
+              .
             </p>
           </div>
         </footer>

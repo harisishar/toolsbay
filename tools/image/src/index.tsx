@@ -12,6 +12,18 @@ import {
 } from './components.js';
 import { PAIRS, TOOL_FAQ, SOURCES, TARGETS } from './content.js';
 import { SITE, webAppJsonLd, faqJsonLd, sitemapXml, robotsTxt, type Faq } from './seo.js';
+import { privacySections, PRIVACY_UPDATED } from '@claudetools/seo';
+
+function privacyLd(origin: string) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: `Privacy Policy — ${SITE.name}`,
+    url: origin + '/privacy-policy',
+    dateModified: PRIVACY_UPDATED,
+  };
+}
+
 
 const app = new Hono();
 const originOf = (url: string) => new URL(url).origin;
@@ -288,6 +300,40 @@ for (const p of PAIRS) {
   });
 }
 
+
+app.get('/privacy-policy', (c) => {
+  const origin = originOf(c.req.url);
+  const desc = `How ${SITE.name} handles your data: images and photos are processed in your browser and are never uploaded. No accounts, no tracking by us.`;
+  const sections = privacySections({ siteName: SITE.name, what: 'images and photos' });
+  return c.html(
+    <Layout
+      title={`Privacy Policy — ${SITE.name}`}
+      desc={desc}
+      path="/privacy-policy"
+      origin={origin}
+      jsonLd={[privacyLd(origin)]}
+    >
+      <Hero
+        h1="Privacy Policy"
+        intro="Privacy here is not a policy promise — it is how the product is built: your images are processed in your browser and never reach our servers."
+      />
+      <div class="mx-auto max-w-3xl px-4 py-8">
+        <article class="prose-tool">
+        {sections.map((s) => (
+          <section>
+            <h2>{s.h}</h2>
+            {s.body.map((p) => (
+              <p>{p}</p>
+            ))}
+          </section>
+        ))}
+          <p class="text-sm">Last updated: {PRIVACY_UPDATED}</p>
+        </article>
+      </div>
+    </Layout>,
+  );
+});
+
 app.get('/sitemap.xml', (c) => {
   const origin = originOf(c.req.url);
   const paths = [
@@ -297,6 +343,7 @@ app.get('/sitemap.xml', (c) => {
     '/crop-image',
     '/image-converter',
     ...PAIRS.map((p) => `/${p.slug}`),
+    '/privacy-policy',
   ];
   return c.body(sitemapXml(origin, paths), 200, { 'Content-Type': 'application/xml' });
 });

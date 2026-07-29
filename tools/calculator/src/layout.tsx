@@ -83,9 +83,9 @@ export function Layout({ title, desc, path, origin, jsonLd = [], children }: Lay
           </div>
           <div class="border-t border-line">
             <p class="mx-auto max-w-5xl px-4 py-4 text-xs leading-5 text-navy-soft">
-              {SITE.name} calculators run entirely in your browser and are provided for
-              information only — results are estimates, not financial, tax, medical or legal
-              advice.
+              {SITE.name} calculators run entirely in your browser — your numbers never leave
+              your device (<a href="/privacy-policy" class="font-semibold text-navy hover:text-amber-deep">privacy policy</a>).
+              Results are estimates, not financial, tax, medical or legal advice.
             </p>
           </div>
         </footer>

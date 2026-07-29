@@ -56,6 +56,12 @@ no deploy).
 - [x] Run /seo-geo per tool, act on findings
 - [x] Final verify: sitemaps, robots, llms.txt, JSON-LD across all four tools
 
+## Bugfixes
+
+- [ ] Crop tool blank canvas: paint() measured clientWidth while x-show still hid the panel
+      (scale 0 → 0×0 canvas) + p-4 padding skewing pointer coords — fixed in
+      tools/image/src/client/app.ts, verify in browser
+
 ## Deferred (needs user input or deploy)
 
 - [ ] Buy apex domain → fill wrangler.jsonc routes (all four tools) and deploy
@@ -64,3 +70,8 @@ no deploy).
 - [ ] og:image artwork per tool (needs brand decision; OG tags ship without images for now)
 - [ ] Optional per brief: dynamic QR codes (needs KV), currency converter (needs live FX rates)
 - [ ] AdSense/ad slots once domains + traffic exist
+
+## Post-launch additions
+
+- [x] /privacy-policy on all four tools (shared copy in @claudetools/seo, tool-accurate
+      server-path disclosure for pdf) + footer privacy emphasis + sitemap entries (2026-07-29)

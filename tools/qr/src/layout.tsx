@@ -94,7 +94,11 @@ export function Layout({ title, desc, path, origin, jsonLd = [], children }: Lay
               <h2 class="font-display mb-3 text-sm text-ink">{SITE.name}</h2>
               <p class="leading-6">
                 Free static QR codes, generated entirely in your browser. No sign-up, no
-                watermark, no expiry — your data never touches a server.
+                watermark, no expiry — your data never touches a server.{' '}
+                <a href="/privacy-policy" class="font-semibold text-ink hover:text-accent-deep">
+                  Read our privacy policy
+                </a>
+                .
               </p>
             </div>
           </div>
