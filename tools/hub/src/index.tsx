@@ -1,5 +1,6 @@
 import { Hono } from "hono";
 import {
+  ADSENSE_CLIENT,
   privacySections,
   PRIVACY_UPDATED,
   robotsTxt,
@@ -116,6 +117,11 @@ app.get("/", (c) => {
           <meta name="twitter:title" content={title} />
           <meta name="twitter:description" content={SITE.desc} />
           <link rel="stylesheet" href="/styles.css" />
+          <script
+            async
+            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`}
+            crossorigin="anonymous"
+          />
           {[websiteLd(origin), itemListLd()].map((ld) => (
             <script
               type="application/ld+json"
@@ -227,6 +233,11 @@ app.get("/privacy-policy", (c) => {
           <link rel="canonical" href={origin + "/privacy-policy"} />
           <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
           <link rel="stylesheet" href="/styles.css" />
+          <script
+            async
+            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`}
+            crossorigin="anonymous"
+          />
           <script
             type="application/ld+json"
             dangerouslySetInnerHTML={{
