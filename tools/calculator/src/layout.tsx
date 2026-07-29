@@ -5,7 +5,15 @@ import { ALL_CALCS, CATEGORIES } from "./lib/calcs/index.ts";
 
 // Manual AdSense unit inside a height-reserved container (no CLS). The push is
 // skipped when the slot is display:none (mobile rail) to avoid availableWidth=0 errors.
-export function AdSlot({ slot, class: cls }: { slot: string; class?: string }) {
+export function AdSlot({
+  slot,
+  size,
+  class: cls,
+}: {
+  slot: string;
+  size?: [number, number]; // fixed-size unit; omit for responsive
+  class?: string;
+}) {
   return (
     <div class={cls}>
       <p class="mb-1 text-[10px] tracking-widest text-navy-soft uppercase">
@@ -13,11 +21,15 @@ export function AdSlot({ slot, class: cls }: { slot: string; class?: string }) {
       </p>
       <ins
         class="adsbygoogle"
-        style="display:block"
+        style={
+          size
+            ? `display:inline-block;width:${size[0]}px;height:${size[1]}px`
+            : "display:block"
+        }
         data-ad-client={ADSENSE_CLIENT}
         data-ad-slot={slot}
-        data-ad-format="auto"
-        data-full-width-responsive="true"
+        data-ad-format={size ? undefined : "auto"}
+        data-full-width-responsive={size ? undefined : "true"}
       />
       <script
         dangerouslySetInnerHTML={{

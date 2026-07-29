@@ -171,6 +171,7 @@ export function Generator({ active }: { active: QrType }) {
         </div>
         <AdSlot
           slot={AD_SLOTS.rail}
+          size={[300, 250]}
           class="mt-6 hidden min-h-[250px] lg:block"
         />
       </aside>

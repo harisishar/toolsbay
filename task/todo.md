@@ -88,16 +88,24 @@ no deploy).
 
 ## AdSense placement (manual units only, Auto ads off — no popups/overlays)
 
-- [x] `packages/seo/src/ads.ts`: ADSENSE_CLIENT (ca-pub-4725551882364441) + AD_SLOTS (unit IDs still placeholders)
+- [x] `packages/seo/src/ads.ts`: ADSENSE_CLIENT (ca-pub-4725551882364441) + AD_SLOTS
 - [x] `public/ads.txt` in all 5 workers (served at each subdomain root by Workers Assets)
 - [x] 4 layouts: async adsbygoogle script in head + AdSlot component + content-bottom slot between main and footer (min-h reserved, zero CLS)
 - [x] Desktop rail (300×250 area, `hidden lg:block`) under sticky aside: calculator results panel + QR preview
 - [x] Hub: ads.txt only, no ad units (clean brand page)
 - [x] Build all workers green
-- [ ] User dashboard: Auto ads OFF for toolsbay.app; create 2 display units; paste slot IDs into `packages/seo/src/ads.ts`; enable GDPR consent message (Privacy & messaging)
-- [ ] Deploy all 5 workers + verify ads.txt live
+- [x] User dashboard: created 2 display units; real slot IDs wired (contentBottom 8992161056 responsive, rail 2571202877 fixed 300×250)
+- [x] Deploy all 5 workers + verify ads.txt live
+- [ ] User dashboard (remaining): confirm Auto ads OFF for toolsbay.app; enable GDPR consent message (Privacy & messaging)
 
 ## Post-launch additions
 
 - [x] /privacy-policy on all four tools (shared copy in @claudetools/seo, tool-accurate
       server-path disclosure for pdf) + footer privacy emphasis + sitemap entries (2026-07-29)
+
+## html-to-pdf 422 fix (2026-07-29)
+
+- [x] tools/pdf/src/api.ts: reuse Browser Rendering sessions (sessions()+connect, launch keep_alive fallback) — root cause of "every URL fails" (new-browsers/min cap)
+- [x] launch/connect failure → 429 "Converter is busy" instead of 422/500; log real errors in both catches
+- [x] Render on networkidle0 timeout instead of failing; normal Chrome UA to dodge bot blocks
+- [ ] Build pdf worker, push → CI deploy, verify with rapid-fire curl + heavy page

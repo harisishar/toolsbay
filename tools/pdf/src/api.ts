@@ -75,22 +75,48 @@ api.post("/api/html-to-pdf", async (c) => {
   const blocked = blockedUrl(url);
   if (blocked) return c.text(blocked, 400);
 
-  const browser = await puppeteer.launch(c.env.BROWSER);
+  // Reuse a warm Browser Rendering session when one is free — a fresh
+  // launch per request burns the new-browsers-per-minute cap and takes
+  // the whole tool down for everyone once exhausted.
+  let browser;
+  try {
+    const free = (await puppeteer.sessions(c.env.BROWSER)).find(
+      (s) => !s.connectionId,
+    );
+    browser = free
+      ? await puppeteer.connect(c.env.BROWSER, free.sessionId)
+      : await puppeteer.launch(c.env.BROWSER, { keep_alive: 60_000 });
+  } catch (err) {
+    console.error("html-to-pdf: browser unavailable", err);
+    return c.text("Converter is busy — try again in a minute.", 429);
+  }
   try {
     const page = await browser.newPage();
-    await page.goto(url, { waitUntil: "networkidle0", timeout: 30_000 });
+    await page.setUserAgent(
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36",
+    );
+    try {
+      await page.goto(url, { waitUntil: "networkidle0", timeout: 20_000 });
+    } catch (err) {
+      // Pages with polling/beacons never go network-idle; the DOM is
+      // usually rendered by now, so print what we have.
+      if (!(err instanceof Error && err.name === "TimeoutError")) throw err;
+      if (page.url() === "about:blank") throw err; // never navigated at all
+    }
     const pdf = await page.pdf({ format: "a4", printBackground: true });
     return c.body(pdf as unknown as ArrayBuffer, 200, {
       "Content-Type": "application/pdf",
       "Content-Disposition": 'attachment; filename="webpage.pdf"',
     });
-  } catch {
+  } catch (err) {
+    console.error("html-to-pdf failed", url, err);
     return c.text(
       "Could not render that page — it may be slow, blocked, or offline.",
       422,
     );
   } finally {
-    await browser.close();
+    // Disconnect (not close) keeps the session warm for the next request.
+    await browser.disconnect();
   }
 });
 
