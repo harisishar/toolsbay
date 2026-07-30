@@ -1,6 +1,12 @@
-import type { Faq } from './seo.js';
+import type { Faq } from "./seo.js";
 
-export function Dropzone({ multiple = true, handler = 'addFiles' }: { multiple?: boolean; handler?: string }) {
+export function Dropzone({
+  multiple = true,
+  handler = "addFiles",
+}: {
+  multiple?: boolean;
+  handler?: string;
+}) {
   return (
     <div
       class="cursor-pointer rounded-lg border-2 border-dashed border-line bg-panel/60 p-10 text-center transition-colors hover:border-ember"
@@ -76,7 +82,11 @@ export function FileList() {
         </div>
       </template>
       <div class="flex items-center justify-between pt-2">
-        <button type="button" class="text-sm text-mist hover:text-ember" x-on:click="clear()">
+        <button
+          type="button"
+          class="text-sm text-mist hover:text-ember"
+          x-on:click="clear()"
+        >
           Clear all
         </button>
         <div class="flex gap-2">
@@ -120,13 +130,22 @@ export function FormatControl() {
         <option value="image/jpeg">JPG</option>
         <option value="image/png">PNG</option>
         <option value="image/webp">WebP</option>
+        <option value="image/x-icon">ICO (favicon)</option>
       </select>
       <span
         x-cloak
         x-show="target === 'keep' && items.some(i => i.file.type === 'image/png')"
         class="mt-1.5 block text-xs text-mist"
       >
-        PNG is lossless, so "keep format" barely shrinks it — choose JPG or WebP for big savings.
+        PNG is lossless, so "keep format" barely shrinks it — choose JPG or WebP
+        for big savings.
+      </span>
+      <span
+        x-cloak
+        x-show="target === 'image/x-icon'"
+        class="mt-1.5 block text-xs text-mist"
+      >
+        ICO files are capped at 256×256 — anything larger is scaled down to fit.
       </span>
     </label>
   );
@@ -138,11 +157,23 @@ export function ResizeControls() {
       <div x-show="!usePercent" class="grid grid-cols-2 gap-3 sm:col-span-2">
         <label>
           <span class="field-label">Width (px)</span>
-          <input type="number" class="field" x-model="wIn" placeholder="auto" x-on:change="reprocess()" />
+          <input
+            type="number"
+            class="field"
+            x-model="wIn"
+            placeholder="auto"
+            x-on:change="reprocess()"
+          />
         </label>
         <label>
           <span class="field-label">Height (px)</span>
-          <input type="number" class="field" x-model="hIn" placeholder="auto" x-on:change="reprocess()" />
+          <input
+            type="number"
+            class="field"
+            x-model="hIn"
+            placeholder="auto"
+            x-on:change="reprocess()"
+          />
         </label>
       </div>
       <div x-cloak x-show="usePercent" class="sm:col-span-2">
@@ -162,11 +193,21 @@ export function ResizeControls() {
         </label>
       </div>
       <label class="flex items-center gap-2 text-sm font-semibold text-mist">
-        <input type="checkbox" class="h-4 w-4 accent-ember" x-model="lock" x-on:change="reprocess()" />
+        <input
+          type="checkbox"
+          class="h-4 w-4 accent-ember"
+          x-model="lock"
+          x-on:change="reprocess()"
+        />
         Lock aspect ratio
       </label>
       <label class="flex items-center gap-2 text-sm font-semibold text-mist">
-        <input type="checkbox" class="h-4 w-4 accent-ember" x-model="usePercent" x-on:change="reprocess()" />
+        <input
+          type="checkbox"
+          class="h-4 w-4 accent-ember"
+          x-model="usePercent"
+          x-on:change="reprocess()"
+        />
         Resize by percentage
       </label>
     </div>
@@ -196,7 +237,9 @@ export function Hero({ h1, intro }: { h1: string; intro: string }) {
   return (
     <div class="halo border-b border-line">
       <div class="mx-auto max-w-5xl px-4 py-10">
-        <h1 class="font-display max-w-2xl text-3xl leading-tight sm:text-4xl">{h1}</h1>
+        <h1 class="font-display max-w-2xl text-3xl leading-tight sm:text-4xl">
+          {h1}
+        </h1>
         <p class="mt-3 max-w-2xl text-[15px] leading-7 text-mist">{intro}</p>
       </div>
     </div>

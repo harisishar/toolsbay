@@ -8,7 +8,8 @@
     "build": "pnpm build:vendor && pnpm build:css",
     "dev": "pnpm build && wrangler dev",
     "deploy": "pnpm build && wrangler deploy",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "check": "node ../../scripts/check-catalogue.mjs"
   },
   "dependencies": {
     "@claudetools/seo": "workspace:*",

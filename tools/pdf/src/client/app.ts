@@ -466,11 +466,12 @@ function imgToPdf() {
 }
 
 /* ---------- pdf -> jpg / extract images ---------- */
-function pdfToJpg() {
+// `fmt` is preset by the page (/pdf-to-png passes 'png'); /pdf-to-jpg keeps the default.
+function pdfToJpg(fmt = 'jpeg') {
   return {
     ...onePdf(),
     scale: 2,
-    fmt: 'jpeg',
+    fmt,
     ranges: '',
     extractMode: false,
     run(this: any) {
@@ -680,10 +681,11 @@ function formsPdf() {
 }
 
 /* ---------- text / markdown ---------- */
-function pdfToText() {
+// `mode` is preset by the page: /pdf-to-markdown passes 'md', /pdf-to-text 'txt'.
+function pdfToText(mode: 'txt' | 'md' = 'txt') {
   return {
     ...onePdf(),
-    mode: 'txt' as 'txt' | 'md',
+    mode,
     output: '',
     run(this: any) {
       return this.guard(async () => {

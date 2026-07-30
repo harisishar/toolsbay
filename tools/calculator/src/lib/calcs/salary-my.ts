@@ -1,5 +1,13 @@
 // Malaysia statutory contributions + PCB. Rates: YA2025 tax brackets,
 // EPF/SOCSO/EIS rates current as of 2025/2026 — each page states this.
+//
+// FILING_YEAR is the calendar year people actually search ("PCB calculator 2026")
+// and is what goes in titles. ASSESSMENT_YEAR is the tax year the brackets below
+// really implement, and is what goes in the on-page rate notes. In Malaysia you
+// file during 2026 for YA2025, so the two legitimately differ — ringgitplus and
+// sql.com.my title their pages the same way ("Tax Calculator 2026 (YA 2025)").
+// Bump FILING_YEAR every January; bump ASSESSMENT_YEAR + MY_BRACKETS together,
+// and only after checking LHDN — the title year must never imply bracket year.
 import {
   type Calc,
   num,
@@ -11,6 +19,9 @@ import {
 
 const c = (x: Calc) => x;
 const RM = (x: number) => money(x, "RM ");
+
+const FILING_YEAR = 2026;
+const ASSESSMENT_YEAR = "YA2025";
 
 // --- statutory formulas (exported for tests) ---
 
@@ -64,16 +75,15 @@ export function myAnnualTax(
   return { chargeable, tax };
 }
 
-const RATE_NOTE =
-  "Rates: EPF 11% employee / 12–13% employer; SOCSO & EIS on wages capped at RM6,000 (rate approximation of the official table, within sen); PCB uses YA2025 resident brackets assuming single status with standard reliefs (individual RM9,000, EPF max RM4,000, SOCSO+EIS max RM350). Estimates only — verify with LHDN/KWSP for payroll.";
+const RATE_NOTE = `Rates: EPF 11% employee / 12–13% employer; SOCSO & EIS on wages capped at RM6,000 (rate approximation of the official table, within sen); PCB uses ${ASSESSMENT_YEAR} resident brackets assuming single status with standard reliefs (individual RM9,000, EPF max RM4,000, SOCSO+EIS max RM350). Estimates only — verify with LHDN/KWSP for payroll.`;
 
 export const SALARY_MY: Calc[] = [
   c({
     slug: "kwsp-epf-calculator",
     name: "KWSP EPF Calculator (Malaysia)",
     category: "Salary & Tax",
-    title: "KWSP EPF Calculator — Employee & Employer Contribution 2025",
-    desc: "Calculate monthly KWSP/EPF contributions in Malaysia: 11% employee, 12–13% employer, with yearly totals.",
+    title: `KWSP EPF Calculator Malaysia ${FILING_YEAR} — Employee & Employer Contribution`,
+    desc: `Calculate monthly KWSP/EPF contributions in Malaysia for ${FILING_YEAR}: 11% employee, 12–13% employer, with yearly totals. Free, instant, no sign-up.`,
     intro:
       "EPF (KWSP) contributions: employees contribute 11% of monthly wages; employers add 13% for wages up to RM5,000 and 12% above that.",
     inputs: [
@@ -110,7 +120,7 @@ export const SALARY_MY: Calc[] = [
           { label: "Total monthly", value: RM(employee + employer) },
           { label: "Total per year", value: RM((employee + employer) * 12) },
         ],
-        note: "Employer rate: 13% for wages ≤ RM5,000, otherwise 12%. Rates current as of 2025.",
+        note: `Employer rate: 13% for wages ≤ RM5,000, otherwise 12%. Rates current as of ${FILING_YEAR}.`,
       };
     },
   }),
@@ -118,8 +128,8 @@ export const SALARY_MY: Calc[] = [
     slug: "socso-eis-calculator",
     name: "SOCSO & EIS Calculator (Malaysia)",
     category: "Salary & Tax",
-    title: "SOCSO (PERKESO) & EIS Calculator Malaysia 2025",
-    desc: "Calculate monthly SOCSO and EIS contributions for employees and employers, using the RM6,000 wage ceiling.",
+    title: `SOCSO (PERKESO) & EIS Calculator Malaysia ${FILING_YEAR}`,
+    desc: `Calculate monthly SOCSO and EIS contributions for employees and employers in ${FILING_YEAR}, using the RM6,000 wage ceiling. Free and instant.`,
     intro:
       "SOCSO Category 1 (below 60): roughly 0.5% employee and 1.75% employer; EIS adds 0.2% each — all on wages capped at RM6,000.",
     inputs: [
@@ -158,10 +168,9 @@ export const SALARY_MY: Calc[] = [
     slug: "pcb-calculator",
     name: "PCB Income Tax Calculator (Malaysia)",
     category: "Salary & Tax",
-    title: "PCB / MTD Calculator Malaysia — Monthly Tax Deduction YA2025",
-    desc: "Estimate your Malaysian monthly tax deduction (PCB/MTD) and annual income tax from monthly salary, using YA2025 resident rates.",
-    intro:
-      "PCB (Potongan Cukai Bulanan) is the monthly tax your employer deducts. This estimates it by annualising your salary, applying standard reliefs and YA2025 resident brackets.",
+    title: `PCB / MTD Calculator Malaysia ${FILING_YEAR} — Monthly Income Tax Deduction (${ASSESSMENT_YEAR})`,
+    desc: `Estimate your Malaysian monthly tax deduction (PCB/MTD) and annual income tax from monthly salary. Filing in ${FILING_YEAR} uses ${ASSESSMENT_YEAR} resident rates.`,
+    intro: `PCB (Potongan Cukai Bulanan) is the monthly tax your employer deducts. This estimates it by annualising your salary, applying standard reliefs and ${ASSESSMENT_YEAR} resident brackets — the ones you file against in ${FILING_YEAR}.`,
     inputs: [
       { key: "salary", label: "Monthly salary (RM)", def: 6000, half: true },
     ],
@@ -199,9 +208,8 @@ export const SALARY_MY: Calc[] = [
     slug: "malaysia-salary-calculator",
     name: "Malaysia Salary Calculator",
     category: "Salary & Tax",
-    title:
-      "Malaysia Salary Calculator — Take-Home Pay 2025 (EPF, SOCSO, EIS, PCB)",
-    desc: "Calculate Malaysian take-home salary after EPF, SOCSO, EIS and PCB deductions, with the full monthly breakdown.",
+    title: `Malaysia Salary Calculator ${FILING_YEAR} — Take-Home Pay (EPF, SOCSO, EIS, PCB)`,
+    desc: `Calculate Malaysian take-home salary (gaji bersih) after EPF, SOCSO, EIS and PCB deductions for ${FILING_YEAR}, with the full monthly breakdown. Free, no sign-up.`,
     intro:
       "Your gross salary minus EPF (11%), SOCSO, EIS and estimated PCB tax — the actual amount that lands in your bank account each month.",
     inputs: [

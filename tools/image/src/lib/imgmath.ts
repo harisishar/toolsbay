@@ -6,11 +6,19 @@ export type Dims = { w: number; h: number };
 export function fitWithin(src: Dims, maxW: number, maxH: number): Dims {
   if (src.w <= 0 || src.h <= 0) return { w: 0, h: 0 };
   const scale = Math.min(maxW / src.w, maxH / src.h, 1);
-  return { w: Math.max(1, Math.round(src.w * scale)), h: Math.max(1, Math.round(src.h * scale)) };
+  return {
+    w: Math.max(1, Math.round(src.w * scale)),
+    h: Math.max(1, Math.round(src.h * scale)),
+  };
 }
 
 // Resolve target dims from user input: either dimension may be blank (auto).
-export function resolveResize(src: Dims, wIn: string, hIn: string, lockAspect: boolean): Dims {
+export function resolveResize(
+  src: Dims,
+  wIn: string,
+  hIn: string,
+  lockAspect: boolean,
+): Dims {
   const w = parseInt(wIn, 10);
   const h = parseInt(hIn, 10);
   const hasW = Number.isFinite(w) && w > 0;
@@ -28,13 +36,22 @@ export function resolveResize(src: Dims, wIn: string, hIn: string, lockAspect: b
 
 export function scaleByPercent(src: Dims, percent: number): Dims {
   const s = percent / 100;
-  return { w: Math.max(1, Math.round(src.w * s)), h: Math.max(1, Math.round(src.h * s)) };
+  return {
+    w: Math.max(1, Math.round(src.w * s)),
+    h: Math.max(1, Math.round(src.h * s)),
+  };
 }
 
 // photo.heic + image/jpeg -> photo.jpg
 export function renameForType(name: string, mime: string): string {
-  const ext = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp' }[mime] ?? 'bin';
-  const base = name.replace(/\.[^.]+$/, '');
+  const ext =
+    {
+      "image/jpeg": "jpg",
+      "image/png": "png",
+      "image/webp": "webp",
+      "image/x-icon": "ico",
+    }[mime] ?? "bin";
+  const base = name.replace(/\.[^.]+$/, "");
   return `${base}.${ext}`;
 }
 

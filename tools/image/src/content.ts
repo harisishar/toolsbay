@@ -1,4 +1,4 @@
-import type { Faq } from './seo.js';
+import type { Faq } from "./seo.js";
 
 type SourceMeta = {
   label: string;
@@ -17,75 +17,88 @@ type TargetMeta = {
 
 export const SOURCES: Record<string, SourceMeta> = {
   jpg: {
-    label: 'JPG',
-    long: 'JPEG photographs',
-    blurb: 'JPG is universal, but it is lossy and cannot store transparency',
+    label: "JPG",
+    long: "JPEG photographs",
+    blurb: "JPG is universal, but it is lossy and cannot store transparency",
     alpha: false,
   },
   png: {
-    label: 'PNG',
-    long: 'PNG graphics',
-    blurb: 'PNG is lossless and supports transparency, but files are often far larger than needed',
+    label: "PNG",
+    long: "PNG graphics",
+    blurb:
+      "PNG is lossless and supports transparency, but files are often far larger than needed",
     alpha: true,
   },
   webp: {
-    label: 'WebP',
-    long: 'WebP images',
-    blurb: 'WebP compresses well, but some older apps, printers and CMSs still reject it',
+    label: "WebP",
+    long: "WebP images",
+    blurb:
+      "WebP compresses well, but some older apps, printers and CMSs still reject it",
     alpha: true,
   },
   heic: {
-    label: 'HEIC',
-    long: 'iPhone HEIC photos',
-    blurb: 'HEIC is what iPhones shoot by default, and almost nothing outside Apple opens it reliably',
+    label: "HEIC",
+    long: "iPhone HEIC photos",
+    blurb:
+      "HEIC is what iPhones shoot by default, and almost nothing outside Apple opens it reliably",
     alpha: false,
   },
   avif: {
-    label: 'AVIF',
-    long: 'AVIF images',
-    blurb: 'AVIF makes tiny files, but many editors and older apps cannot open it',
+    label: "AVIF",
+    long: "AVIF images",
+    blurb:
+      "AVIF makes tiny files, but many editors and older apps cannot open it",
     alpha: true,
   },
   gif: {
-    label: 'GIF',
-    long: 'GIF images',
-    blurb: 'GIF is limited to 256 colours; converting a static GIF gives smaller, better-looking files',
+    label: "GIF",
+    long: "GIF images",
+    blurb:
+      "GIF is limited to 256 colours; converting a static GIF gives smaller, better-looking files",
     alpha: true,
   },
   bmp: {
-    label: 'BMP',
-    long: 'BMP bitmaps',
-    blurb: 'BMP is uncompressed — files are enormous for no visual benefit',
+    label: "BMP",
+    long: "BMP bitmaps",
+    blurb: "BMP is uncompressed — files are enormous for no visual benefit",
     alpha: false,
   },
   svg: {
-    label: 'SVG',
-    long: 'SVG vector graphics',
-    blurb: 'SVG is a vector format; converting rasterizes it so it works anywhere an image is expected',
+    label: "SVG",
+    long: "SVG vector graphics",
+    blurb:
+      "SVG is a vector format; converting rasterizes it so it works anywhere an image is expected",
     alpha: true,
   },
 };
 
 export const TARGETS: Record<string, TargetMeta> = {
   jpg: {
-    label: 'JPG',
-    long: 'JPEG',
-    mime: 'image/jpeg',
-    pros: 'small files that open everywhere — every browser, phone, editor and printer',
+    label: "JPG",
+    long: "JPEG",
+    mime: "image/jpeg",
+    pros: "small files that open everywhere — every browser, phone, editor and printer",
     alpha: false,
   },
   png: {
-    label: 'PNG',
-    long: 'PNG',
-    mime: 'image/png',
-    pros: 'pixel-perfect lossless quality with full transparency support',
+    label: "PNG",
+    long: "PNG",
+    mime: "image/png",
+    pros: "pixel-perfect lossless quality with full transparency support",
     alpha: true,
   },
   webp: {
-    label: 'WebP',
-    long: 'WebP',
-    mime: 'image/webp',
-    pros: 'files roughly 25–35% smaller than JPG at the same visual quality — ideal for websites',
+    label: "WebP",
+    long: "WebP",
+    mime: "image/webp",
+    pros: "files roughly 25–35% smaller than JPG at the same visual quality — ideal for websites",
+    alpha: true,
+  },
+  ico: {
+    label: "ICO",
+    long: "Windows ICO icons",
+    mime: "image/x-icon",
+    pros: "the icon format browsers look for at /favicon.ico and Windows uses for shortcuts",
     alpha: true,
   },
 };
@@ -123,15 +136,27 @@ export const PAIRS: Pair[] = Object.keys(SOURCES).flatMap((src) =>
           a: `${t.long} does not support transparency, so transparent areas are composited onto a white background. If you need transparency preserved, convert to PNG or WebP instead.`,
         });
       }
-      if (src === 'heic') {
+      if (src === "heic") {
         faq.push({
-          q: 'Why does my iPhone save photos as HEIC?',
-          a: 'Apple uses HEIC because it halves file size at the same quality. To make your iPhone shoot JPG directly, go to Settings → Camera → Formats → Most Compatible.',
+          q: "Why does my iPhone save photos as HEIC?",
+          a: "Apple uses HEIC because it halves file size at the same quality. To make your iPhone shoot JPG directly, go to Settings → Camera → Formats → Most Compatible.",
         });
       }
-      if (src === 'gif') {
+      if (tgt === "ico") {
+        faq.push(
+          {
+            q: "What size will my ICO file be?",
+            a: "ICO cannot store an image larger than 256×256, so anything bigger is scaled down to fit while keeping its aspect ratio. For a browser favicon a square source works best — 256×256 covers every modern use, and browsers scale it down to the 16 or 32 pixel tab icon themselves.",
+          },
+          {
+            q: "How do I use this as my website favicon?",
+            a: 'Save the file as favicon.ico in your site\'s root directory. Browsers request /favicon.ico automatically, so no HTML is strictly needed — though adding <link rel="icon" href="/favicon.ico"> makes it explicit.',
+          },
+        );
+      }
+      if (src === "gif") {
         faq.push({
-          q: 'Will an animated GIF stay animated?',
+          q: "Will an animated GIF stay animated?",
           a: `No — ${t.label} output is a still image, so only the first frame is kept. For animations, keep the GIF or use a video format.`,
         });
       }
@@ -151,50 +176,50 @@ export const PAIRS: Pair[] = Object.keys(SOURCES).flatMap((src) =>
 export const TOOL_FAQ: Record<string, Faq[]> = {
   compress: [
     {
-      q: 'How does the image compressor reduce file size?',
-      a: 'It re-encodes your image at a quality level you control. At 75–85% quality, JPG and WebP files typically shrink by 60–80% with no visible difference on screens.',
+      q: "How does the image compressor reduce file size?",
+      a: "It re-encodes your image at a quality level you control. At 75–85% quality, JPG and WebP files typically shrink by 60–80% with no visible difference on screens.",
     },
     {
-      q: 'Are my photos uploaded anywhere?',
-      a: 'No. Compression runs entirely in your browser using the Canvas API. Files never leave your device — you can even use the tool offline once the page is loaded.',
+      q: "Are my photos uploaded anywhere?",
+      a: "No. Compression runs entirely in your browser using the Canvas API. Files never leave your device — you can even use the tool offline once the page is loaded.",
     },
     {
-      q: 'What quality setting should I use?',
-      a: 'For web photos, 75–85% is the sweet spot. For archiving, use 90%+. If a file must hit a size limit (say a 2 MB form upload), lower the slider until the output size fits.',
+      q: "What quality setting should I use?",
+      a: "For web photos, 75–85% is the sweet spot. For archiving, use 90%+. If a file must hit a size limit (say a 2 MB form upload), lower the slider until the output size fits.",
     },
   ],
   resize: [
     {
-      q: 'How do I resize an image without stretching it?',
+      q: "How do I resize an image without stretching it?",
       a: 'Keep "Lock aspect ratio" on and set just one dimension — the other is calculated automatically, so nothing distorts.',
     },
     {
-      q: 'Does resizing reduce quality?',
-      a: 'Downscaling keeps images sharp (we use high-quality resampling). Upscaling beyond the original size cannot add detail and will look soft — this tool resizes to exactly the pixels you ask for.',
+      q: "Does resizing reduce quality?",
+      a: "Downscaling keeps images sharp (we use high-quality resampling). Upscaling beyond the original size cannot add detail and will look soft — this tool resizes to exactly the pixels you ask for.",
     },
     {
-      q: 'Can I resize many images to the same width at once?',
-      a: 'Yes — drop a batch, set the width once, and every image is resized proportionally, then download everything as a ZIP.',
+      q: "Can I resize many images to the same width at once?",
+      a: "Yes — drop a batch, set the width once, and every image is resized proportionally, then download everything as a ZIP.",
     },
   ],
   crop: [
     {
-      q: 'How do I crop an image online?',
-      a: 'Drop an image, drag a selection over the area you want to keep, optionally lock a ratio like 1:1 or 16:9, then download the cropped result. Nothing is uploaded.',
+      q: "How do I crop an image online?",
+      a: "Drop an image, drag a selection over the area you want to keep, optionally lock a ratio like 1:1 or 16:9, then download the cropped result. Nothing is uploaded.",
     },
     {
-      q: 'What aspect ratio should I crop to?',
-      a: '1:1 for profile pictures and Instagram posts, 16:9 for YouTube thumbnails and presentations, 4:3 for classic photos, 9:16 for stories and reels.',
+      q: "What aspect ratio should I crop to?",
+      a: "1:1 for profile pictures and Instagram posts, 16:9 for YouTube thumbnails and presentations, 4:3 for classic photos, 9:16 for stories and reels.",
     },
   ],
   convert: [
     {
-      q: 'Which format should I convert my images to?',
-      a: 'JPG for photos that must open anywhere, PNG for graphics that need transparency or lossless quality, WebP for websites where smaller files mean faster loading.',
+      q: "Which format should I convert my images to?",
+      a: "JPG for photos that must open anywhere, PNG for graphics that need transparency or lossless quality, WebP for websites where smaller files mean faster loading.",
     },
     {
-      q: 'Is there a file size or count limit?',
-      a: 'No hard limit — processing happens on your own device, so capacity depends only on your browser memory. Batches of hundreds of typical photos work fine.',
+      q: "Is there a file size or count limit?",
+      a: "No hard limit — processing happens on your own device, so capacity depends only on your browser memory. Batches of hundreds of typical photos work fine.",
     },
   ],
 };

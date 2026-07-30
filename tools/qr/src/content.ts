@@ -386,3 +386,133 @@ export const PAYMENT_GUIDES: Guide[] = [
     ],
   },
 ];
+
+// --- Barcode symbologies ---
+// All four formats already work in the shared generator (client/barcode.ts).
+// These give each one its own URL: people search "code 128 barcode generator",
+// not "barcode generator", and TEC-IT ranks a separate page per symbology.
+// /barcode-generator stays as the all-formats hub.
+
+export type Symbology = {
+  slug: string;
+  format: string; // JsBarcode format id
+  label: string;
+  title: string;
+  desc: string;
+  h1: string;
+  intro: string;
+  placeholder: string;
+  faq: Faq[];
+};
+
+const barcodePrivacyFaq: Faq = {
+  q: 'Is this barcode generator really free, and is my data uploaded?',
+  a: 'Yes, free with no sign-up or watermark. The barcode is drawn in your browser — whatever you type is never sent to a server, so product codes and internal part numbers stay on your device.',
+};
+
+export const SYMBOLOGIES: Symbology[] = [
+  {
+    slug: 'code-128-barcode-generator',
+    format: 'CODE128',
+    label: 'CODE128',
+    title: 'CODE 128 Barcode Generator — Free, SVG & PNG, No Sign-Up',
+    desc: 'Generate CODE 128 barcodes free in your browser. Encodes letters, digits and symbols compactly. Download print-ready SVG or PNG — nothing is uploaded.',
+    h1: 'CODE 128 Barcode Generator',
+    intro:
+      'CODE 128 is the workhorse of internal barcoding: it encodes the full ASCII set — letters, digits and punctuation — in a compact symbol, which is why warehouses, shipping labels and asset tags use it. Type your content and download vector SVG that stays sharp at any print size.',
+    placeholder: 'e.g. ITEM-0042 or SHIP-99120',
+    faq: [
+      barcodePrivacyFaq,
+      {
+        q: 'What can a CODE 128 barcode contain?',
+        a: 'Any ASCII character — uppercase and lowercase letters, digits, spaces and punctuation. There is no fixed length, though very long content produces a wide symbol that needs more label space to stay scannable.',
+      },
+      {
+        q: 'What is the difference between CODE 128 A, B and C?',
+        a: 'They are subsets: A covers uppercase and control characters, B adds lowercase, and C encodes digit pairs at double density. The generator picks the most efficient subset for your content automatically.',
+      },
+      {
+        q: 'Should I use CODE 128 or CODE 39?',
+        a: 'CODE 128 unless a legacy system requires otherwise. It is denser and supports lowercase, so the same data produces a narrower symbol than CODE 39.',
+      },
+    ],
+  },
+  {
+    slug: 'ean-13-barcode-generator',
+    format: 'EAN13',
+    label: 'EAN-13',
+    title: 'EAN-13 Barcode Generator — Free Retail Barcodes, SVG & PNG',
+    desc: 'Generate EAN-13 retail barcodes free in your browser. Enter 12 digits and the check digit is calculated automatically. Print-ready SVG or PNG, no upload.',
+    h1: 'EAN-13 Barcode Generator',
+    intro:
+      'EAN-13 is the barcode on retail products outside North America. Enter the 12-digit number issued to you and the 13th check digit is calculated automatically — then download a vector SVG that stays sharp at packaging print sizes.',
+    placeholder: 'e.g. 590123412345',
+    faq: [
+      barcodePrivacyFaq,
+      {
+        q: 'How many digits does EAN-13 need?',
+        a: 'Twelve digits, and the generator appends the thirteenth check digit for you. You can also paste all thirteen — it will be accepted if the check digit is already correct, and rejected if it is not.',
+      },
+      {
+        q: 'Can I sell products using a barcode I generated here?',
+        a: 'The image is yours to use, but the number is not ours to give. Retail EAN numbers are assigned by GS1, and retailers reject made-up numbers. Get your GS1 prefix first, then generate the barcode here from the number they issue.',
+      },
+      {
+        q: 'What is the difference between EAN-13 and UPC-A?',
+        a: 'UPC-A is the 12-digit North American format; EAN-13 is the 13-digit international superset. An EAN-13 starting with a leading zero is the same product code as the equivalent UPC-A.',
+      },
+    ],
+  },
+  {
+    slug: 'upc-a-barcode-generator',
+    format: 'UPC',
+    label: 'UPC-A',
+    title: 'UPC-A Barcode Generator — Free UPC Codes, SVG & PNG',
+    desc: 'Generate UPC-A barcodes free in your browser for North American retail. Enter 11 digits and the check digit is added automatically. SVG or PNG, no upload.',
+    h1: 'UPC-A Barcode Generator',
+    intro:
+      'UPC-A is the 12-digit barcode used on retail products in the United States and Canada. Enter your 11-digit number and the check digit is computed automatically — download as vector SVG for packaging or PNG for quick use.',
+    placeholder: 'e.g. 03600029145',
+    faq: [
+      barcodePrivacyFaq,
+      {
+        q: 'How many digits does UPC-A need?',
+        a: 'Eleven digits, with the twelfth check digit calculated for you. Pasting all twelve works too, provided the check digit is correct.',
+      },
+      {
+        q: 'Can I use a generated UPC to sell in stores?',
+        a: 'Only if the number was issued to you by GS1. The barcode image here is free to use, but retailers verify that the company prefix is registered — self-invented numbers will be rejected.',
+      },
+      {
+        q: 'Do I need UPC-A or EAN-13?',
+        a: 'UPC-A for North American retail, EAN-13 elsewhere. Most modern scanners read both, and many brands register a single GS1 number that can be printed in either format.',
+      },
+    ],
+  },
+  {
+    slug: 'code-39-barcode-generator',
+    format: 'CODE39',
+    label: 'CODE39',
+    title: 'CODE 39 Barcode Generator — Free, SVG & PNG, No Sign-Up',
+    desc: 'Generate CODE 39 barcodes free in your browser for legacy industrial, logistics and military systems. Download print-ready SVG or PNG — nothing is uploaded.',
+    h1: 'CODE 39 Barcode Generator',
+    intro:
+      'CODE 39 is the older industrial standard, still required by many logistics, automotive and defence systems (it underpins LOGMARS and older MIL-STD labelling). It encodes uppercase letters, digits and a few symbols, and every scanner ever built reads it.',
+    placeholder: 'e.g. PART-1234',
+    faq: [
+      barcodePrivacyFaq,
+      {
+        q: 'What characters can CODE 39 encode?',
+        a: 'Uppercase A–Z, digits 0–9, space, and the symbols - . $ / + %. Lowercase is not supported — if you need it, use CODE 128 instead.',
+      },
+      {
+        q: 'Why is my CODE 39 barcode so wide?',
+        a: 'CODE 39 uses nine bars per character, so it is roughly 30% wider than CODE 128 for the same content. For long values on a small label, CODE 128 is the better fit.',
+      },
+      {
+        q: 'Does CODE 39 need a check digit?',
+        a: 'Not usually. The optional modulo-43 check digit is required only by specific standards such as LOGMARS and HIBC; most applications omit it.',
+      },
+    ],
+  },
+];

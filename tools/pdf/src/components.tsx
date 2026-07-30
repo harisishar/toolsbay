@@ -451,9 +451,9 @@ function Img2PdfBody() {
   );
 }
 
-function Pdf2JpgBody() {
+function Pdf2JpgBody({ tool }: { tool: Tool }) {
   return (
-    <div x-data="pdfToJpg()">
+    <div x-data={tool.preset ? `pdfToJpg('${tool.preset}')` : 'pdfToJpg()'}>
       <PickedBar />
       <div x-show="!file">
         <Drop />
@@ -851,9 +851,9 @@ function CompareBody() {
   );
 }
 
-function ToTextBody() {
+function ToTextBody({ tool }: { tool: Tool }) {
   return (
-    <div x-data="pdfToText()">
+    <div x-data={tool.preset ? `pdfToText('${tool.preset}')` : 'pdfToText()'}>
       <PickedBar />
       <div x-show="!file">
         <Drop />
@@ -987,7 +987,7 @@ export function ToolBody({ tool }: { tool: Tool }) {
     case 'img2pdf':
       return <Img2PdfBody />;
     case 'pdf2jpg':
-      return <Pdf2JpgBody />;
+      return <Pdf2JpgBody tool={tool} />;
     case 'compress':
       return <CompressBody />;
     case 'edit':
@@ -1005,7 +1005,7 @@ export function ToolBody({ tool }: { tool: Tool }) {
     case 'compare':
       return <CompareBody />;
     case 'totext':
-      return <ToTextBody />;
+      return <ToTextBody tool={tool} />;
     case 'scan':
       return <ScanBody />;
     case 'html2pdf':
