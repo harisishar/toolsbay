@@ -112,3 +112,103 @@ no deploy).
 - [x] Render on networkidle0 timeout instead of failing; normal Chrome UA to dodge bot blocks
 - [x] Build pdf worker, push → CI deploy, verify with rapid-fire curl + heavy page
       (6 concurrent → all 200 %PDF; nytimes.com → 200, 6.7MB PDF in 26s)
+
+## Keyword research — all 5 tools (2026-07-30)
+
+Output: `task/keywords/{README,calculator,image,pdf,qr,hub}.md` — 134 mapped queries + gap lists.
+
+- [x] No metrics API reachable: OpenSEO MCP not connected; Semrush MCP = "corporate sub-account,
+      not enough API units". Ran SERP-evidence based instead; every Volume/KD/CPC cell is `unknown`
+- [x] Page inventory pulled from code (111 slugs): 43 calcs, 29 pdf, 21 image pairs + 4 core,
+      12 qr types + barcode, hub
+- [x] Competitor inventories fetched live: calculator.net (~200 calcs), ilovepdf.com (33 tools),
+      iloveimg.com (13 tools), me-qr.com
+- [x] SERP harvest across all 5 tools (image compressor, merge pdf, qr code generator, heic to jpg,
+      kwsp epf 2026, barcode generator, wifi qr, multi-country salary, free online tools)
+- [x] Verified: every Target page resolves to a shipped slug; every proposed gap is genuinely
+      unbuilt; no fabricated metrics
+
+### Acting on the findings (2026-07-31)
+
+- [x] MY statutory pages carried a **stale 2025**, not a missing year. Added FILING_YEAR /
+      ASSESSMENT_YEAR constants in `salary-my.ts`: titles say 2026 (what people search),
+      rate notes say YA2025 (what the brackets are). Verified YA2026 brackets are unchanged
+      and that MY convention is "file in 2026 for YA2025" — ringgitplus/sql.com.my title it
+      the same way. EPF/SOCSO/EIS rates already current. Bump FILING_YEAR each January
+- [x] "No upload" titles: **already done** on image (core + all pairs) and on the client-side
+      pdf pages. No change needed; server-path pdf pages correctly omit the claim
+- [x] QR: 4 per-symbology pages (code-128, ean-13, upc-a, code-39) + all-formats hub, from one
+      renderer. `barcodeApp(format)` presets and hides the picker. Cross-linked, in sitemap
+      and llms.txt. Zero new encoding logic — the formats already worked
+- [x] Image: added **ico** target (8 new pairs, 21 → 29). Hand-rolled PNG-in-ICO container in
+      `ops.ts`; `draw()` clamps to 256 for all callers. Verified in Chrome against the shipped
+      bundle: valid header (type=1, count=1, bpp=32, size byte 0 = 256), browser decodes it at
+      256×256 with pixels intact
+- [x] Image: **skipped avif + tiff.** No browser can encode AVIF via canvas.toBlob (it would
+      silently emit PNG), and no browser decodes TIFF without a new JS/WASM decoder. Both need
+      a real encoder/decoder dependency — spike before planning
+- [x] Hub: full directory of all 127 tool pages (was 4 links). New `catalogue.ts` + rendered
+      Group sections + `/llms.txt` with the whole catalogue. Fixed two false claims that were
+      live: "53 calculators" (43) and "salary calculators for 8 countries" (1)
+- [x] `scripts/check-catalogue.mjs` — fails if the hub catalogue or its quoted counts drift
+      from the tool sources. It caught the "53 calculators" lie on first run
+- [x] PDF: +5 pages — pdf-to-png, png-to-pdf, pdf-to-text, delete-pages-from-pdf,
+      extract-pages-from-pdf (29 → 34). All reuse shipped engines via a new `preset` field;
+      each has its own intro + FAQ, not a title swap
+- [x] Fixed in passing: `/pdf-to-markdown` defaulted to plain-text output. Now presets 'md'
+- [x] All 5 workers build; all new routes verified 200 with correct presets in wrangler dev
+
+### Still open from the keyword maps
+
+- [x] **Correction:** I reported the country salary cluster as unbuilt. It was already built —
+      8 countries in `salary-world.ts` (us/uk/singapore/australia/india/germany/canada/japan)
+      with real tax engines and existing tests. My slug extraction used a regex and those slugs
+      are template literals, so it silently missed them. Real count is 51 calculators, not 43.
+      Fixed: catalogue, hub copy, `task/keywords/calculator.md`, README counts
+- [ ] Calc: retitle the 8 country pages for local phrasing — "take home pay" (UK), "in hand
+      salary" (IN), "brutto netto rechner" (DE), CPF (SG), Medicare levy (AU). They ship with
+      generic templated titles and miss the phrase each market searches. See calculator.md
+- [ ] Calc: only genuinely missing countries are Indonesia and Philippines (P2)
+- [ ] Deploy: nothing here is live yet — 4 workers changed (calculator, image, pdf, qr, hub)
+- [ ] Image P1 gaps still unbuilt: rotate-image, watermark-image, convert-to-jpg hub,
+      compress-image-to-100kb / passport-photo-resizer (target-size intent)
+- [ ] QR P1 gaps still unbuilt: whatsapp-qr-code, google-review-qr-code, menu-qr-code,
+      static-vs-dynamic-qr-codes positioning page
+- [ ] Re-run with real metrics once Semrush API units exist: pull the Keyword column from all 5
+      files, one bulk metrics call, fill Volume/KD/CPC in place (mapping does not need redoing)
+- [ ] `/keyword-clustering` on the maps → content briefs
+
+## Validation + unit tests (2026-07-31)
+
+- [x] **Found and fixed my own error:** the 8 country salary calculators were already built.
+      My slug extraction regexed `slug: "..."` out of source; those slugs are template literals
+      (`${cfg.code}-salary-tax-calculator`) so it silently missed them. Real total: 51 calculators
+- [x] Root-cause fix: `scripts/check-catalogue.mjs` now **imports the real modules**
+      (ALL_CALCS/TOOLS/PAIRS/QR_TYPES) instead of parsing source, and can regenerate the
+      catalogue with `--write`. Node runs .ts directly, so there was never a reason to grep
+- [x] Corrected everywhere the wrong number leaked: catalogue (135 pages), hub copy (restored
+      the accurate "8 countries" line I had wrongly deleted), calculator.md, hub.md, README
+- [x] Wired the catalogue check into `pnpm check` via the hub package
+
+### Tests added (24 new, 52 total, all green)
+
+- [x] `tools/image/tests/ico.test.mjs` (5) — encode() drives the real shipped function with a
+      faked canvas: header framing, 256-as-0 size byte, declared length vs actual, PNG passthrough,
+      icoFit clamping, and that non-ICO targets still reach canvas.toBlob with the right quality
+- [x] `tools/image/tests/pairs.test.mjs` (5) — generated pair surface: count matches
+      SOURCES×TARGETS minus no-ops, slug pattern, encodable mimes, SERP length limits, and that
+      every lossy conversion discloses what it drops (transparency / animation / 256px ICO cap)
+- [x] `tools/pdf/tests/tools.test.mjs` (7) — registry invariants + **the honesty rule**:
+      server-path tools must never claim files stay on-device, must disclose the server path;
+      client tools must state they run locally. Preset validity and the 5 new pages' wiring
+- [x] `tools/qr/tests/content.test.mjs` (7) — unique slugs, JsBarcode format validity, formats
+      safe to inline into x-data, each symbology page names its own format, payment pages stay
+      guides (never generators — a minted merchant QR fails at the till)
+- [x] `renameForType` extended for the .ico extension
+- [x] **Bug the tests caught:** `html-to-pdf` was `server: true` with no disclosure FAQ at all.
+      Added an accurate one (it takes a URL, not a file, so the shared serverFaq did not fit)
+- [x] Mutation-checked the new assertions: breaking the ICO offset, declared length, the clamp,
+      a preset, or a server flag each fails the suite. (Writing the size byte literally does NOT
+      fail — Uint8Array truncates 256 to 0, so that mutation is behaviourally identical)
+- [x] Full sweep green: `pnpm typecheck`, `pnpm check` (52 tests + catalogue), 5/5 builds,
+      all 8 country calculator pages verified 200 in wrangler dev
