@@ -1,0 +1,7 @@
+# The model parts and the ONNX runtime are ~55 MB combined and are content-pinned
+# (a new model means a new filename), so they must never be re-fetched.
+/models/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/ort/*
+  Cache-Control: public, max-age=31536000, immutable

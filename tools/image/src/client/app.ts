@@ -16,7 +16,13 @@ import {
   savings,
 } from "../lib/imgmath.js";
 
-type Mode = "compress" | "resize" | "convert";
+type Mode = "compress" | "resize" | "convert" | "removebg";
+
+// The segmentation model is ~42 MB, so the chunk that owns it is imported on
+// first use and memoised — same pattern as the HEIC decoder in ops.ts.
+type Bg = typeof import("./bgremove.js");
+let bgP: Promise<Bg> | null = null;
+const bg = (): Promise<Bg> => (bgP ??= import("./bgremove.js"));
 
 // Alpine magic properties, available at runtime on every component.
 type Magic = {
@@ -61,6 +67,9 @@ export function imgApp(mode: Mode, presetTarget = "keep") {
     usePercent: false,
     percent: 50,
     busy: false,
+    // Empty unless the background-removal model is downloading; the page shows
+    // it so a 42 MB fetch is not a silent stall.
+    modelStatus: "",
 
     fmtBytes: formatBytes,
     saved(it: Item) {
@@ -117,6 +126,24 @@ export function imgApp(mode: Mode, presetTarget = "keep") {
         const bmp = await decode(it.file);
         it.w = bmp.width;
         it.h = bmp.height;
+
+        if (this.mode === "removebg") {
+          const { cutout } = await bg();
+          const canvas = await cutout(bmp, (loaded, total) => {
+            this.modelStatus =
+              loaded >= total
+                ? "Starting the model…"
+                : `Downloading the model — ${formatBytes(loaded)} of ${formatBytes(total)} (one time)`;
+          });
+          this.modelStatus = "";
+          // Always PNG: it is the only offered target that stores transparency.
+          it.outBlob = await encode(canvas, "image/png", 1);
+          it.outName = renameForType(it.name, "image/png");
+          it.status = "done";
+          bmp.close();
+          return;
+        }
+
         let dims = { w: bmp.width, h: bmp.height };
         if (this.mode === "resize") {
           dims = this.usePercent
@@ -130,6 +157,7 @@ export function imgApp(mode: Mode, presetTarget = "keep") {
         it.status = "done";
         bmp.close();
       } catch (e) {
+        this.modelStatus = "";
         it.status = "error";
         it.error =
           e instanceof Error ? e.message : "Could not process this file";

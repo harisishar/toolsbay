@@ -1,8 +1,9 @@
 # Keyword map — ImgSquash image suite (`image.toolsbay.app`)
 
-Shipped: index, `/compress-image`, `/resize-image`, `/crop-image`, `/image-converter`, and **21**
-generated format-pair pages. Source of truth: `tools/image/src/content.ts` (`SOURCES` × `TARGETS`,
-slug is `${src}-to-${tgt}`).
+Shipped: index, `/compress-image`, `/resize-image`, `/crop-image`, `/image-converter`,
+`/remove-background`, and **29** generated format-pair pages. Source of truth:
+`tools/image/src/content.ts` — `CORE` for the tool pages, `SOURCES` × `TARGETS` for the pairs
+(slug is `${src}-to-${tgt}`).
 
 Sources: jpg, png, webp, heic, avif, gif, bmp, svg. Targets: jpg, png, webp.
 
@@ -85,20 +86,30 @@ Tag `topic:target-size` — the `compress to <N>kb` family.
 
 ### Missing tools — validated against iLoveIMG's 13-tool inventory
 
-| Proposed slug     | Keyword                      | Priority | Feasibility                             | Evidence                                                                                         |
-| ----------------- | ---------------------------- | -------- | --------------------------------------- | ------------------------------------------------------------------------------------------------ |
-| rotate-image      | rotate image online          | P1       | Trivial — Canvas transform              | iloveimg.com `/rotate-image`                                                                     |
-| watermark-image   | add watermark to image       | P1       | Easy — Canvas draw                      | iloveimg.com `/watermark-image`; commercial intent                                               |
-| convert-to-jpg    | convert to jpg               | P1       | Already built — needs a hub page        | iloveimg.com `/convert-to-jpg` is a hub over all sources; ours are 21 separate pages with no hub |
-| image-to-pdf      | image to pdf                 | P2       | Exists on the PDF tool as `/jpg-to-pdf` | Cross-link rather than rebuild — decide which subdomain owns the query                           |
-| photo-editor      | photo editor online free     | P2       | Medium — large surface area             | iloveimg.com `/photo-editor`                                                                     |
-| upscale-image     | image upscaler               | P2       | Hard — needs a WASM/ONNX model          | iloveimg.com `/upscale-image`, bigjpg.com (~1.73M/mo per the brief). Big prize, real build cost  |
-| remove-background | remove background from image | P2       | Hard — WASM segmentation model          | iloveimg.com `/remove-background`; remove.bg owns the term but demand is enormous                |
-| meme-generator    | meme generator               | P3       | Easy                                    | iloveimg.com `/meme-generator`; low commercial intent                                            |
-| blur-face         | blur faces in photo          | P3       | Medium — face detection                 | iloveimg.com `/blur-face`; privacy angle fits the tool's positioning                             |
+| Proposed slug         | Keyword                      | Priority               | Feasibility                             | Evidence                                                                                         |
+| --------------------- | ---------------------------- | ---------------------- | --------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| rotate-image          | rotate image online          | P1                     | Trivial — Canvas transform              | iloveimg.com `/rotate-image`                                                                     |
+| watermark-image       | add watermark to image       | P1                     | Easy — Canvas draw                      | iloveimg.com `/watermark-image`; commercial intent                                               |
+| convert-to-jpg        | convert to jpg               | P1                     | Already built — needs a hub page        | iloveimg.com `/convert-to-jpg` is a hub over all sources; ours are 21 separate pages with no hub |
+| image-to-pdf          | image to pdf                 | P2                     | Exists on the PDF tool as `/jpg-to-pdf` | Cross-link rather than rebuild — decide which subdomain owns the query                           |
+| photo-editor          | photo editor online free     | P2                     | Medium — large surface area             | iloveimg.com `/photo-editor`                                                                     |
+| upscale-image         | image upscaler               | P2                     | Hard — needs a WASM/ONNX model          | iloveimg.com `/upscale-image`, bigjpg.com (~1.73M/mo per the brief). Big prize, real build cost  |
+| ~~remove-background~~ | remove background from image | **SHIPPED 2026-08-01** | Built client-side — see note below      | iloveimg.com `/remove-background`; remove.bg owns the term but demand is enormous                |
+| meme-generator        | meme generator               | P3                     | Easy                                    | iloveimg.com `/meme-generator`; low commercial intent                                            |
+| blur-face             | blur faces in photo          | P3                     | Medium — face detection                 | iloveimg.com `/blur-face`; privacy angle fits the tool's positioning                             |
 
-**Note on upscale/remove-background:** both violate the "no server processing" rule unless done as
-client-side WASM. Bundle size is the real constraint, not compute. Worth a spike before planning.
+**Note on upscale/remove-background — spike resolved 2026-08-01.** The bundle-size worry was
+right, and it was survivable. `/remove-background` ships client-side: ONNX Runtime Web (MIT) plus
+the silueta U²-Net model (42 MB, Apache-2.0 via xuebinqin/U-2-Net, redistributed by rembg), split
+into three parts because Cloudflare caps a static asset at 25 MiB. About 30 MB over the wire once
+gzipped, downloaded on first use only, then cached. Roughly 10–14 s per image — the cost of not
+uploading. Measured, not estimated.
+
+Licensing killed the better models and is worth not rediscovering: `@imgly/background-removal` is
+AGPL-3.0, and BRIA RMBG-1.4/2.0 are CC BY-NC. Neither is usable alongside AdSense.
+
+**Upscaling stays unbuilt.** Same architecture would work, but the models are 170 MB+ and run at
+1024², which is roughly 10× the inference cost of what we just shipped. Not worth it yet.
 
 ### Missing formats — extend `SOURCES` / `TARGETS` in `content.ts`
 

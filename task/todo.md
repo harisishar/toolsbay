@@ -250,52 +250,93 @@ numbers on screen.
 - [x] Full sweep green: `pnpm typecheck`, `pnpm check` (52 tests + catalogue), 5/5 builds,
       all 8 country calculator pages verified 200 in wrangler dev
 
-## ImgSquash rename + /remove-background (planned 2026-08-01, PAUSED)
+## ImgSquash rename + /remove-background (2026-08-01)
 
 Plan: `~/.claude/plans/for-pixsquash-change-to-tender-wombat.md`.
 
-**Paused before implementation.** A second Claude session was writing this repo concurrently
-(competitor-comparison pages across all four tools + `Comparison`/`CompareRow` in
-`packages/seo`, ~1300 uncommitted lines, files touched 19:20–19:27). Part 2 rewrites the same
-four image files, so building on top of it would have clobbered one side or the other.
-Resume once that work is committed.
+Was paused mid-flight: a second Claude session was writing the same four image files
+concurrently (the competitor-comparison work, now committed as f8b818a). Resumed after it
+landed. Cost of the collision: the rename surface grew 5 -> 13 occurrences, because the new
+comparison prose names the tool nine times in `content.ts`.
 
-### Part 1 — rename PixSquash → ImgSquash
+### Part 1 - rename (commit b0e095c)
 
-- [x] `tools/hub/src/index.tsx:39` — hub `TOOLS` entry
-- [x] `tools/image/src/index.tsx:138` — homepage title was the one literal bypassing
-      `SITE.name`; now built from it, so it cannot drift again
-- [x] `tools/image/src/seo.ts` — `SITE.name`, the source of truth. Edit failed mid-flight
-      ("file modified since read") — this is the live collision. **Brand is inconsistent until
-      this lands**
-- [ ] Re-scope on resume: the comparison prose the other session added names PixSquash 9× in
-      `content.ts` and 1× in `components.tsx`. Count went 5 → 13
-- [ ] `task/keywords/image.md:1`, `task/keywords/README.md:8`
+- [x] `SITE.name` in `tools/image/src/seo.ts` - the source of truth
+- [x] `index.tsx` homepage title was the one literal bypassing `SITE.name`. Now built from
+      `SITE.name`/`SITE.tagline`, the same string the line below it already used
+- [x] The 9 occurrences in the comparison prose, plus the hub `TOOLS` entry (separate Worker,
+      genuinely a second copy), `task/keywords/image.md`, `task/keywords/README.md`
+- [x] `tests/pairs.test.mjs` pinned the brand in `assertComparisons()`. That assertion catches
+      prose that forgets to name the tool - it should not pin what the tool is called. Now
+      reads `SITE.name`, so a rename cannot fail the suite for the wrong reason again
 
-### Part 2 — /remove-background (not started)
+### Part 2 - /remove-background
 
-Resolves the spike flagged at `task/keywords/image.md:100` ("bundle size is the real
-constraint"). Stays client-side; no server exception needed.
+- [x] **Collapsed five duplicated core-page lists into one `CORE` array** in `content.ts`
+      (homepage tiles, sitemap, llms.txt, layout nav/footer, and `IMAGE_CORE` hardcoded in
+      `scripts/check-catalogue.mjs`). The script already imported that module for `PAIRS`, so
+      its copy just deleted. This is what made the new page a one-line addition
+- [x] Engine: `onnxruntime-web` 1.27 (MIT), CPU/WASM, `numThreads = 1` - AdSense rules out
+      COOP/COEP so there is no SharedArrayBuffer and no threading
+- [x] Model: `silueta.onnx`, 42 MiB, 320x320, U-2-Net. Apache-2.0 upstream
+      (xuebinqin/U-2-Net), redistributed by rembg (MIT)
+- [x] **Licensing dead ends, do not revisit:** `@imgly/background-removal` is AGPL-3.0;
+      BRIA RMBG-1.4 and 2.0 are CC BY-NC ("commercial use subject to a commercial agreement").
+      Neither is usable on an ad-funded site. They are the better models; that is the trade
+- [x] Cloudflare caps a static asset at 25 MiB, so `vendor.mjs` splits the model into three
+      14 MiB parts and the client concatenates them. `InferenceSession.create()` takes a
+      `Uint8Array`, so this avoids ONNX `externalData`, which would have needed Python
+- [x] `vendor.mjs` downloads from a pinned release URL and **verifies sha256 before writing**,
+      caching in `node_modules/.cache`. A model file is executable input to ONNX
+- [x] Constants shared between build and client in `src/lib/model.ts` - a part-count drift
+      between the splitter and the reassembler would surface as an unreadable ONNX parse error
+- [x] Lazy chunk `client/bgremove.ts` (the HEIC pattern from `ops.ts`, memoised like the PDF
+      engine, and cleared on failure so a network blip does not poison later attempts)
+- [x] **No new Alpine component.** `'removebg'` is one branch in `imgApp.processOne`, so batch,
+      ZIP, per-file status and error handling all came free
+- [x] `public/_headers` pins the model and runtime to `immutable` - verified honoured by
+      Workers static assets, not just assumed
 
-- [ ] Collapse the 4 core-page literal lists (index tiles, sitemap, llms.txt, layout nav) plus
-      `scripts/check-catalogue.mjs:25` into one `CORE` array in `content.ts` — 5 copies today
-- [ ] `onnxruntime-web` (MIT, CPU/WASM, `numThreads = 1`) + `silueta.onnx` (42 MiB,
-      Apache-2.0 via U²-Net, 320×320) vendored by `scripts/vendor.mjs` with a sha256 check
-- [ ] Split the model into 3 parts — Cloudflare caps static assets at **25 MiB per file**.
-      `InferenceSession.create()` takes a `Uint8Array`, so fetch+concat beats ONNX
-      `externalData` (which needs Python)
-- [ ] Lazy chunk `client/bgremove.ts` (HEIC pattern, `ops.ts:31`) + DOM-free
-      `lib/segmath.ts` so `node --test` can reach the mask math
-- [ ] No new Alpine component: add `'removebg'` to the `Mode` union and one branch in
-      `processOne` — batch, ZIP, per-file status all come free
-- [ ] Tests: `core.test.mjs`, `segmath.test.mjs`, SEO limits + an assertion that the FAQ
-      discloses the ~55 MiB download
-- [ ] Regenerate hub catalogue (`node scripts/check-catalogue.mjs --write`)
+### Bug found by testing it for real
 
-**Rejected on licensing, do not revisit:** `@imgly/background-removal` (AGPL-3.0),
-BRIA RMBG-1.4 / 2.0 (CC BY-NC — commercial use needs a paid BRIA agreement). Both are
-unusable on an AdSense-funded site.
+- [x] Shipping only `ort-wasm-simd-threaded.wasm` failed with "no available backend found":
+      the bundled ORT build still resolves its glue `.mjs` through `wasmPaths` at runtime.
+      Vendored both halves. Would not have shown up in any unit test
 
-**Cost accepted:** ~55 MiB on first use (cached after), ~5–15 s per image desktop. Must not
-fetch until the first file is dropped, or it wrecks LCP. Measure on resume; if it lands far
-past 15 s, the 4.4 MiB `u2netp` fallback stops being optional.
+### Tests (13 new, 90 across the repo, all green)
+
+- [x] `tests/segmath.test.mjs` (8) - the two transforms with no visual tell: planar-vs-
+      interleaved NCHW layout, the max-divisor normalisation (rembg divides by the image's
+      brightest channel, not 255 - it looks like a bug and is not), all-black input not
+      dividing by zero, flat mask returning transparent rather than NaN
+- [x] `tests/core.test.mjs` (5) - `CORE` invariants, and that the remove-background FAQ
+      actually discloses the download size, the no-upload claim and the PNG output
+- [x] Root-caused the honesty test instead of editing its expectation: it hardcoded a feature
+      list, so shipping background removal made it fail on a row that had become _true_. It
+      now gates on `CORE`, so shipping a page releases its own guard
+- [x] Mutation-checked: breaking the max-divisor kills 3 assertions; restoring is green
+
+### Measured in the browser, not estimated
+
+- [x] Cutout verified visually and numerically: subject alpha 255, all three background
+      sample points 0, 15.2% opaque / 84.1% transparent / 0.7% feathered, dimensions preserved
+- [x] **~10 s warm for one 800x600 image; ~14 s each in a batch of three.** Upper half of the
+      5-15 s I predicted. Honest, and the reason the FAQ says so out loud
+- [x] ~30 MB over the wire (gzip takes each 14.7 MiB part to ~8.9 MiB), not the 55 MB the copy
+      quotes - the constant is the uncompressed ceiling, which is the safe number to promise
+- [x] No model or runtime fetch until a file is dropped - confirmed empty on page load, so LCP
+      is untouched. Model parts fetched exactly once across five images
+- [x] **No POST of any kind.** Every request is a static asset GET
+- [x] `pnpm typecheck` + `pnpm check` (90 tests + catalogue) green, 5/5 builds; catalogue at
+      136 pages
+
+### Deliberately skipped
+
+- [ ] WebGPU tier (BiRefNet-lite, MIT, much better edges) - ORT's WebGPU binary is 25.6 MiB,
+      itself over the Cloudflare per-file cap. Gate on `navigator.gpu` if quality costs traffic
+- [ ] Guided-filter mask refinement. Bilinear upscale ships; 320x320 is the quality ceiling
+- [ ] Mobile fallback to the 4.4 MiB `u2netp`. One model shipped; measure phone traffic first.
+      At ~14 s on a laptop this is the most likely thing to need doing
+- [ ] AI upscaling stays unbuilt - same architecture, but 170 MB+ models at 1024x1024
+
+- [ ] **Deploy: not shipped.** `pnpm --filter @tools/image deploy` and the hub after it

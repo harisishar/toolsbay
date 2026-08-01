@@ -173,6 +173,11 @@ export const PAIRS: Pair[] = Object.keys(SOURCES).flatMap((src) =>
     }),
 );
 
+// Approximate first-use download (segmentation model + ONNX runtime), quoted in
+// the FAQ and on the page. Declared before TOOL_FAQ because the FAQ copy
+// interpolates it at module load.
+export const MODEL_MB = 55;
+
 export const TOOL_FAQ: Record<string, Faq[]> = {
   compress: [
     {
@@ -222,7 +227,75 @@ export const TOOL_FAQ: Record<string, Faq[]> = {
       a: "No hard limit — processing happens on your own device, so capacity depends only on your browser memory. Batches of hundreds of typical photos work fine.",
     },
   ],
+  removeBackground: [
+    {
+      q: "Is the background removed on your servers?",
+      a: "No. The segmentation model is downloaded to your browser and runs there, so the photo itself never leaves your device — you can watch the network panel and see no upload, or disconnect after the model has loaded and keep working offline.",
+    },
+    {
+      q: "Why is the first image slow?",
+      a: `The model is about ${MODEL_MB} MB and downloads the first time you use this page, then stays in your browser cache. After that, expect a few seconds per image — the work runs on your own processor rather than a server farm, which is the trade for not uploading anything. Older phones will be slower.`,
+    },
+    {
+      q: "What kind of photos work best?",
+      a: "A clear main subject against a background that is reasonably distinct from it — people, products, pets, objects on a desk. Edges are computed at 320×320 and scaled up, so fine detail like flyaway hair or fur comes out soft. At normal web sizes that is rarely visible; at 100% zoom on a large photo it is.",
+    },
+    {
+      q: "What file do I get back?",
+      a: "A PNG with a transparent background, which is what you want for logos, product shots and anything you are placing onto another background. JPG cannot store transparency, so it is not offered here.",
+    },
+  ],
 };
+
+export type Core = {
+  path: string;
+  label: string; // nav, footer, hub catalogue
+  tile: string; // homepage tile heading
+  blurb: string; // homepage tile subtitle
+  llms: string; // one-line summary for /llms.txt
+};
+
+// The core pages, listed once. These were previously five separate literal
+// lists (homepage tiles, sitemap, llms.txt, layout nav/footer, and IMAGE_CORE
+// in scripts/check-catalogue.mjs), which is four chances to add a page and
+// forget one of them.
+export const CORE: Core[] = [
+  {
+    path: "/compress-image",
+    label: "Compress Image",
+    tile: "Compress",
+    blurb: "Shrink file sizes up to 80%",
+    llms: "Reduce image file size with a quality slider (batch + ZIP).",
+  },
+  {
+    path: "/resize-image",
+    label: "Resize Image",
+    tile: "Resize",
+    blurb: "Exact pixels or percentage",
+    llms: "Resize to exact pixels or percentage, aspect-ratio locked.",
+  },
+  {
+    path: "/crop-image",
+    label: "Crop Image",
+    tile: "Crop",
+    blurb: "Freeform or fixed ratios",
+    llms: "Crop freeform or to 1:1, 4:3, 16:9, 9:16.",
+  },
+  {
+    path: "/image-converter",
+    label: "Image Converter",
+    tile: "Convert",
+    blurb: "JPG · PNG · WebP · HEIC",
+    llms: "Convert between JPG, PNG, WebP (also reads HEIC, AVIF, GIF, BMP, SVG).",
+  },
+  {
+    path: "/remove-background",
+    label: "Remove Background",
+    tile: "Remove BG",
+    blurb: "Cut out the subject, get a PNG",
+    llms: `Remove an image background and download a transparent PNG. Runs a segmentation model in the browser (~${MODEL_MB} MB, downloaded once).`,
+  },
+];
 
 // --- Competitor comparison ---
 // Deliberately not part of PAIRS: that array is generated from SOURCES ×
@@ -246,7 +319,7 @@ export const COMPARISONS: Comparison[] = [
         h: "Should you switch? The short answer",
         body: [
           "Switch if you compress or convert images regularly and do not want a counter watching you, if you work with photos that should not be uploaded — client work, ID documents, screenshots with customer data — or if you mostly need the core four: compress, resize, crop, convert.",
-          "Stay with iLoveIMG if you need AI upscaling, background removal, watermarking or its photo editor. ImgSquash does not have any of those, and the free tier of iLoveIMG will at least let you do a few.",
+          "Stay with iLoveIMG if you need AI upscaling, watermarking or its photo editor. ImgSquash does not have those. It does now remove backgrounds, and does it without uploading anything — but the model runs on your device, so it is slower than their server and softer on fine detail like hair.",
           "Disclosure: ImgSquash is our tool. Every iLoveIMG figure below comes from their published pricing page, linked at the bottom.",
         ],
       },
@@ -262,7 +335,7 @@ export const COMPARISONS: Comparison[] = [
       {
         h: "Where your images go",
         body: [
-          "iLoveIMG processes on its servers, which means your images are uploaded. That is not a criticism — it is what makes their upscaling and background removal possible at all, since those need models that cannot run in a tab.",
+          "iLoveIMG processes on its servers, which means your images are uploaded. That is not a criticism — a server can run a far larger model than a browser tab can, which is why their upscaler exists and ours does not, and why their background removal handles hair better than ours.",
           "ImgSquash uses the browser's Canvas API and never sends the file anywhere. This is checkable rather than promised: open your browser's network tab while you compress a batch and you will see no upload, and the tools keep working if you disconnect after the page has loaded.",
           'This is worth being sceptical about generally, because "processed in your browser" is now a claim on almost every image tool\'s homepage, including competitors that then upload anyway. The network tab settles it in about five seconds, for us or for anyone else.',
         ],
@@ -270,7 +343,8 @@ export const COMPARISONS: Comparison[] = [
       {
         h: "Where iLoveIMG is genuinely better",
         body: [
-          "Feature range. iLoveIMG ships thirteen tools; we ship four plus twenty-nine format-conversion pages. Their upscaler, background remover, watermarking tool, meme generator and photo editor have no equivalent here, and the first two are not things a browser tab can realistically do well.",
+          "Feature range. iLoveIMG ships thirteen tools; we ship five plus twenty-nine format-conversion pages. Their upscaler, watermarking tool, meme generator and photo editor have no equivalent here.",
+          "Background-removal quality. We both do it; theirs is better. A server can run a model many times larger than one a browser will download, and it shows on hair, fur and semi-transparent edges. Ours is computed at 320×320 and scaled up, which is fine at web sizes and visibly soft at full zoom. The trade you get for that is that the photo never leaves your device.",
           "Very large files on weak hardware. Server-side processing does not care how much memory your device has. If you are compressing a 400 MB TIFF on a Chromebook, their architecture is the right one.",
           "Mobile apps, on the paid plan. We are a website only.",
         ],
@@ -303,10 +377,16 @@ export const COMPARISONS: Comparison[] = [
         them: "1 task · 50 MB",
       },
       {
-        feature: "Upscale / remove background",
+        feature: "Remove background",
+        us: "Yes, on-device",
+        them: "3 tasks · 6 MB",
+        note: "Ours downloads a 42 MB model to your browser once, then runs locally. Theirs is a larger model on a server, so it handles hair better — and needs the upload.",
+      },
+      {
+        feature: "AI upscale",
         us: "Not offered",
         them: "3 tasks · 6 MB",
-        note: "These need models that cannot run in a browser tab, so we do not offer them at all.",
+        note: "Upscaling needs a model far larger than a browser should download.",
       },
       {
         feature: "Images uploaded to a server",
@@ -326,7 +406,7 @@ export const COMPARISONS: Comparison[] = [
         them: "Convert tool",
         note: "We read JPG, PNG, WebP, HEIC, AVIF, GIF, BMP and SVG, and write JPG, PNG, WebP and ICO.",
       },
-      { feature: "Number of tools", us: "4 core", them: "13" },
+      { feature: "Number of tools", us: "5 core", them: "13" },
       { feature: "Mobile apps", us: "No", them: "Premium" },
     ],
     sources: [
@@ -356,7 +436,7 @@ export const COMPARISONS: Comparison[] = [
       },
       {
         q: "Does ImgSquash do background removal or AI upscaling?",
-        a: "No. Both need machine-learning models that are impractical to run in a browser tab, and running them on a server would mean uploading your images — which is the thing this tool exists to avoid. iLoveIMG offers both, capped at 3 tasks and 6 MB on the free tier.",
+        a: `Background removal, yes — at /remove-background, with no task cap and no upload. It downloads a ${MODEL_MB} MB model to your browser the first time and runs on your own processor after that, which is slower than a server and softer on fine detail like hair. AI upscaling, no: that needs a model far larger than is reasonable to download. iLoveIMG offers both, capped at 3 tasks and 6 MB on the free tier.`,
       },
       {
         q: "Can I convert HEIC photos from my iPhone?",

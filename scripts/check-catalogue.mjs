@@ -18,16 +18,9 @@ const url = (p) => new URL(`../${p}`, import.meta.url);
 const { ALL_CALCS } =
   await import("../tools/calculator/src/lib/calcs/index.ts");
 const { TOOLS } = await import("../tools/pdf/src/content.ts");
-const { PAIRS } = await import("../tools/image/src/content.ts");
+const { PAIRS, CORE } = await import("../tools/image/src/content.ts");
 const { QR_TYPES, SYMBOLOGIES, PAYMENT_GUIDES } =
   await import("../tools/qr/src/content.ts");
-
-const IMAGE_CORE = [
-  ["compress-image", "Compress Image"],
-  ["resize-image", "Resize Image"],
-  ["crop-image", "Crop Image"],
-  ["image-converter", "Image Converter"],
-];
 
 const GUIDE_LABEL = {
   "duitnow-qr-code": "DuitNow QR (Malaysia)",
@@ -40,6 +33,8 @@ const GUIDE_LABEL = {
 const expected = {
   CALC: ALL_CALCS.map((c) => [c.slug, c.name]),
   PDF: TOOLS.map((t) => [t.slug, t.label]),
+  // CORE paths are routes ("/compress-image"); the catalogue stores bare slugs.
+  IMAGE_CORE: CORE.map((t) => [t.path.slice(1), t.label]),
   IMAGE_PAIRS: PAIRS.map((p) => [
     p.slug,
     `${p.src.toUpperCase()} to ${p.tgt.toUpperCase()}`,
@@ -60,7 +55,7 @@ const pdfCategory = Object.fromEntries(TOOLS.map((t) => [t.slug, t.category]));
 const total =
   expected.CALC.length +
   expected.PDF.length +
-  IMAGE_CORE.length +
+  expected.IMAGE_CORE.length +
   expected.IMAGE_PAIRS.length +
   expected.QR_TYPES.length +
   expected.BARCODES.length +
@@ -106,7 +101,7 @@ ${record(pdfCategory)}
 };
 
 export const IMAGE_CORE: Entry[] = [
-${entries(IMAGE_CORE)}
+${entries(expected.IMAGE_CORE)}
 ];
 
 export const IMAGE_PAIRS: Entry[] = [

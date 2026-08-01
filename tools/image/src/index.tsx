@@ -11,7 +11,15 @@ import {
   Hero,
   CompareTable,
 } from "./components.js";
-import { PAIRS, TOOL_FAQ, SOURCES, TARGETS, COMPARISONS } from "./content.js";
+import {
+  PAIRS,
+  TOOL_FAQ,
+  SOURCES,
+  TARGETS,
+  COMPARISONS,
+  CORE,
+  MODEL_MB,
+} from "./content.js";
 import {
   SITE,
   webAppJsonLd,
@@ -44,27 +52,41 @@ app.use("*", async (c, next) => {
 });
 
 function BatchPage(props: {
-  mode: "compress" | "resize" | "convert";
+  mode: "compress" | "resize" | "convert" | "removebg";
   presetTarget?: string;
   showFormat?: boolean;
   showResize?: boolean;
+  showQuality?: boolean;
 }) {
   const preset = props.presetTarget ?? "keep";
+  const controls =
+    props.showResize ||
+    props.showQuality !== false ||
+    props.showFormat !== false;
   return (
     <div
       x-data={`imgApp('${props.mode}', '${preset}')`}
       class="mx-auto max-w-3xl px-4 py-8"
     >
       <Dropzone />
-      <div class="mt-6 grid gap-5 rounded-lg border border-line bg-panel p-5 sm:grid-cols-2">
-        {props.showResize && (
-          <div class="sm:col-span-2">
-            <ResizeControls />
-          </div>
-        )}
-        <QualityControl />
-        {props.showFormat !== false && <FormatControl />}
-      </div>
+      {/* The model download is the one wait long enough to look like a hang. */}
+      <p
+        x-cloak
+        x-show="modelStatus"
+        class="mt-4 rounded-md border border-line bg-panel px-4 py-3 text-sm text-mist"
+        x-text="modelStatus"
+      />
+      {controls && (
+        <div class="mt-6 grid gap-5 rounded-lg border border-line bg-panel p-5 sm:grid-cols-2">
+          {props.showResize && (
+            <div class="sm:col-span-2">
+              <ResizeControls />
+            </div>
+          )}
+          {props.showQuality !== false && <QualityControl />}
+          {props.showFormat !== false && <FormatControl />}
+        </div>
+      )}
       <FileList />
     </div>
   );
@@ -127,6 +149,15 @@ const pages: Record<string, (origin: string) => unknown> = {
     faq: TOOL_FAQ.convert!,
     body: <BatchPage mode="convert" showFormat />,
   }),
+  "/remove-background": toolPage({
+    path: "/remove-background",
+    title: "Remove Background from Image — Free, No Upload",
+    desc: `Cut the background out of any photo and download a transparent PNG. The model runs in your browser — images are never uploaded. Free, no sign-up, batch supported.`,
+    h1: "Remove Image Backgrounds",
+    intro: `Drop a photo and get the subject back on a transparent background, as a PNG. Unlike every other background remover, this one does not upload your image: a ${MODEL_MB} MB segmentation model downloads to your browser the first time and runs on your own device from then on.`,
+    faq: TOOL_FAQ.removeBackground!,
+    body: <BatchPage mode="removebg" showFormat={false} showQuality={false} />,
+  }),
 };
 
 app.get("/", (c) => {
@@ -149,19 +180,14 @@ app.get("/", (c) => {
         intro="Compress, resize, crop and convert — powered by your own browser, not our servers. That makes every tool here fast, free without limits, and private by construction."
       />
       <div class="mx-auto max-w-5xl px-4 pt-8">
-        <div class="grid gap-3 sm:grid-cols-4">
-          {[
-            ["/compress-image", "Compress", "Shrink file sizes up to 80%"],
-            ["/resize-image", "Resize", "Exact pixels or percentage"],
-            ["/crop-image", "Crop", "Freeform or fixed ratios"],
-            ["/image-converter", "Convert", "JPG · PNG · WebP · HEIC"],
-          ].map(([href, t, s]) => (
+        <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+          {CORE.map((t) => (
             <a
-              href={href}
+              href={t.path}
               class="rounded-lg border border-line bg-panel p-4 transition-colors hover:border-ember"
             >
-              <span class="font-display block">{t}</span>
-              <span class="mt-1 block text-sm text-mist">{s}</span>
+              <span class="font-display block">{t.tile}</span>
+              <span class="mt-1 block text-sm text-mist">{t.blurb}</span>
             </a>
           ))}
         </div>
@@ -456,10 +482,7 @@ app.get("/sitemap.xml", (c) => {
   const origin = originOf(c.req.url);
   const paths = [
     "/",
-    "/compress-image",
-    "/resize-image",
-    "/crop-image",
-    "/image-converter",
+    ...CORE.map((t) => t.path),
     ...PAIRS.map((p) => `/${p.slug}`),
     ...COMPARISONS.map((c) => `/${c.slug}`),
     "/privacy-policy",
@@ -479,10 +502,7 @@ Free browser-based image tools. All processing is client-side (Canvas API) — i
 never uploaded. No sign-up, no watermarks, no file limits.
 
 ## Tools
-- ${origin}/compress-image: Reduce image file size with a quality slider (batch + ZIP).
-- ${origin}/resize-image: Resize to exact pixels or percentage, aspect-ratio locked.
-- ${origin}/crop-image: Crop freeform or to 1:1, 4:3, 16:9, 9:16.
-- ${origin}/image-converter: Convert between JPG, PNG, WebP (also reads HEIC, AVIF, GIF, BMP, SVG).
+${CORE.map((t) => `- ${origin}${t.path}: ${t.llms}`).join("\n")}
 
 ## Conversion pages
 ${PAIRS.map((p) => `- ${origin}/${p.slug}: ${p.h1}`).join("\n")}

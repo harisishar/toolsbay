@@ -3,7 +3,7 @@
 // generated surface, not the generator.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { PAIRS, SOURCES, TARGETS, COMPARISONS } from "../src/content.ts";
+import { PAIRS, SOURCES, TARGETS, COMPARISONS, CORE } from "../src/content.ts";
 import { SITE } from "../src/seo.ts";
 import { assertComparisons } from "../../../scripts/assert-comparisons.mjs";
 
@@ -13,17 +13,29 @@ import { assertComparisons } from "../../../scripts/assert-comparisons.mjs";
 assertComparisons(test, COMPARISONS, { toolName: SITE.name });
 
 // Every ImgSquash tool really is client-side, so unlike the PDF page this one
-// may make the claim flatly — but only about tools that exist. Upscaling and
-// background removal do not, and pretending otherwise in a comparison against
-// a competitor that ships both is the easiest lie to tell here.
+// may make the claim flatly — but only about tools that exist. Claiming a
+// capability we do not ship, in a comparison against a competitor who does, is
+// the easiest lie to tell here.
+//
+// The gate is CORE, not a hardcoded list: when /remove-background shipped, the
+// old fixed list failed this test for a row that had become true. Ship the page
+// and the guard releases itself; until then it holds.
+const CAPABILITY_PAGE = [
+  [/background/i, "/remove-background"],
+  [/upscal/i, "/upscale-image"],
+  [/editor/i, "/photo-editor"],
+];
+
 test("the image comparison does not claim tools we do not have", () => {
+  const shipped = new Set(CORE.map((t) => t.path));
   for (const c of COMPARISONS) {
     for (const r of c.matrix) {
-      if (/upscale|background|editor/i.test(r.feature)) {
+      for (const [re, path] of CAPABILITY_PAGE) {
+        if (!re.test(r.feature) || shipped.has(path)) continue;
         assert.match(
           r.us,
           /^(No|Not offered)/i,
-          `${c.slug}: "${r.feature}" claims a tool ${SITE.name} does not ship`,
+          `${c.slug}: "${r.feature}" claims a tool ${SITE.name} does not ship (no ${path})`,
         );
       }
     }

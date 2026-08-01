@@ -13,8 +13,8 @@
     "check": "node --test"
   },
   "dependencies": {
-    "hono": "^4.8.0",
-    "@claudetools/seo": "workspace:*"
+    "@claudetools/seo": "workspace:*",
+    "hono": "^4.8.0"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20250712.0",
@@ -25,6 +25,7 @@
     "esbuild": "^0.28.0",
     "fflate": "^0.8.2",
     "heic-to": "^1.1.0",
+    "onnxruntime-web": "^1.27.0",
     "tailwindcss": "^4.1.0",
     "typescript": "^5.9.0",
     "wrangler": "^4.26.0"

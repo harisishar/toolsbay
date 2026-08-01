@@ -198,6 +198,7 @@ export const IMAGE_CORE: Entry[] = [
   ["resize-image", "Resize Image"],
   ["crop-image", "Crop Image"],
   ["image-converter", "Image Converter"],
+  ["remove-background", "Remove Background"],
 ];
 
 export const IMAGE_PAIRS: Entry[] = [
@@ -258,4 +259,4 @@ export const QR_GUIDES: Entry[] = [
   ["promptpay-qr-code", "PromptPay QR (Thailand)"],
 ];
 
-export const TOTAL_PAGES = 135;
+export const TOTAL_PAGES = 136;

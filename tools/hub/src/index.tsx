@@ -40,7 +40,7 @@ const TOOLS = [
     url: "https://image.toolsbay.app",
     host: "image.toolsbay.app",
     tagline: "Compress, resize & convert images",
-    desc: `Compress, resize and crop, plus ${IMAGE_PAIRS.length} format converters across JPG, PNG, WebP, HEIC, AVIF, GIF, BMP and SVG. Photos never leave your device.`,
+    desc: `Compress, resize, crop and remove backgrounds, plus ${IMAGE_PAIRS.length} format converters across JPG, PNG, WebP, HEIC, AVIF, GIF, BMP and SVG. Photos never leave your device.`,
     accent: "image",
   },
   {

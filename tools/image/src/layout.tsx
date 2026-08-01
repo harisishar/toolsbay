@@ -1,7 +1,7 @@
 import type { Child } from "hono/jsx";
 import { ADSENSE_CLIENT, AD_SLOTS } from "@claudetools/seo";
 import { SITE } from "./seo.js";
-import { PAIRS } from "./content.js";
+import { PAIRS, CORE } from "./content.js";
 
 // Manual AdSense unit inside a height-reserved container (no CLS). The push is
 // skipped when the slot is display:none (mobile rail) to avoid availableWidth=0 errors.
@@ -38,12 +38,7 @@ type LayoutProps = {
   children: Child;
 };
 
-const TOOLS = [
-  ["/compress-image", "Compress Image"],
-  ["/resize-image", "Resize Image"],
-  ["/crop-image", "Crop Image"],
-  ["/image-converter", "Convert Image"],
-] as const;
+const TOOLS = CORE.map((c) => [c.path, c.label] as const);
 
 export function Layout({
   title,

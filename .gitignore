@@ -8,3 +8,5 @@ tools/*/public/styles.css
 tools/*/public/js/
 tools/*/public/vendor/
 tools/*/public/fonts/
+tools/*/public/models/
+tools/*/public/ort/
