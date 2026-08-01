@@ -249,3 +249,53 @@ numbers on screen.
       fail — Uint8Array truncates 256 to 0, so that mutation is behaviourally identical)
 - [x] Full sweep green: `pnpm typecheck`, `pnpm check` (52 tests + catalogue), 5/5 builds,
       all 8 country calculator pages verified 200 in wrangler dev
+
+## ImgSquash rename + /remove-background (planned 2026-08-01, PAUSED)
+
+Plan: `~/.claude/plans/for-pixsquash-change-to-tender-wombat.md`.
+
+**Paused before implementation.** A second Claude session was writing this repo concurrently
+(competitor-comparison pages across all four tools + `Comparison`/`CompareRow` in
+`packages/seo`, ~1300 uncommitted lines, files touched 19:20–19:27). Part 2 rewrites the same
+four image files, so building on top of it would have clobbered one side or the other.
+Resume once that work is committed.
+
+### Part 1 — rename PixSquash → ImgSquash
+
+- [x] `tools/hub/src/index.tsx:39` — hub `TOOLS` entry
+- [x] `tools/image/src/index.tsx:138` — homepage title was the one literal bypassing
+      `SITE.name`; now built from it, so it cannot drift again
+- [x] `tools/image/src/seo.ts` — `SITE.name`, the source of truth. Edit failed mid-flight
+      ("file modified since read") — this is the live collision. **Brand is inconsistent until
+      this lands**
+- [ ] Re-scope on resume: the comparison prose the other session added names PixSquash 9× in
+      `content.ts` and 1× in `components.tsx`. Count went 5 → 13
+- [ ] `task/keywords/image.md:1`, `task/keywords/README.md:8`
+
+### Part 2 — /remove-background (not started)
+
+Resolves the spike flagged at `task/keywords/image.md:100` ("bundle size is the real
+constraint"). Stays client-side; no server exception needed.
+
+- [ ] Collapse the 4 core-page literal lists (index tiles, sitemap, llms.txt, layout nav) plus
+      `scripts/check-catalogue.mjs:25` into one `CORE` array in `content.ts` — 5 copies today
+- [ ] `onnxruntime-web` (MIT, CPU/WASM, `numThreads = 1`) + `silueta.onnx` (42 MiB,
+      Apache-2.0 via U²-Net, 320×320) vendored by `scripts/vendor.mjs` with a sha256 check
+- [ ] Split the model into 3 parts — Cloudflare caps static assets at **25 MiB per file**.
+      `InferenceSession.create()` takes a `Uint8Array`, so fetch+concat beats ONNX
+      `externalData` (which needs Python)
+- [ ] Lazy chunk `client/bgremove.ts` (HEIC pattern, `ops.ts:31`) + DOM-free
+      `lib/segmath.ts` so `node --test` can reach the mask math
+- [ ] No new Alpine component: add `'removebg'` to the `Mode` union and one branch in
+      `processOne` — batch, ZIP, per-file status all come free
+- [ ] Tests: `core.test.mjs`, `segmath.test.mjs`, SEO limits + an assertion that the FAQ
+      discloses the ~55 MiB download
+- [ ] Regenerate hub catalogue (`node scripts/check-catalogue.mjs --write`)
+
+**Rejected on licensing, do not revisit:** `@imgly/background-removal` (AGPL-3.0),
+BRIA RMBG-1.4 / 2.0 (CC BY-NC — commercial use needs a paid BRIA agreement). Both are
+unusable on an AdSense-funded site.
+
+**Cost accepted:** ~55 MiB on first use (cached after), ~5–15 s per image desktop. Must not
+fetch until the first file is dropped, or it wrecks LCP. Measure on resume; if it lands far
+past 15 s, the 4.4 MiB `u2netp` fallback stops being optional.

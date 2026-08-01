@@ -13,7 +13,7 @@ export { faqJsonLd, sitemapXml, robotsTxt };
 export type { Faq, Comparison, CompareRow };
 
 export const SITE = {
-  name: "PixSquash",
+  name: "ImgSquash",
   tagline: "Free Image Compressor, Resizer & Converter",
 };
 

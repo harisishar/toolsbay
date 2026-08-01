@@ -5,7 +5,7 @@ One file per tool. Each maps shipped pages to their target queries and flags gap
 | File                           | Tool                  | Subdomain          | Shipped pages                    |
 | ------------------------------ | --------------------- | ------------------ | -------------------------------- |
 | [calculator.md](calculator.md) | Calculators           | calc.toolsbay.app  | 51 + index                       |
-| [image.md](image.md)           | PixSquash image suite | image.toolsbay.app | 4 core + 29 format pairs + index |
+| [image.md](image.md)           | ImgSquash image suite | image.toolsbay.app | 4 core + 29 format pairs + index |
 | [pdf.md](pdf.md)               | PDF suite             | pdf.toolsbay.app   | 29 + index                       |
 | [qr.md](qr.md)                 | QR + barcode          | qr.toolsbay.app    | 12 QR types + barcode + index    |
 | [hub.md](hub.md)               | Hub landing           | toolsbay.app       | 1                                |

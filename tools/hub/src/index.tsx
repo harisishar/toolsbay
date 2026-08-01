@@ -36,7 +36,7 @@ const TOOLS = [
     accent: "calc",
   },
   {
-    name: "PixSquash",
+    name: "ImgSquash",
     url: "https://image.toolsbay.app",
     host: "image.toolsbay.app",
     tagline: "Compress, resize & convert images",

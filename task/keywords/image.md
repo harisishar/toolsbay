@@ -1,4 +1,4 @@
-# Keyword map — PixSquash image suite (`image.toolsbay.app`)
+# Keyword map — ImgSquash image suite (`image.toolsbay.app`)
 
 Shipped: index, `/compress-image`, `/resize-image`, `/crop-image`, `/image-converter`, and **21**
 generated format-pair pages. Source of truth: `tools/image/src/content.ts` (`SOURCES` × `TARGETS`,

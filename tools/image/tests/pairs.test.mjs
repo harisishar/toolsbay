@@ -4,11 +4,15 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { PAIRS, SOURCES, TARGETS, COMPARISONS } from "../src/content.ts";
+import { SITE } from "../src/seo.ts";
 import { assertComparisons } from "../../../scripts/assert-comparisons.mjs";
 
-assertComparisons(test, COMPARISONS, { toolName: "PixSquash" });
+// Read the brand rather than repeating it: this assertion exists to catch prose
+// that forgets to name the tool, not to pin the tool's name. Hardcoding it here
+// made a rename fail the suite for the wrong reason.
+assertComparisons(test, COMPARISONS, { toolName: SITE.name });
 
-// Every PixSquash tool really is client-side, so unlike the PDF page this one
+// Every ImgSquash tool really is client-side, so unlike the PDF page this one
 // may make the claim flatly — but only about tools that exist. Upscaling and
 // background removal do not, and pretending otherwise in a comparison against
 // a competitor that ships both is the easiest lie to tell here.
@@ -19,7 +23,7 @@ test("the image comparison does not claim tools we do not have", () => {
         assert.match(
           r.us,
           /^(No|Not offered)/i,
-          `${c.slug}: "${r.feature}" claims a tool PixSquash does not ship`,
+          `${c.slug}: "${r.feature}" claims a tool ${SITE.name} does not ship`,
         );
       }
     }
