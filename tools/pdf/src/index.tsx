@@ -1,45 +1,53 @@
-import { Hono } from 'hono';
-import { api, Converter } from './api.js';
-import { Layout } from './layout.js';
+import { Hono } from "hono";
+import { api, Converter } from "./api.js";
+import { Layout } from "./layout.js";
 
 export { Converter };
-import { Hero, FaqSection, ToolBody } from './components.js';
-import { TOOLS, CATEGORIES } from './content.js';
-import { SITE, webAppJsonLd, faqJsonLd, sitemapXml, robotsTxt } from './seo.js';
-import { privacySections, PRIVACY_UPDATED } from '@claudetools/seo';
+import { Hero, FaqSection, ToolBody, CompareTable } from "./components.js";
+import { TOOLS, CATEGORIES, COMPARISONS } from "./content.js";
+import {
+  SITE,
+  webAppJsonLd,
+  articleJsonLd,
+  faqJsonLd,
+  sitemapXml,
+  robotsTxt,
+} from "./seo.js";
+import { privacySections, PRIVACY_UPDATED } from "@claudetools/seo";
 
 function privacyLd(origin: string) {
   return {
-    '@context': 'https://schema.org',
-    '@type': 'WebPage',
+    "@context": "https://schema.org",
+    "@type": "WebPage",
     name: `Privacy Policy — ${SITE.name}`,
-    url: origin + '/privacy-policy',
+    url: origin + "/privacy-policy",
     dateModified: PRIVACY_UPDATED,
   };
 }
 
-
 const app = new Hono();
 const originOf = (url: string) => new URL(url).origin;
 
-app.use('*', async (c, next) => {
+app.use("*", async (c, next) => {
   await next();
-  if (c.res.headers.get('content-type')?.includes('text/html')) {
-    c.res.headers.set('Cache-Control', 'public, max-age=600');
+  if (c.res.headers.get("content-type")?.includes("text/html")) {
+    c.res.headers.set("Cache-Control", "public, max-age=600");
   }
 });
 
-app.get('/', (c) => {
+app.get("/", (c) => {
   const origin = originOf(c.req.url);
   const desc =
-    'Every PDF tool you need, free: merge, split, compress, convert, edit, sign, protect and more. Browser-based and private — most tools never upload your files.';
+    "Every PDF tool you need, free: merge, split, compress, convert, edit, sign, protect and more. Browser-based and private — most tools never upload your files.";
   return c.html(
     <Layout
       title="PaperKit — Free PDF Tools: Merge, Split, Compress, Convert & More"
       desc={desc}
       path="/"
       origin={origin}
-      jsonLd={[webAppJsonLd(origin, '/', `${SITE.name} — ${SITE.tagline}`, desc)]}
+      jsonLd={[
+        webAppJsonLd(origin, "/", `${SITE.name} — ${SITE.tagline}`, desc),
+      ]}
     >
       <Hero
         h1="Every PDF tool, free and private"
@@ -61,7 +69,7 @@ app.get('/', (c) => {
                     )}
                   </span>
                   <span class="mt-1 block text-[13px] leading-5 text-muted">
-                    {t.intro.split('.')[0]}.
+                    {t.intro.split(".")[0]}.
                   </span>
                 </a>
               ))}
@@ -82,7 +90,10 @@ for (const tool of TOOLS) {
         desc={tool.desc}
         path={`/${tool.slug}`}
         origin={origin}
-        jsonLd={[webAppJsonLd(origin, `/${tool.slug}`, tool.h1, tool.desc), faqJsonLd(tool.faq)]}
+        jsonLd={[
+          webAppJsonLd(origin, `/${tool.slug}`, tool.h1, tool.desc),
+          faqJsonLd(tool.faq),
+        ]}
       >
         <Hero h1={tool.h1} intro={tool.intro} />
         <div class="mx-auto max-w-3xl px-4 py-8">
@@ -91,7 +102,9 @@ for (const tool of TOOLS) {
           <section class="mt-10">
             <h2 class="font-display mb-3 text-lg">More PDF tools</h2>
             <div class="flex flex-wrap gap-2">
-              {TOOLS.filter((t) => t.slug !== tool.slug && t.category === tool.category)
+              {TOOLS.filter(
+                (t) => t.slug !== tool.slug && t.category === tool.category,
+              )
                 .slice(0, 6)
                 .map((t) => (
                   <a
@@ -109,11 +122,96 @@ for (const tool of TOOLS) {
   });
 }
 
+const START_HERE = [
+  "merge-pdf",
+  "split-pdf",
+  "compress-pdf",
+  "pdf-to-word",
+  "ocr-pdf",
+  "sign-pdf",
+];
 
-app.get('/privacy-policy', (c) => {
+for (const cmp of COMPARISONS) {
+  app.get(`/${cmp.slug}`, (c) => {
+    const origin = originOf(c.req.url);
+    return c.html(
+      <Layout
+        title={cmp.title}
+        desc={cmp.desc}
+        path={`/${cmp.slug}`}
+        origin={origin}
+        jsonLd={[
+          articleJsonLd(origin, `/${cmp.slug}`, cmp.h1, cmp.desc),
+          faqJsonLd(cmp.faq),
+        ]}
+      >
+        <Hero h1={cmp.h1} intro={cmp.intro} />
+        <div class="mx-auto max-w-3xl px-4 py-8">
+          <article class="prose-tool">
+            {cmp.sections.map((s) => (
+              <section>
+                <h2>{s.h}</h2>
+                {s.body.map((p) => (
+                  <p>{p}</p>
+                ))}
+              </section>
+            ))}
+          </article>
+          <CompareTable rows={cmp.matrix} competitor={cmp.competitor} />
+          <section class="mt-10">
+            <h2 class="font-display mb-3 text-xl">Start here</h2>
+            <div class="flex flex-wrap gap-2">
+              {START_HERE.map((slug) => {
+                const t = TOOLS.find((x) => x.slug === slug);
+                return t ? (
+                  <a
+                    class="rounded-md border border-line bg-panel px-3 py-1.5 text-sm hover:border-brick"
+                    href={`/${t.slug}`}
+                  >
+                    {t.label}
+                  </a>
+                ) : null;
+              })}
+            </div>
+          </section>
+          <section class="mt-10 text-[13px] leading-6 text-muted">
+            <h2 class="font-display mb-2 text-base text-ink">Sources</h2>
+            <p>
+              Every claim about {cmp.competitor} on this page is taken from its
+              own published pages, checked on {cmp.updated}:{" "}
+              {cmp.sources.map((s, i) => (
+                <>
+                  {i > 0 ? ", " : ""}
+                  <a
+                    class="underline"
+                    href={s.url}
+                    rel="nofollow noopener"
+                    target="_blank"
+                  >
+                    {s.label}
+                  </a>
+                </>
+              ))}
+              . Pricing and limits change — if you spot something out of date,
+              treat their page as authoritative over ours.
+            </p>
+            <p class="mt-2">Last updated: {cmp.updated}</p>
+          </section>
+          <FaqSection faq={cmp.faq} />
+        </div>
+      </Layout>,
+    );
+  });
+}
+
+app.get("/privacy-policy", (c) => {
   const origin = originOf(c.req.url);
   const desc = `How ${SITE.name} handles your data: PDFs are processed in your browser; marked server-side conversions are streamed through and never stored. No accounts, no tracking.`;
-  const sections = privacySections({ siteName: SITE.name, what: 'PDF documents', serverPath: true });
+  const sections = privacySections({
+    siteName: SITE.name,
+    what: "PDF documents",
+    serverPath: true,
+  });
   return c.html(
     <Layout
       title={`Privacy Policy — ${SITE.name}`}
@@ -128,14 +226,14 @@ app.get('/privacy-policy', (c) => {
       />
       <div class="mx-auto max-w-3xl px-4 py-8">
         <article class="prose-tool">
-        {sections.map((s) => (
-          <section>
-            <h2>{s.h}</h2>
-            {s.body.map((p) => (
-              <p>{p}</p>
-            ))}
-          </section>
-        ))}
+          {sections.map((s) => (
+            <section>
+              <h2>{s.h}</h2>
+              {s.body.map((p) => (
+                <p>{p}</p>
+              ))}
+            </section>
+          ))}
           <p class="text-sm">Last updated: {PRIVACY_UPDATED}</p>
         </article>
       </div>
@@ -143,16 +241,27 @@ app.get('/privacy-policy', (c) => {
   );
 });
 
-app.get('/sitemap.xml', (c) => {
+app.get("/sitemap.xml", (c) => {
   const origin = originOf(c.req.url);
-  return c.body(sitemapXml(origin, ['/', ...TOOLS.map((t) => `/${t.slug}`), '/privacy-policy']), 200, {
-    'Content-Type': 'application/xml',
-  });
+  return c.body(
+    sitemapXml(origin, [
+      "/",
+      ...TOOLS.map((t) => `/${t.slug}`),
+      ...COMPARISONS.map((c) => `/${c.slug}`),
+      "/privacy-policy",
+    ]),
+    200,
+    {
+      "Content-Type": "application/xml",
+    },
+  );
 });
 
-app.get('/robots.txt', (c) => c.text(robotsTxt(originOf(c.req.url), { disallow: ['/api/'] })));
+app.get("/robots.txt", (c) =>
+  c.text(robotsTxt(originOf(c.req.url), { disallow: ["/api/"] })),
+);
 
-app.get('/llms.txt', (c) => {
+app.get("/llms.txt", (c) => {
   const origin = originOf(c.req.url);
   return c.text(`# ${SITE.name} — ${SITE.tagline}
 
@@ -161,11 +270,14 @@ uploaded); Office conversions, OCR, PDF/A, repair and URL-to-PDF use a stateless
 engine that streams files through without storing them.
 
 ## Tools
-${TOOLS.map((t) => `- ${origin}/${t.slug}: ${t.desc}`).join('\n')}`);
+${TOOLS.map((t) => `- ${origin}/${t.slug}: ${t.desc}`).join("\n")}
+
+## Comparisons
+${COMPARISONS.map((c) => `- ${origin}/${c.slug}: ${c.desc}`).join("\n")}`);
 });
 
 // Approved server path: HTML→PDF (Browser Rendering) + Office/OCR/PDF-A/Repair (Container).
-app.route('/', api);
+app.route("/", api);
 
 app.notFound((c) =>
   c.html(

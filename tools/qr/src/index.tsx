@@ -1,7 +1,12 @@
 import { Hono } from "hono";
 import { Layout } from "./layout.js";
-import { Generator, FaqSection } from "./generator.js";
-import { QR_TYPES, PAYMENT_GUIDES, SYMBOLOGIES } from "./content.js";
+import { Generator, FaqSection, CompareTable } from "./generator.js";
+import {
+  QR_TYPES,
+  PAYMENT_GUIDES,
+  SYMBOLOGIES,
+  COMPARISONS,
+} from "./content.js";
 import {
   SITE,
   webAppJsonLd,
@@ -363,6 +368,87 @@ for (const g of PAYMENT_GUIDES) {
   });
 }
 
+for (const cmp of COMPARISONS) {
+  app.get(`/${cmp.slug}`, (c) => {
+    const origin = originOf(c.req.url);
+    return c.html(
+      <Layout
+        title={cmp.title}
+        desc={cmp.desc}
+        path={`/${cmp.slug}`}
+        origin={origin}
+        jsonLd={[
+          articleJsonLd(origin, `/${cmp.slug}`, cmp.h1, cmp.desc),
+          faqJsonLd(cmp.faq),
+        ]}
+      >
+        <div class="module-grid border-b border-line bg-white">
+          <div class="mx-auto max-w-3xl px-4 py-10">
+            <h1 class="font-display text-3xl leading-tight sm:text-4xl">
+              {cmp.h1}
+            </h1>
+            <p class="mt-3 text-[15px] leading-7 text-ink-soft">{cmp.intro}</p>
+          </div>
+        </div>
+        <div class="mx-auto max-w-3xl px-4 py-8">
+          <article class="prose-tool">
+            {cmp.sections.map((s) => (
+              <section>
+                <h2>{s.h}</h2>
+                {s.body.map((p) => (
+                  <p>{p}</p>
+                ))}
+              </section>
+            ))}
+          </article>
+          <CompareTable rows={cmp.matrix} competitor={cmp.competitor} />
+          <section class="mt-10">
+            <h2 class="font-display mb-3 text-xl">Start here</h2>
+            <p class="text-[15px] leading-7 text-ink-soft">
+              {QR_TYPES.slice(0, 4).map((t, i) => (
+                <>
+                  {i > 0 ? " · " : ""}
+                  <a class="underline" href={`/${t.slug}`}>
+                    {t.label}
+                  </a>
+                </>
+              ))}
+              {" · "}
+              <a class="underline" href="/barcode-generator">
+                Barcodes
+              </a>
+            </p>
+          </section>
+          <section class="mt-10 text-[13px] leading-6 text-ink-soft">
+            <h2 class="font-display mb-2 text-base text-ink">Sources</h2>
+            <p>
+              Every claim about {cmp.competitor} on this page is taken from its
+              own published pages, checked on {cmp.updated}:{" "}
+              {cmp.sources.map((s, i) => (
+                <>
+                  {i > 0 ? ", " : ""}
+                  <a
+                    class="underline"
+                    href={s.url}
+                    rel="nofollow noopener"
+                    target="_blank"
+                  >
+                    {s.label}
+                  </a>
+                </>
+              ))}
+              . Pricing and limits change — if you spot something out of date,
+              treat their page as authoritative over ours.
+            </p>
+            <p class="mt-2">Last updated: {cmp.updated}</p>
+          </section>
+          <FaqSection faq={cmp.faq} />
+        </div>
+      </Layout>,
+    );
+  });
+}
+
 app.get("/privacy-policy", (c) => {
   const origin = originOf(c.req.url);
   const desc = `How ${SITE.name} handles your data: QR codes, barcodes and everything you type into them are processed in your browser and are never uploaded. No accounts, no tracking by us.`;
@@ -414,6 +500,7 @@ app.get("/sitemap.xml", (c) => {
     ...QR_TYPES.map((t) => `/${t.slug}`),
     ...barcodePages.map((b) => `/${b.slug}`),
     ...PAYMENT_GUIDES.map((g) => `/${g.slug}`),
+    ...COMPARISONS.map((c) => `/${c.slug}`),
     "/privacy-policy",
   ];
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
@@ -437,7 +524,10 @@ ${QR_TYPES.map((t) => `- ${origin}/${t.slug}: ${t.desc}`).join("\n")}
 ${barcodePages.map((b) => `- ${origin}/${b.slug}: ${b.desc}`).join("\n")}
 
 ## Guides
-${PAYMENT_GUIDES.map((g) => `- ${origin}/${g.slug}: ${g.desc}`).join("\n")}`);
+${PAYMENT_GUIDES.map((g) => `- ${origin}/${g.slug}: ${g.desc}`).join("\n")}
+
+## Comparisons
+${COMPARISONS.map((c) => `- ${origin}/${c.slug}: ${c.desc}`).join("\n")}`);
 });
 
 app.notFound((c) =>

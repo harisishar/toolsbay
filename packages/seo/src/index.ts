@@ -8,6 +8,34 @@ export {
 
 export type Faq = { q: string; a: string };
 
+// Competitor comparison pages. Data only — each tool renders it with its own
+// Layout/FaqSection, exactly like privacySections(). `sections` is the same
+// { h, body[] } shape the privacy page and the QR guides already use.
+//
+// `us`/`them` are short cell strings ("No cap", "2 tasks"); `note` is the
+// qualifier that keeps a cell honest when a bare tick would overclaim.
+export type CompareRow = {
+  feature: string;
+  us: string;
+  them: string;
+  note?: string;
+};
+
+export type Comparison = {
+  slug: string;
+  competitor: string;
+  title: string;
+  desc: string;
+  h1: string;
+  intro: string;
+  sections: { h: string; body: string[] }[];
+  matrix: CompareRow[];
+  // Every competitor claim on the page is checkable from one of these.
+  sources: { label: string; url: string }[];
+  updated: string;
+  faq: Faq[];
+};
+
 export function webAppJsonLd(o: {
   origin: string;
   path: string;

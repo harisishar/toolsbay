@@ -1,4 +1,4 @@
-import type { Faq } from "./seo.js";
+import { SITE, type CompareRow, type Faq } from "./seo.js";
 
 export function Dropzone({
   multiple = true,
@@ -228,6 +228,49 @@ export function FaqSection({ faq }: { faq: Faq[] }) {
             <p class="mt-2 text-[15px] leading-7 text-mist">{f.a}</p>
           </details>
         ))}
+      </div>
+    </section>
+  );
+}
+
+// Feature matrix for the comparison pages. The wrapper scrolls, not the page —
+// three columns of prose do not fit 375px.
+export function CompareTable({
+  rows,
+  competitor,
+}: {
+  rows: CompareRow[];
+  competitor: string;
+}) {
+  return (
+    <section class="mt-10">
+      <h2 class="font-display mb-4 text-xl">Feature comparison</h2>
+      <div class="overflow-x-auto rounded-md border border-line bg-panel">
+        <table class="w-full min-w-[34rem] border-collapse text-left text-[15px]">
+          <thead>
+            <tr class="border-b border-line">
+              <th class="px-4 py-3 font-semibold">Feature</th>
+              <th class="px-4 py-3 font-semibold">{SITE.name}</th>
+              <th class="px-4 py-3 font-semibold">{competitor}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((r) => (
+              <tr class="border-b border-line align-top last:border-0">
+                <td class="px-4 py-3">
+                  {r.feature}
+                  {r.note ? (
+                    <span class="mt-1 block text-[13px] leading-6 text-mist">
+                      {r.note}
+                    </span>
+                  ) : null}
+                </td>
+                <td class="px-4 py-3 font-semibold">{r.us}</td>
+                <td class="px-4 py-3 text-mist">{r.them}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </section>
   );

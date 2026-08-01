@@ -1,4 +1,4 @@
-import type { Faq } from "./seo.js";
+import type { Comparison, Faq } from "./seo.js";
 
 export type Tool = {
   slug: string;
@@ -687,3 +687,161 @@ export const CATEGORIES = [
   "Security",
   "More",
 ] as const;
+
+// --- Competitor comparison ---
+// Kept out of TOOLS on purpose: a prose page has no `kind`, no client
+// component, and would trip the registry invariants in tests/tools.test.mjs.
+//
+// The honesty rule that governs TOOLS governs this page harder. 10 of our 34
+// tools run server-side (Office conversions, OCR, PDF/A, repair, URL-to-PDF),
+// so a blanket "your files never leave your device — unlike iLovePDF" claim
+// would be false on exactly the axis this page asks readers to trust us on.
+// Every privacy statement below is scoped to the tools it is true of, and
+// tests/tools.test.mjs enforces that.
+//
+// Competitor numbers are quoted from iLovePDF's own pricing and legal pages
+// (see `sources`) and were checked on the `updated` date. Re-check before edit.
+
+export const COMPARISONS: Comparison[] = [
+  {
+    slug: "ilovepdf-alternative",
+    competitor: "iLovePDF",
+    title: "iLovePDF Alternative — Free PDF Tools, No Task Limits, No Account",
+    desc: "A free iLovePDF alternative with no task caps and no $7/mo upgrade: 34 PDF tools, 24 running entirely in your browser. Honest comparison, including where iLovePDF wins.",
+    h1: "The free iLovePDF alternative",
+    intro:
+      "iLovePDF is a genuinely good product and this page is not going to pretend otherwise. But its free tier is metered — two Compress tasks, no OCR, no PDF/A — and lifting those limits costs $7 a month. PaperKit is our PDF suite: 34 tools, no task counters, no account. Here is the honest comparison, including the parts where iLovePDF is the better choice.",
+    sections: [
+      {
+        h: "Should you switch? The short answer",
+        body: [
+          "Switch if you keep running into iLovePDF's task counters, if you do not want to pay $7 a month to compress more than two files, or if you handle documents that should not be uploaded anywhere — contracts, medical records, payslips, anything under NDA. Twenty-four of our thirty-four tools do their work in the browser tab and never transmit the file.",
+          "Stay with iLovePDF if you need its desktop or mobile apps, if you want an account that keeps a task history across devices, or if you need the highest-fidelity PDF-to-Word conversion and are willing to pay for it. Those are real advantages and we do not match them.",
+          "Disclosure: PaperKit is our tool. Every iLovePDF figure below is quoted from their own pricing and legal pages, linked at the bottom.",
+        ],
+      },
+      {
+        h: "The free-tier limits you are hitting",
+        body: [
+          "iLovePDF's free tier is not limited by file size so much as by how often you may use it. As published on their pricing page: Compress PDF allows 200 MB but only 2 tasks; Merge PDF allows 100 MB across 25 tasks; Rotate allows 20 tasks; Image to PDF caps at 40 MB and PDF to JPG at 25 MB.",
+          'Two whole features are simply switched off for free accounts: OCR — both "PDF to Word (OCR)" and "PDF to Excel (OCR)" are listed as unavailable — and PDF to PDF/A, the archival format people usually need precisely once, under deadline, for a submission portal.',
+          "Removing the caps means Premium at $7 per month, or $48 billed annually (about $4 a month). That is a fair price for a tool you use daily. It is a strange price for compressing three PDFs in a year.",
+          "PaperKit has no task counter and no account, so there is nothing to meter. What we do have is a practical ceiling in the other direction: browser-based tools are bounded by your device's memory, so a 500 MB scanned PDF may struggle on an old phone where a server-side service would not.",
+        ],
+      },
+      {
+        h: "Where your files actually go — the part that needs precision",
+        body: [
+          'iLovePDF uploads. Their legal page states it plainly: "Files you upload and process are encrypted and deleted from our servers within 2 hours", and that iLovePDF "does not access, use, analyze or store any processed data". That is a reasonable policy, honestly disclosed. It is still an upload.',
+          "PaperKit is split, and we are not going to blur it. Twenty-four tools — merge, split, compress, rotate, organise, crop, watermark, page numbers, sign, redact, protect, unlock, compare, PDF to JPG, JPG to PDF, PDF to text and the rest — run on pdf-lib and pdf.js inside your browser. Open your network tab while you use them: the file never goes anywhere. They keep working with your connection switched off after the page loads.",
+          "Ten tools cannot work that way. PDF to Word, Excel and PowerPoint, the three reverse Office conversions, OCR, PDF/A, Repair and URL-to-PDF need LibreOffice, an OCR engine or a real browser — none of which fit in a tab. Those stream through our server and are never written to disk, but they are uploads, and each of those pages says so on its own page rather than hiding it here.",
+          "So the accurate version of the privacy claim is: for most of what people do with PDFs, PaperKit does not transmit the file at all; for the hard conversions, both services upload, and the difference narrows to what happens afterwards.",
+        ],
+      },
+      {
+        h: "Where iLovePDF is genuinely better",
+        body: [
+          "Conversion fidelity. Server-side LibreOffice and commercial PDF engines produce different results, and for a heavily formatted PDF to Word conversion iLovePDF's output is often cleaner than ours. If the document is a legal contract whose layout must survive intact, test both before committing.",
+          "Apps and continuity. iLovePDF ships desktop and mobile apps and an account that carries your work between them. PaperKit is a website with no account, which means nothing to sync and also nothing to come back to.",
+          "Very large files on weak hardware. Because their processing happens on a server, a 300 MB scan is their server's problem. On PaperKit it is your laptop's problem, and on a low-memory device that is a real difference.",
+        ],
+      },
+      {
+        h: "How to switch",
+        body: [
+          "There is nothing to migrate — no account, no stored files, no export step. Bookmark the tool you use most and carry on.",
+          "The most common starting points are merging, splitting and compressing; all three are linked below. If you arrived here because you hit the two-task compression limit, that is the one to try first.",
+        ],
+      },
+    ],
+    matrix: [
+      {
+        feature: "Price",
+        us: "Free",
+        them: "Free / $7 mo",
+        note: "iLovePDF Premium is $7 monthly or $48 billed annually (about $4/month). Business is custom-priced.",
+      },
+      { feature: "Account required", us: "No", them: "No (free tier)" },
+      {
+        feature: "Compress PDF limit",
+        us: "No task cap",
+        them: "2 tasks · 200 MB",
+      },
+      {
+        feature: "Merge PDF limit",
+        us: "No task cap",
+        them: "25 tasks · 100 MB",
+      },
+      {
+        feature: "OCR on the free tier",
+        us: "Yes",
+        them: "No",
+        note: "iLovePDF lists PDF to Word (OCR) and PDF to Excel (OCR) as unavailable on Basic. Our OCR is a server-side conversion.",
+      },
+      {
+        feature: "PDF/A on the free tier",
+        us: "Yes",
+        them: "No",
+        note: "Also a server-side conversion on our side.",
+      },
+      { feature: "Watermark on output", us: "None", them: "None" },
+      { feature: "Number of tools", us: "34", them: "33" },
+      {
+        feature: "Runs in your browser, no upload",
+        us: "24 of 34 tools",
+        them: "No",
+        note: "Our Office conversions, OCR, PDF/A, repair and URL-to-PDF stream through a server like theirs. Every other tool does not transmit the file at all.",
+      },
+      {
+        feature: "Files stored after processing",
+        us: "Never written to disk",
+        them: "Deleted within 2h",
+        note: 'Their wording: files are "encrypted and deleted from our servers within 2 hours".',
+      },
+      {
+        feature: "Works offline after page load",
+        us: "The 24 in-browser tools",
+        them: "No",
+      },
+      {
+        feature: "Desktop & mobile apps",
+        us: "No",
+        them: "Premium",
+      },
+    ],
+    sources: [
+      { label: "iLovePDF pricing", url: "https://www.ilovepdf.com/pricing" },
+      {
+        label: "iLovePDF legal & privacy",
+        url: "https://www.ilovepdf.com/help/legal",
+      },
+    ],
+    updated: "2026-08-01",
+    faq: [
+      {
+        q: "Is there a completely free alternative to iLovePDF?",
+        a: "PaperKit is free with no task counter, no account and no watermark across all 34 tools, including OCR and PDF/A, which iLovePDF reserves for paid plans. It is ad-supported, which is how it stays free.",
+      },
+      {
+        q: "What are iLovePDF's free limits exactly?",
+        a: "Per their pricing page: Compress PDF is 2 tasks at up to 200 MB, Merge PDF is 25 tasks at up to 100 MB, Rotate is 20 tasks, Image to PDF caps at 40 MB and PDF to JPG at 25 MB. OCR and PDF/A are not available on the free tier at all. Premium is $7 a month or $48 a year.",
+      },
+      {
+        q: "Do my PDFs get uploaded here?",
+        a: "It depends on the tool, and we would rather be precise than reassuring. Twenty-four of the thirty-four tools — merge, split, compress, rotate, organise, sign, redact, protect, unlock and the rest — process the file inside your browser and transmit nothing. The other ten (Office conversions, OCR, PDF/A, repair and URL-to-PDF) are processed on our server because they need LibreOffice or an OCR engine; those files stream through and are never written to disk. Each of those pages says so.",
+      },
+      {
+        q: "Does iLovePDF keep my files?",
+        a: "Their legal page states files are encrypted and deleted from their servers within 2 hours, and that they do not access, analyse or store processed data. It is a clear policy — but the file does get uploaded, which is the part you are choosing between.",
+      },
+      {
+        q: "Which is better for PDF to Word?",
+        a: "Often iLovePDF, if the document is heavily formatted. Both of us run the conversion on a server, and their engine frequently produces a cleaner result on complex layouts. The difference is that ours is not behind a task counter. For an important document, run it through both and keep the better output.",
+      },
+      {
+        q: "Is PaperKit's OCR really free?",
+        a: "Yes. OCR is one of the ten conversions that run on our server rather than in your browser, and it is not metered or gated. On iLovePDF, OCR requires Premium.",
+      },
+    ],
+  },
+];

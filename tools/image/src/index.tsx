@@ -1,6 +1,6 @@
-import { Hono } from 'hono';
-import type { Child } from 'hono/jsx';
-import { Layout } from './layout.js';
+import { Hono } from "hono";
+import type { Child } from "hono/jsx";
+import { Layout } from "./layout.js";
 import {
   Dropzone,
   FileList,
@@ -9,39 +9,47 @@ import {
   ResizeControls,
   FaqSection,
   Hero,
-} from './components.js';
-import { PAIRS, TOOL_FAQ, SOURCES, TARGETS } from './content.js';
-import { SITE, webAppJsonLd, faqJsonLd, sitemapXml, robotsTxt, type Faq } from './seo.js';
-import { privacySections, PRIVACY_UPDATED } from '@claudetools/seo';
+  CompareTable,
+} from "./components.js";
+import { PAIRS, TOOL_FAQ, SOURCES, TARGETS, COMPARISONS } from "./content.js";
+import {
+  SITE,
+  webAppJsonLd,
+  articleJsonLd,
+  faqJsonLd,
+  sitemapXml,
+  robotsTxt,
+  type Faq,
+} from "./seo.js";
+import { privacySections, PRIVACY_UPDATED } from "@claudetools/seo";
 
 function privacyLd(origin: string) {
   return {
-    '@context': 'https://schema.org',
-    '@type': 'WebPage',
+    "@context": "https://schema.org",
+    "@type": "WebPage",
     name: `Privacy Policy — ${SITE.name}`,
-    url: origin + '/privacy-policy',
+    url: origin + "/privacy-policy",
     dateModified: PRIVACY_UPDATED,
   };
 }
 
-
 const app = new Hono();
 const originOf = (url: string) => new URL(url).origin;
 
-app.use('*', async (c, next) => {
+app.use("*", async (c, next) => {
   await next();
-  if (c.res.headers.get('content-type')?.includes('text/html')) {
-    c.res.headers.set('Cache-Control', 'public, max-age=600');
+  if (c.res.headers.get("content-type")?.includes("text/html")) {
+    c.res.headers.set("Cache-Control", "public, max-age=600");
   }
 });
 
 function BatchPage(props: {
-  mode: 'compress' | 'resize' | 'convert';
+  mode: "compress" | "resize" | "convert";
   presetTarget?: string;
   showFormat?: boolean;
   showResize?: boolean;
 }) {
-  const preset = props.presetTarget ?? 'keep';
+  const preset = props.presetTarget ?? "keep";
   return (
     <div
       x-data={`imgApp('${props.mode}', '${preset}')`}
@@ -89,49 +97,52 @@ function toolPage(o: {
 }
 
 const pages: Record<string, (origin: string) => unknown> = {
-  '/compress-image': toolPage({
-    path: '/compress-image',
-    title: 'Compress Image Online Free — No Upload, No Watermark',
-    desc: 'Reduce JPG, PNG, WebP and HEIC file sizes by up to 80% without visible quality loss. Runs in your browser — photos are never uploaded.',
-    h1: 'Compress Images',
+  "/compress-image": toolPage({
+    path: "/compress-image",
+    title: "Compress Image Online Free — No Upload, No Watermark",
+    desc: "Reduce JPG, PNG, WebP and HEIC file sizes by up to 80% without visible quality loss. Runs in your browser — photos are never uploaded.",
+    h1: "Compress Images",
     intro:
-      'Shrink photos for email, websites and forms without visible quality loss. Drop a batch, pick a quality level, and download — compression runs on your device, so nothing is uploaded.',
+      "Shrink photos for email, websites and forms without visible quality loss. Drop a batch, pick a quality level, and download — compression runs on your device, so nothing is uploaded.",
     faq: TOOL_FAQ.compress!,
     body: <BatchPage mode="compress" />,
   }),
-  '/resize-image': toolPage({
-    path: '/resize-image',
-    title: 'Resize Image Online Free — Exact Pixels or Percentage',
-    desc: 'Resize images to exact pixel dimensions or by percentage, alone or in batches. Aspect-ratio lock prevents stretching. No upload — runs in your browser.',
-    h1: 'Resize Images',
+  "/resize-image": toolPage({
+    path: "/resize-image",
+    title: "Resize Image Online Free — Exact Pixels or Percentage",
+    desc: "Resize images to exact pixel dimensions or by percentage, alone or in batches. Aspect-ratio lock prevents stretching. No upload — runs in your browser.",
+    h1: "Resize Images",
     intro:
-      'Set an exact width or height — the other side follows automatically so nothing stretches — or scale by percentage. Works on whole batches at once, entirely in your browser.',
+      "Set an exact width or height — the other side follows automatically so nothing stretches — or scale by percentage. Works on whole batches at once, entirely in your browser.",
     faq: TOOL_FAQ.resize!,
     body: <BatchPage mode="resize" showResize />,
   }),
-  '/image-converter': toolPage({
-    path: '/image-converter',
-    title: 'Image Converter Online Free — JPG, PNG, WebP, HEIC & More',
-    desc: 'Convert images between JPG, PNG and WebP — including HEIC, AVIF, GIF, BMP and SVG sources. Free, private, batch-capable, no upload.',
-    h1: 'Convert Images',
+  "/image-converter": toolPage({
+    path: "/image-converter",
+    title: "Image Converter Online Free — JPG, PNG, WebP, HEIC & More",
+    desc: "Convert images between JPG, PNG and WebP — including HEIC, AVIF, GIF, BMP and SVG sources. Free, private, batch-capable, no upload.",
+    h1: "Convert Images",
     intro:
-      'Convert between JPG, PNG and WebP — and open formats like HEIC, AVIF, GIF, BMP or SVG and save them as any of the three. Batch-friendly and fully private: files never leave your device.',
+      "Convert between JPG, PNG and WebP — and open formats like HEIC, AVIF, GIF, BMP or SVG and save them as any of the three. Batch-friendly and fully private: files never leave your device.",
     faq: TOOL_FAQ.convert!,
     body: <BatchPage mode="convert" showFormat />,
   }),
 };
 
-app.get('/', (c) => {
+app.get("/", (c) => {
   const origin = originOf(c.req.url);
   const desc =
-    'Free image tools that run in your browser: compress, resize, crop and convert JPG, PNG, WebP, HEIC and more. No uploads, no watermarks, no sign-up.';
+    "Free image tools that run in your browser: compress, resize, crop and convert JPG, PNG, WebP, HEIC and more. No uploads, no watermarks, no sign-up.";
   return c.html(
     <Layout
-      title="PixSquash — Free Image Compressor, Resizer & Converter"
+      title={`${SITE.name} — ${SITE.tagline}`}
       desc={desc}
       path="/"
       origin={origin}
-      jsonLd={[webAppJsonLd(origin, '/', `${SITE.name} — ${SITE.tagline}`, desc), faqJsonLd(TOOL_FAQ.compress!)]}
+      jsonLd={[
+        webAppJsonLd(origin, "/", `${SITE.name} — ${SITE.tagline}`, desc),
+        faqJsonLd(TOOL_FAQ.compress!),
+      ]}
     >
       <Hero
         h1="Image tools that never upload your images"
@@ -140,10 +151,10 @@ app.get('/', (c) => {
       <div class="mx-auto max-w-5xl px-4 pt-8">
         <div class="grid gap-3 sm:grid-cols-4">
           {[
-            ['/compress-image', 'Compress', 'Shrink file sizes up to 80%'],
-            ['/resize-image', 'Resize', 'Exact pixels or percentage'],
-            ['/crop-image', 'Crop', 'Freeform or fixed ratios'],
-            ['/image-converter', 'Convert', 'JPG · PNG · WebP · HEIC'],
+            ["/compress-image", "Compress", "Shrink file sizes up to 80%"],
+            ["/resize-image", "Resize", "Exact pixels or percentage"],
+            ["/crop-image", "Crop", "Freeform or fixed ratios"],
+            ["/image-converter", "Convert", "JPG · PNG · WebP · HEIC"],
           ].map(([href, t, s]) => (
             <a
               href={href}
@@ -177,22 +188,27 @@ app.get('/', (c) => {
 });
 
 for (const [path, render] of Object.entries(pages)) {
-  app.get(path, (c) => c.html(render(originOf(c.req.url)) as Parameters<typeof c.html>[0]));
+  app.get(path, (c) =>
+    c.html(render(originOf(c.req.url)) as Parameters<typeof c.html>[0]),
+  );
 }
 
-app.get('/crop-image', (c) => {
+app.get("/crop-image", (c) => {
   const origin = originOf(c.req.url);
-  const path = '/crop-image';
-  const title = 'Crop Image Online Free — Freeform & Fixed Ratios';
+  const path = "/crop-image";
+  const title = "Crop Image Online Free — Freeform & Fixed Ratios";
   const desc =
-    'Crop images online free: drag to select, snap to 1:1, 4:3, 16:9 or 9:16, download instantly. No upload — cropping runs in your browser.';
+    "Crop images online free: drag to select, snap to 1:1, 4:3, 16:9 or 9:16, download instantly. No upload — cropping runs in your browser.";
   return c.html(
     <Layout
       title={title}
       desc={desc}
       path={path}
       origin={origin}
-      jsonLd={[webAppJsonLd(origin, path, 'Crop Images', desc), faqJsonLd(TOOL_FAQ.crop!)]}
+      jsonLd={[
+        webAppJsonLd(origin, path, "Crop Images", desc),
+        faqJsonLd(TOOL_FAQ.crop!),
+      ]}
     >
       <Hero
         h1="Crop Images"
@@ -202,7 +218,12 @@ app.get('/crop-image', (c) => {
         <div x-show="!bmp">
           <Dropzone multiple={false} handler="load" />
         </div>
-        <p x-cloak x-show="error" class="mt-3 text-sm text-ember" x-text="error" />
+        <p
+          x-cloak
+          x-show="error"
+          class="mt-3 text-sm text-ember"
+          x-text="error"
+        />
         <div x-cloak x-show="bmp">
           <div class="rounded-lg border border-line bg-panel p-4">
             <canvas
@@ -213,14 +234,20 @@ app.get('/crop-image', (c) => {
               x-on:pointerup="pointer($event, 'up')"
             />
             <p class="mt-2 text-center text-xs text-mist">
-              <span x-show="!hasSel">Drag on the image to select the crop area</span>
+              <span x-show="!hasSel">
+                Drag on the image to select the crop area
+              </span>
               <span x-show="hasSel" x-text="'Selection: ' + selText()" />
             </p>
           </div>
           <div class="mt-4 grid gap-4 rounded-lg border border-line bg-panel p-5 sm:grid-cols-3">
             <label>
               <span class="field-label">Aspect ratio</span>
-              <select class="field" x-model="aspect" x-on:change="aspect = Number(aspect)">
+              <select
+                class="field"
+                x-model="aspect"
+                x-on:change="aspect = Number(aspect)"
+              >
                 <option value="0">Freeform</option>
                 <option value="1">1:1 square</option>
                 <option value="1.3333">4:3</option>
@@ -273,16 +300,26 @@ for (const p of PAIRS) {
         desc={p.desc}
         path={`/${p.slug}`}
         origin={origin}
-        jsonLd={[webAppJsonLd(origin, `/${p.slug}`, p.h1, p.desc), faqJsonLd(p.faq)]}
+        jsonLd={[
+          webAppJsonLd(origin, `/${p.slug}`, p.h1, p.desc),
+          faqJsonLd(p.faq),
+        ]}
       >
         <Hero h1={p.h1} intro={p.intro} />
-        <BatchPage mode="convert" presetTarget={TARGETS[p.tgt]!.mime} showFormat={false} />
+        <BatchPage
+          mode="convert"
+          presetTarget={TARGETS[p.tgt]!.mime}
+          showFormat={false}
+        />
         <div class="mx-auto max-w-3xl px-4">
           <FaqSection faq={p.faq} />
           <section class="mt-10">
             <h2 class="font-display mb-3 text-lg">Related conversions</h2>
             <div class="flex flex-wrap gap-2">
-              {PAIRS.filter((x) => x.slug !== p.slug && (x.src === p.src || x.tgt === p.tgt))
+              {PAIRS.filter(
+                (x) =>
+                  x.slug !== p.slug && (x.src === p.src || x.tgt === p.tgt),
+              )
                 .slice(0, 6)
                 .map((x) => (
                   <a
@@ -300,11 +337,92 @@ for (const p of PAIRS) {
   });
 }
 
+const START_HERE: [string, string][] = [
+  ["/compress-image", "Compress image"],
+  ["/resize-image", "Resize image"],
+  ["/image-converter", "Image converter"],
+  ["/heic-to-jpg", "HEIC to JPG"],
+  ["/png-to-jpg", "PNG to JPG"],
+  ["/jpg-to-webp", "JPG to WebP"],
+];
 
-app.get('/privacy-policy', (c) => {
+for (const cmp of COMPARISONS) {
+  app.get(`/${cmp.slug}`, (c) => {
+    const origin = originOf(c.req.url);
+    return c.html(
+      <Layout
+        title={cmp.title}
+        desc={cmp.desc}
+        path={`/${cmp.slug}`}
+        origin={origin}
+        jsonLd={[
+          articleJsonLd(origin, `/${cmp.slug}`, cmp.h1, cmp.desc),
+          faqJsonLd(cmp.faq),
+        ]}
+      >
+        <Hero h1={cmp.h1} intro={cmp.intro} />
+        <div class="mx-auto max-w-3xl px-4 py-8">
+          <article class="prose-tool">
+            {cmp.sections.map((s) => (
+              <section>
+                <h2>{s.h}</h2>
+                {s.body.map((p) => (
+                  <p>{p}</p>
+                ))}
+              </section>
+            ))}
+          </article>
+          <CompareTable rows={cmp.matrix} competitor={cmp.competitor} />
+          <section class="mt-10">
+            <h2 class="font-display mb-3 text-xl">Start here</h2>
+            <div class="flex flex-wrap gap-2">
+              {START_HERE.map(([href, label]) => (
+                <a
+                  class="rounded-md border border-line bg-panel px-3 py-1.5 text-sm hover:border-ember"
+                  href={href}
+                >
+                  {label}
+                </a>
+              ))}
+            </div>
+          </section>
+          <section class="mt-10 text-[13px] leading-6 text-mist">
+            <h2 class="font-display mb-2 text-base text-fog">Sources</h2>
+            <p>
+              Every claim about {cmp.competitor} on this page is taken from its
+              own published pages, checked on {cmp.updated}:{" "}
+              {cmp.sources.map((s, i) => (
+                <>
+                  {i > 0 ? ", " : ""}
+                  <a
+                    class="underline"
+                    href={s.url}
+                    rel="nofollow noopener"
+                    target="_blank"
+                  >
+                    {s.label}
+                  </a>
+                </>
+              ))}
+              . Pricing and limits change — if you spot something out of date,
+              treat their page as authoritative over ours.
+            </p>
+            <p class="mt-2">Last updated: {cmp.updated}</p>
+          </section>
+          <FaqSection faq={cmp.faq} />
+        </div>
+      </Layout>,
+    );
+  });
+}
+
+app.get("/privacy-policy", (c) => {
   const origin = originOf(c.req.url);
   const desc = `How ${SITE.name} handles your data: images and photos are processed in your browser and are never uploaded. No accounts, no tracking by us.`;
-  const sections = privacySections({ siteName: SITE.name, what: 'images and photos' });
+  const sections = privacySections({
+    siteName: SITE.name,
+    what: "images and photos",
+  });
   return c.html(
     <Layout
       title={`Privacy Policy — ${SITE.name}`}
@@ -319,14 +437,14 @@ app.get('/privacy-policy', (c) => {
       />
       <div class="mx-auto max-w-3xl px-4 py-8">
         <article class="prose-tool">
-        {sections.map((s) => (
-          <section>
-            <h2>{s.h}</h2>
-            {s.body.map((p) => (
-              <p>{p}</p>
-            ))}
-          </section>
-        ))}
+          {sections.map((s) => (
+            <section>
+              <h2>{s.h}</h2>
+              {s.body.map((p) => (
+                <p>{p}</p>
+              ))}
+            </section>
+          ))}
           <p class="text-sm">Last updated: {PRIVACY_UPDATED}</p>
         </article>
       </div>
@@ -334,23 +452,26 @@ app.get('/privacy-policy', (c) => {
   );
 });
 
-app.get('/sitemap.xml', (c) => {
+app.get("/sitemap.xml", (c) => {
   const origin = originOf(c.req.url);
   const paths = [
-    '/',
-    '/compress-image',
-    '/resize-image',
-    '/crop-image',
-    '/image-converter',
+    "/",
+    "/compress-image",
+    "/resize-image",
+    "/crop-image",
+    "/image-converter",
     ...PAIRS.map((p) => `/${p.slug}`),
-    '/privacy-policy',
+    ...COMPARISONS.map((c) => `/${c.slug}`),
+    "/privacy-policy",
   ];
-  return c.body(sitemapXml(origin, paths), 200, { 'Content-Type': 'application/xml' });
+  return c.body(sitemapXml(origin, paths), 200, {
+    "Content-Type": "application/xml",
+  });
 });
 
-app.get('/robots.txt', (c) => c.text(robotsTxt(originOf(c.req.url))));
+app.get("/robots.txt", (c) => c.text(robotsTxt(originOf(c.req.url))));
 
-app.get('/llms.txt', (c) => {
+app.get("/llms.txt", (c) => {
   const origin = originOf(c.req.url);
   return c.text(`# ${SITE.name} — ${SITE.tagline}
 
@@ -364,7 +485,10 @@ never uploaded. No sign-up, no watermarks, no file limits.
 - ${origin}/image-converter: Convert between JPG, PNG, WebP (also reads HEIC, AVIF, GIF, BMP, SVG).
 
 ## Conversion pages
-${PAIRS.map((p) => `- ${origin}/${p.slug}: ${p.h1}`).join('\n')}`);
+${PAIRS.map((p) => `- ${origin}/${p.slug}: ${p.h1}`).join("\n")}
+
+## Comparisons
+${COMPARISONS.map((c) => `- ${origin}/${c.slug}: ${c.desc}`).join("\n")}`);
 });
 
 app.notFound((c) =>

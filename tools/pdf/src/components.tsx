@@ -1,13 +1,15 @@
-import type { Child } from 'hono/jsx';
-import type { Faq } from './seo.js';
-import type { Tool } from './content.js';
+import type { Child } from "hono/jsx";
+import { SITE, type CompareRow, type Faq } from "./seo.js";
+import type { Tool } from "./content.js";
 
 export function Hero({ h1, intro }: { h1: string; intro: string }) {
   return (
     <div class="border-b border-line bg-panel">
       <div class="paper-edge h-1.5" />
       <div class="mx-auto max-w-5xl px-4 py-10">
-        <h1 class="font-display max-w-2xl text-3xl leading-tight sm:text-4xl">{h1}</h1>
+        <h1 class="font-display max-w-2xl text-3xl leading-tight sm:text-4xl">
+          {h1}
+        </h1>
         <p class="mt-3 max-w-2xl text-[15px] leading-7 text-muted">{intro}</p>
       </div>
     </div>
@@ -33,11 +35,54 @@ export function FaqSection({ faq }: { faq: Faq[] }) {
   );
 }
 
+// Feature matrix for the comparison pages. The wrapper scrolls, not the page —
+// three columns of prose do not fit 375px.
+export function CompareTable({
+  rows,
+  competitor,
+}: {
+  rows: CompareRow[];
+  competitor: string;
+}) {
+  return (
+    <section class="mt-10">
+      <h2 class="font-display mb-4 text-xl">Feature comparison</h2>
+      <div class="overflow-x-auto rounded-md border border-line bg-panel">
+        <table class="w-full min-w-[34rem] border-collapse text-left text-[15px]">
+          <thead>
+            <tr class="border-b border-line">
+              <th class="px-4 py-3 font-semibold">Feature</th>
+              <th class="px-4 py-3 font-semibold">{SITE.name}</th>
+              <th class="px-4 py-3 font-semibold">{competitor}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((r) => (
+              <tr class="border-b border-line align-top last:border-0">
+                <td class="px-4 py-3">
+                  {r.feature}
+                  {r.note ? (
+                    <span class="mt-1 block text-[13px] leading-6 text-muted">
+                      {r.note}
+                    </span>
+                  ) : null}
+                </td>
+                <td class="px-4 py-3 font-semibold">{r.us}</td>
+                <td class="px-4 py-3 text-muted">{r.them}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  );
+}
+
 export function Drop({
-  handler = 'pick',
+  handler = "pick",
   multiple = false,
-  label = 'Drop PDF here',
-  sub = 'or click to browse',
+  label = "Drop PDF here",
+  sub = "or click to browse",
 }: {
   handler?: string;
   multiple?: boolean;
@@ -81,7 +126,13 @@ export function ErrorNote() {
   );
 }
 
-export function RunButton({ label, guard = 'file' }: { label: string; guard?: string }) {
+export function RunButton({
+  label,
+  guard = "file",
+}: {
+  label: string;
+  guard?: string;
+}) {
   return (
     <button
       type="button"
@@ -108,7 +159,11 @@ export function PickedBar() {
         <span class="font-semibold" x-text="name" />
         <span class="ml-2 text-muted" x-text="pages ? pages + ' pages' : ''" />
       </p>
-      <button type="button" class="ml-3 shrink-0 text-muted hover:text-brick" x-on:click="reset()">
+      <button
+        type="button"
+        class="ml-3 shrink-0 text-muted hover:text-brick"
+        x-on:click="reset()"
+      >
         Change file
       </button>
     </div>
@@ -132,7 +187,11 @@ export function PageNav() {
 }
 
 function Panel({ children }: { children: Child }) {
-  return <div class="mt-5 grid gap-4 rounded-lg border border-line bg-panel p-5">{children}</div>;
+  return (
+    <div class="mt-5 grid gap-4 rounded-lg border border-line bg-panel p-5">
+      {children}
+    </div>
+  );
 }
 
 /* ------------------------- per-tool bodies ------------------------- */
@@ -145,15 +204,30 @@ function MergeBody() {
         <template x-for="(it, i) in items">
           <div class="flex items-center gap-2 rounded-md border border-line bg-panel px-4 py-2.5 text-sm">
             <span class="w-6 text-muted" x-text="i + 1 + '.'" />
-            <span class="min-w-0 flex-1 truncate font-semibold" x-text="it.name" />
+            <span
+              class="min-w-0 flex-1 truncate font-semibold"
+              x-text="it.name"
+            />
             <span class="text-muted" x-text="it.pages + 'p'" />
-            <button type="button" class="btn-ghost px-2 py-1" x-on:click="move(i, -1)">
+            <button
+              type="button"
+              class="btn-ghost px-2 py-1"
+              x-on:click="move(i, -1)"
+            >
               ↑
             </button>
-            <button type="button" class="btn-ghost px-2 py-1" x-on:click="move(i, 1)">
+            <button
+              type="button"
+              class="btn-ghost px-2 py-1"
+              x-on:click="move(i, 1)"
+            >
               ↓
             </button>
-            <button type="button" class="text-muted hover:text-brick" x-on:click="remove(i)">
+            <button
+              type="button"
+              class="text-muted hover:text-brick"
+              x-on:click="remove(i)"
+            >
               ✕
             </button>
           </div>
@@ -175,15 +249,32 @@ function SplitBody() {
       <div x-cloak x-show="file">
         <Panel>
           <label class="flex items-center gap-2 text-sm font-semibold">
-            <input type="radio" value="groups" x-model="mode" class="accent-brick" />
+            <input
+              type="radio"
+              value="groups"
+              x-model="mode"
+              class="accent-brick"
+            />
             Split by ranges
           </label>
           <div x-show="mode === 'groups'">
-            <span class="field-label">Page ranges — each comma group becomes one file</span>
-            <input type="text" class="field" x-model="ranges" placeholder="e.g. 1-3, 4, 5-8" />
+            <span class="field-label">
+              Page ranges — each comma group becomes one file
+            </span>
+            <input
+              type="text"
+              class="field"
+              x-model="ranges"
+              placeholder="e.g. 1-3, 4, 5-8"
+            />
           </div>
           <label class="flex items-center gap-2 text-sm font-semibold">
-            <input type="radio" value="each" x-model="mode" class="accent-brick" />
+            <input
+              type="radio"
+              value="each"
+              x-model="mode"
+              class="accent-brick"
+            />
             Extract every page as a separate PDF
           </label>
         </Panel>
@@ -214,7 +305,12 @@ function RotateBody() {
             </label>
             <label>
               <span class="field-label">Pages (blank = all)</span>
-              <input type="text" class="field" x-model="ranges" placeholder="e.g. 2, 5-7" />
+              <input
+                type="text"
+                class="field"
+                x-model="ranges"
+                placeholder="e.g. 2, 5-7"
+              />
             </label>
           </div>
         </Panel>
@@ -232,10 +328,18 @@ function OrganizeBody() {
       <div x-show="!file">
         <Drop />
       </div>
-      <p x-cloak x-show="busy && !thumbs.length" class="mt-4 text-center text-sm text-muted">
+      <p
+        x-cloak
+        x-show="busy && !thumbs.length"
+        class="mt-4 text-center text-sm text-muted"
+      >
         Rendering page thumbnails…
       </p>
-      <div x-cloak x-show="thumbs.length" class="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <div
+        x-cloak
+        x-show="thumbs.length"
+        class="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4"
+      >
         <template x-for="(t, i) in thumbs">
           <div class="rounded-md border border-line bg-panel p-2">
             <img
@@ -244,15 +348,30 @@ function OrganizeBody() {
               class="mx-auto max-h-40 transition-transform"
               alt=""
             />
-            <p class="mt-1 text-center text-xs text-muted" x-text="'Page ' + (t.idx + 1)" />
+            <p
+              class="mt-1 text-center text-xs text-muted"
+              x-text="'Page ' + (t.idx + 1)"
+            />
             <div class="mt-1 flex justify-center gap-1">
-              <button type="button" class="btn-ghost px-2 py-0.5 text-xs" x-on:click="move(i, -1)">
+              <button
+                type="button"
+                class="btn-ghost px-2 py-0.5 text-xs"
+                x-on:click="move(i, -1)"
+              >
                 ←
               </button>
-              <button type="button" class="btn-ghost px-2 py-0.5 text-xs" x-on:click="rotate(i)">
+              <button
+                type="button"
+                class="btn-ghost px-2 py-0.5 text-xs"
+                x-on:click="rotate(i)"
+              >
                 ⟳
               </button>
-              <button type="button" class="btn-ghost px-2 py-0.5 text-xs" x-on:click="move(i, 1)">
+              <button
+                type="button"
+                class="btn-ghost px-2 py-0.5 text-xs"
+                x-on:click="move(i, 1)"
+              >
                 →
               </button>
               <button
@@ -301,7 +420,13 @@ function PageNumBody() {
             </label>
             <label>
               <span class="field-label">Font size</span>
-              <input type="number" class="field" x-model="size" min="6" max="36" />
+              <input
+                type="number"
+                class="field"
+                x-model="size"
+                min="6"
+                max="36"
+              />
             </label>
           </div>
         </Panel>
@@ -323,10 +448,22 @@ function WatermarkBody() {
         <Panel>
           <div class="flex gap-4 text-sm font-semibold">
             <label class="flex items-center gap-2">
-              <input type="radio" value="text" x-model="mode" class="accent-brick" /> Text
+              <input
+                type="radio"
+                value="text"
+                x-model="mode"
+                class="accent-brick"
+              />{" "}
+              Text
             </label>
             <label class="flex items-center gap-2">
-              <input type="radio" value="image" x-model="mode" class="accent-brick" /> Image
+              <input
+                type="radio"
+                value="image"
+                x-model="mode"
+                class="accent-brick"
+              />{" "}
+              Image
             </label>
           </div>
           <div x-show="mode === 'text'" class="grid gap-4 sm:grid-cols-2">
@@ -336,23 +473,41 @@ function WatermarkBody() {
             </label>
             <label>
               <span class="field-label">Size</span>
-              <input type="number" class="field" x-model="size" min="8" max="144" />
+              <input
+                type="number"
+                class="field"
+                x-model="size"
+                min="8"
+                max="144"
+              />
             </label>
             <label>
               <span class="field-label">Rotation (°)</span>
-              <input type="number" class="field" x-model="rotation" min="-90" max="90" />
+              <input
+                type="number"
+                class="field"
+                x-model="rotation"
+                min="-90"
+                max="90"
+              />
             </label>
             <label>
               <span class="field-label">Colour</span>
               <input type="color" class="field h-[42px] p-1" x-model="color" />
             </label>
             <label class="flex items-center gap-2 pt-5 text-sm font-semibold text-muted">
-              <input type="checkbox" class="h-4 w-4 accent-brick" x-model="tile" />
+              <input
+                type="checkbox"
+                class="h-4 w-4 accent-brick"
+                x-model="tile"
+              />
               Tile across page
             </label>
           </div>
           <div x-cloak x-show="mode === 'image'">
-            <span class="field-label">Watermark image (PNG with transparency works best)</span>
+            <span class="field-label">
+              Watermark image (PNG with transparency works best)
+            </span>
             <input
               type="file"
               accept="image/*"
@@ -403,7 +558,11 @@ function CropBody() {
         </div>
         <Panel>
           <label class="flex items-center gap-2 text-sm font-semibold text-muted">
-            <input type="checkbox" class="h-4 w-4 accent-brick" x-model="applyAll" />
+            <input
+              type="checkbox"
+              class="h-4 w-4 accent-brick"
+              x-model="applyAll"
+            />
             Apply to all pages (otherwise only page 1)
           </label>
         </Panel>
@@ -417,19 +576,38 @@ function CropBody() {
 function Img2PdfBody() {
   return (
     <div x-data="imgToPdf()">
-      <Drop multiple label="Drop images here" sub="JPG, PNG, WebP and more — one page each" />
+      <Drop
+        multiple
+        label="Drop images here"
+        sub="JPG, PNG, WebP and more — one page each"
+      />
       <div x-cloak x-show="files.length" class="mt-5 space-y-2">
         <template x-for="(f, i) in files">
           <div class="flex items-center gap-2 rounded-md border border-line bg-panel px-4 py-2 text-sm">
             <span class="w-6 text-muted" x-text="i + 1 + '.'" />
-            <span class="min-w-0 flex-1 truncate font-semibold" x-text="f.name" />
-            <button type="button" class="btn-ghost px-2 py-1" x-on:click="move(i, -1)">
+            <span
+              class="min-w-0 flex-1 truncate font-semibold"
+              x-text="f.name"
+            />
+            <button
+              type="button"
+              class="btn-ghost px-2 py-1"
+              x-on:click="move(i, -1)"
+            >
               ↑
             </button>
-            <button type="button" class="btn-ghost px-2 py-1" x-on:click="move(i, 1)">
+            <button
+              type="button"
+              class="btn-ghost px-2 py-1"
+              x-on:click="move(i, 1)"
+            >
               ↓
             </button>
-            <button type="button" class="text-muted hover:text-brick" x-on:click="remove(i)">
+            <button
+              type="button"
+              class="text-muted hover:text-brick"
+              x-on:click="remove(i)"
+            >
               ✕
             </button>
           </div>
@@ -453,7 +631,7 @@ function Img2PdfBody() {
 
 function Pdf2JpgBody({ tool }: { tool: Tool }) {
   return (
-    <div x-data={tool.preset ? `pdfToJpg('${tool.preset}')` : 'pdfToJpg()'}>
+    <div x-data={tool.preset ? `pdfToJpg('${tool.preset}')` : "pdfToJpg()"}>
       <PickedBar />
       <div x-show="!file">
         <Drop />
@@ -461,7 +639,11 @@ function Pdf2JpgBody({ tool }: { tool: Tool }) {
       <div x-cloak x-show="file">
         <Panel>
           <label class="flex items-center gap-2 text-sm font-semibold text-muted">
-            <input type="checkbox" class="h-4 w-4 accent-brick" x-model="extractMode" />
+            <input
+              type="checkbox"
+              class="h-4 w-4 accent-brick"
+              x-model="extractMode"
+            />
             Extract embedded images instead of converting pages
           </label>
           <div x-show="!extractMode" class="grid gap-4 sm:grid-cols-3">
@@ -482,7 +664,12 @@ function Pdf2JpgBody({ tool }: { tool: Tool }) {
             </label>
             <label>
               <span class="field-label">Pages (blank = all)</span>
-              <input type="text" class="field" x-model="ranges" placeholder="e.g. 1-4" />
+              <input
+                type="text"
+                class="field"
+                x-model="ranges"
+                placeholder="e.g. 1-4"
+              />
             </label>
           </div>
         </Panel>
@@ -521,12 +708,17 @@ function CompressBody() {
             </label>
           </div>
           <p class="text-xs leading-5 text-muted">
-            Pages are re-encoded as images for maximum savings — ideal for scans. Text stays
-            readable but is no longer selectable.
+            Pages are re-encoded as images for maximum savings — ideal for
+            scans. Text stays readable but is no longer selectable.
           </p>
         </Panel>
         <ErrorNote />
-        <p x-cloak x-show="resultText" class="mt-4 rounded-md border border-moss/30 bg-moss/5 px-3 py-2 text-sm text-moss" x-text="resultText" />
+        <p
+          x-cloak
+          x-show="resultText"
+          class="mt-4 rounded-md border border-moss/30 bg-moss/5 px-3 py-2 text-sm text-moss"
+          x-text="resultText"
+        />
         <RunButton label="Compress PDF" />
       </div>
     </div>
@@ -542,7 +734,7 @@ function EditBody() {
       </div>
       <div x-cloak x-show="file">
         <div class="mb-3 flex flex-wrap items-center gap-2 rounded-lg border border-line bg-panel p-3 text-sm">
-          {(['draw', 'rect', 'ellipse', 'text', 'image'] as const).map((t) => (
+          {(["draw", "rect", "ellipse", "text", "image"] as const).map((t) => (
             <button
               type="button"
               class="btn-ghost px-3 py-1.5 capitalize"
@@ -552,21 +744,51 @@ function EditBody() {
               {t}
             </button>
           ))}
-          <input type="color" class="h-8 w-10 cursor-pointer rounded border border-line" x-model="color" />
+          <input
+            type="color"
+            class="h-8 w-10 cursor-pointer rounded border border-line"
+            x-model="color"
+          />
           <label class="flex items-center gap-1 text-xs text-muted">
             Stroke
-            <input type="number" class="field w-16 px-2 py-1" x-model="strokeW" min="1" max="20" />
+            <input
+              type="number"
+              class="field w-16 px-2 py-1"
+              x-model="strokeW"
+              min="1"
+              max="20"
+            />
           </label>
-          <button type="button" class="btn-ghost px-3 py-1.5" x-on:click="undo()">
+          <button
+            type="button"
+            class="btn-ghost px-3 py-1.5"
+            x-on:click="undo()"
+          >
             Undo
           </button>
         </div>
         <div x-show="tool === 'text'" class="mb-3 flex gap-2">
-          <input type="text" class="field" x-model="text" placeholder="Text to place — then click on the page" />
-          <input type="number" class="field w-24" x-model="fontSize" min="8" max="72" />
+          <input
+            type="text"
+            class="field"
+            x-model="text"
+            placeholder="Text to place — then click on the page"
+          />
+          <input
+            type="number"
+            class="field w-24"
+            x-model="fontSize"
+            min="8"
+            max="72"
+          />
         </div>
         <div x-cloak x-show="tool === 'image'" class="mb-3">
-          <input type="file" accept="image/*" class="field" x-on:change="pickImg($event.target.files)" />
+          <input
+            type="file"
+            accept="image/*"
+            class="field"
+            x-on:change="pickImg($event.target.files)"
+          />
         </div>
         <div class="overflow-auto rounded-lg border border-line bg-panel p-4">
           <div class="relative mx-auto w-fit">
@@ -599,7 +821,7 @@ function SignBody() {
         <div class="grid gap-4 lg:grid-cols-[380px_1fr]">
           <div class="rounded-lg border border-line bg-panel p-4">
             <div class="mb-2 flex gap-2 text-sm font-semibold">
-              {(['draw', 'type', 'upload'] as const).map((m) => (
+              {(["draw", "type", "upload"] as const).map((m) => (
                 <button
                   type="button"
                   class="btn-ghost px-3 py-1.5 capitalize"
@@ -618,7 +840,11 @@ function SignBody() {
                 x-on:pointermove="pad($event, 'move')"
                 x-on:pointerup="pad($event, 'up')"
               />
-              <button type="button" class="btn-ghost mt-2 px-3 py-1 text-xs" x-on:click="clearPad()">
+              <button
+                type="button"
+                class="btn-ghost mt-2 px-3 py-1 text-xs"
+                x-on:click="clearPad()"
+              >
                 Clear
               </button>
             </div>
@@ -632,21 +858,42 @@ function SignBody() {
               />
             </div>
             <div x-cloak x-show="sigMode === 'upload'">
-              <input type="file" accept="image/*" class="field" x-on:change="pickSig($event.target.files)" />
+              <input
+                type="file"
+                accept="image/*"
+                class="field"
+                x-on:change="pickSig($event.target.files)"
+              />
             </div>
             <label class="mt-3 block">
               <span class="field-label">
                 Signature width: <span x-text="widthPct + '%'" /> of page
               </span>
-              <input type="range" min="10" max="60" x-model="widthPct" class="w-full accent-brick" />
+              <input
+                type="range"
+                min="10"
+                max="60"
+                x-model="widthPct"
+                class="w-full accent-brick"
+              />
             </label>
-            <button type="button" class="btn-ghost mt-2 w-full text-xs" x-on:click="clearPlacements()">
+            <button
+              type="button"
+              class="btn-ghost mt-2 w-full text-xs"
+              x-on:click="clearPlacements()"
+            >
               Remove placed signatures
             </button>
           </div>
           <div class="rounded-lg border border-line bg-panel p-4">
-            <canvas x-ref="stage" class="mx-auto block max-w-full cursor-copy" x-on:click="place($event)" />
-            <p class="mt-2 text-center text-xs text-muted">Click on the page to place your signature</p>
+            <canvas
+              x-ref="stage"
+              class="mx-auto block max-w-full cursor-copy"
+              x-on:click="place($event)"
+            />
+            <p class="mt-2 text-center text-xs text-muted">
+              Click on the page to place your signature
+            </p>
             <PageNav />
           </div>
         </div>
@@ -674,10 +921,15 @@ function RedactBody() {
             x-on:pointerup="pointer($event, 'up')"
           />
           <p class="mt-2 text-center text-xs text-muted">
-            Drag black boxes over content to remove — <span x-text="count()" /> box(es) placed
+            Drag black boxes over content to remove — <span x-text="count()" />{" "}
+            box(es) placed
           </p>
           <div class="flex justify-center">
-            <button type="button" class="btn-ghost px-3 py-1 text-xs" x-on:click="clearPage()">
+            <button
+              type="button"
+              class="btn-ghost px-3 py-1 text-xs"
+              x-on:click="clearPage()"
+            >
               Clear this page
             </button>
           </div>
@@ -706,7 +958,12 @@ function FormsBody() {
             </template>
             <template x-if="f.kind === 'PDFCheckBox'">
               <label class="flex items-center gap-2 text-sm">
-                <input type="checkbox" class="h-4 w-4 accent-brick" x-model="f.checked" /> Checked
+                <input
+                  type="checkbox"
+                  class="h-4 w-4 accent-brick"
+                  x-model="f.checked"
+                />{" "}
+                Checked
               </label>
             </template>
             <template x-if="f.options.length > 0">
@@ -720,7 +977,11 @@ function FormsBody() {
           </div>
         </template>
         <label class="flex items-center gap-2 text-sm font-semibold text-muted">
-          <input type="checkbox" class="h-4 w-4 accent-brick" x-model="flatten" />
+          <input
+            type="checkbox"
+            class="h-4 w-4 accent-brick"
+            x-model="flatten"
+          />
           Flatten after filling (answers become permanent)
         </label>
       </div>
@@ -753,10 +1014,20 @@ function ProtectBody() {
           </div>
           <div class="flex gap-6 text-sm font-semibold text-muted">
             <label class="flex items-center gap-2">
-              <input type="checkbox" class="h-4 w-4 accent-brick" x-model="allowPrint" /> Allow printing
+              <input
+                type="checkbox"
+                class="h-4 w-4 accent-brick"
+                x-model="allowPrint"
+              />{" "}
+              Allow printing
             </label>
             <label class="flex items-center gap-2">
-              <input type="checkbox" class="h-4 w-4 accent-brick" x-model="allowCopy" /> Allow copying
+              <input
+                type="checkbox"
+                class="h-4 w-4 accent-brick"
+                x-model="allowCopy"
+              />{" "}
+              Allow copying
             </label>
           </div>
         </Panel>
@@ -792,7 +1063,7 @@ function CompareBody() {
   return (
     <div x-data="comparePdf()">
       <div class="grid gap-4 sm:grid-cols-2">
-        {(['A', 'B'] as const).map((side) => (
+        {(["A", "B"] as const).map((side) => (
           <div
             class="cursor-pointer rounded-lg border-2 border-dashed border-line bg-panel p-6 text-center transition-colors hover:border-brick"
             x-on:click={`$refs.file${side}.click()`}
@@ -806,8 +1077,13 @@ function CompareBody() {
               accept=".pdf,application/pdf"
               x-on:change={`pickSide($event.target.files, '${side}')`}
             />
-            <p class="font-display">{side === 'A' ? 'Original PDF' : 'Revised PDF'}</p>
-            <p class="mt-1 truncate text-sm text-muted" x-text={`name${side} || 'Drop or click'`} />
+            <p class="font-display">
+              {side === "A" ? "Original PDF" : "Revised PDF"}
+            </p>
+            <p
+              class="mt-1 truncate text-sm text-muted"
+              x-text={`name${side} || 'Drop or click'`}
+            />
           </div>
         ))}
       </div>
@@ -840,7 +1116,11 @@ function CompareBody() {
             Highlight differences
           </button>
         </div>
-        <div x-cloak x-show="diffOn" class="mt-4 overflow-auto rounded-lg border border-line bg-panel p-2">
+        <div
+          x-cloak
+          x-show="diffOn"
+          class="mt-4 overflow-auto rounded-lg border border-line bg-panel p-2"
+        >
           <p class="mb-1 text-center text-xs text-muted">
             <span x-text="diffPct" />% of pixels differ on this page
           </p>
@@ -853,7 +1133,7 @@ function CompareBody() {
 
 function ToTextBody({ tool }: { tool: Tool }) {
   return (
-    <div x-data={tool.preset ? `pdfToText('${tool.preset}')` : 'pdfToText()'}>
+    <div x-data={tool.preset ? `pdfToText('${tool.preset}')` : "pdfToText()"}>
       <PickedBar />
       <div x-show="!file">
         <Drop />
@@ -885,20 +1165,47 @@ function ScanBody() {
   return (
     <div x-data="scanPdf()">
       <div class="rounded-lg border border-line bg-panel p-4 text-center">
-        <video x-ref="video" autoplay playsinline class="mx-auto max-h-96 rounded" x-show="active" />
+        <video
+          x-ref="video"
+          autoplay
+          playsinline
+          class="mx-auto max-h-96 rounded"
+          x-show="active"
+        />
         <div class="mt-3 flex justify-center gap-2">
-          <button type="button" class="btn-primary" x-show="!active" x-on:click="start()">
+          <button
+            type="button"
+            class="btn-primary"
+            x-show="!active"
+            x-on:click="start()"
+          >
             Start camera
           </button>
-          <button type="button" class="btn-primary" x-cloak x-show="active" x-on:click="capture()">
+          <button
+            type="button"
+            class="btn-primary"
+            x-cloak
+            x-show="active"
+            x-on:click="capture()"
+          >
             Capture page
           </button>
-          <button type="button" class="btn-ghost" x-cloak x-show="active" x-on:click="stop()">
+          <button
+            type="button"
+            class="btn-ghost"
+            x-cloak
+            x-show="active"
+            x-on:click="stop()"
+          >
             Stop
           </button>
         </div>
       </div>
-      <div x-cloak x-show="shots.length" class="mt-4 grid grid-cols-3 gap-3 sm:grid-cols-5">
+      <div
+        x-cloak
+        x-show="shots.length"
+        class="mt-4 grid grid-cols-3 gap-3 sm:grid-cols-5"
+      >
         <template x-for="(s, i) in shots">
           <div class="relative">
             <img x-bind:src="s" class="rounded border border-line" alt="" />
@@ -919,33 +1226,42 @@ function ScanBody() {
 }
 
 const API_ACCEPT: Record<string, [accept: string, outExt: string]> = {
-  'api:docx': ['.pdf,application/pdf', 'docx'],
-  'api:xlsx': ['.pdf,application/pdf', 'xlsx'],
-  'api:pptx': ['.pdf,application/pdf', 'pptx'],
-  'api:pdf:doc': ['.doc,.docx', 'pdf'],
-  'api:pdf:xls': ['.xls,.xlsx,.csv', 'pdf'],
-  'api:pdf:ppt': ['.ppt,.pptx', 'pdf'],
-  'api:ocr': ['.pdf,application/pdf', 'pdf'],
-  'api:pdfa': ['.pdf,application/pdf', 'pdf'],
-  'api:repair': ['.pdf,application/pdf', 'pdf'],
+  "api:docx": [".pdf,application/pdf", "docx"],
+  "api:xlsx": [".pdf,application/pdf", "xlsx"],
+  "api:pptx": [".pdf,application/pdf", "pptx"],
+  "api:pdf:doc": [".doc,.docx", "pdf"],
+  "api:pdf:xls": [".xls,.xlsx,.csv", "pdf"],
+  "api:pdf:ppt": [".ppt,.pptx", "pdf"],
+  "api:ocr": [".pdf,application/pdf", "pdf"],
+  "api:pdfa": [".pdf,application/pdf", "pdf"],
+  "api:repair": [".pdf,application/pdf", "pdf"],
 };
 
 function ApiBody({ tool }: { tool: Tool }) {
   const [accept, outExt] = API_ACCEPT[tool.kind]!;
   return (
-    <div x-data={`convertApi('/api/convert/${tool.slug}', '${accept}', '${outExt}')`}>
+    <div
+      x-data={`convertApi('/api/convert/${tool.slug}', '${accept}', '${outExt}')`}
+    >
       <div
         x-cloak
         x-show="file"
         class="mb-4 flex items-center justify-between rounded-md border border-line bg-panel px-4 py-2.5 text-sm"
       >
         <p class="truncate font-semibold" x-text="name" />
-        <button type="button" class="ml-3 shrink-0 text-muted hover:text-brick" x-on:click="file = null; name = ''">
+        <button
+          type="button"
+          class="ml-3 shrink-0 text-muted hover:text-brick"
+          x-on:click="file = null; name = ''"
+        >
           Change file
         </button>
       </div>
       <div x-show="!file">
-        <Drop label={`Drop your file here`} sub="Processed server-side: streamed through, never stored" />
+        <Drop
+          label={`Drop your file here`}
+          sub="Processed server-side: streamed through, never stored"
+        />
       </div>
       <ErrorNote />
       <RunButton label={tool.label} />
@@ -959,7 +1275,12 @@ function HtmlToPdfBody() {
       <div class="rounded-lg border border-line bg-panel p-5">
         <label>
           <span class="field-label">Webpage URL</span>
-          <input type="url" class="field" x-model="url" placeholder="https://example.com/article" />
+          <input
+            type="url"
+            class="field"
+            x-model="url"
+            placeholder="https://example.com/article"
+          />
         </label>
       </div>
       <ErrorNote />
@@ -970,45 +1291,45 @@ function HtmlToPdfBody() {
 
 export function ToolBody({ tool }: { tool: Tool }) {
   switch (tool.kind) {
-    case 'merge':
+    case "merge":
       return <MergeBody />;
-    case 'split':
+    case "split":
       return <SplitBody />;
-    case 'rotate':
+    case "rotate":
       return <RotateBody />;
-    case 'organize':
+    case "organize":
       return <OrganizeBody />;
-    case 'pagenum':
+    case "pagenum":
       return <PageNumBody />;
-    case 'watermark':
+    case "watermark":
       return <WatermarkBody />;
-    case 'crop':
+    case "crop":
       return <CropBody />;
-    case 'img2pdf':
+    case "img2pdf":
       return <Img2PdfBody />;
-    case 'pdf2jpg':
+    case "pdf2jpg":
       return <Pdf2JpgBody tool={tool} />;
-    case 'compress':
+    case "compress":
       return <CompressBody />;
-    case 'edit':
+    case "edit":
       return <EditBody />;
-    case 'sign':
+    case "sign":
       return <SignBody />;
-    case 'redact':
+    case "redact":
       return <RedactBody />;
-    case 'forms':
+    case "forms":
       return <FormsBody />;
-    case 'protect':
+    case "protect":
       return <ProtectBody />;
-    case 'unlock':
+    case "unlock":
       return <UnlockBody />;
-    case 'compare':
+    case "compare":
       return <CompareBody />;
-    case 'totext':
+    case "totext":
       return <ToTextBody tool={tool} />;
-    case 'scan':
+    case "scan":
       return <ScanBody />;
-    case 'html2pdf':
+    case "html2pdf":
       return <HtmlToPdfBody />;
     default:
       return <ApiBody tool={tool} />;

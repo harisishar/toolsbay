@@ -3,7 +3,16 @@ import { AD_SLOTS } from "@claudetools/seo";
 import { AdSlot, Layout } from "./layout.tsx";
 import { ALL_CALCS, CALC_BY_SLUG, CATEGORIES } from "./lib/calcs/index.ts";
 import type { Calc, Input } from "./lib/calc-types.ts";
-import { SITE, webAppJsonLd, faqJsonLd, sitemapXml, robotsTxt } from "./seo.ts";
+import {
+  SITE,
+  webAppJsonLd,
+  articleJsonLd,
+  faqJsonLd,
+  sitemapXml,
+  robotsTxt,
+  type CompareRow,
+} from "./seo.ts";
+import { COMPARISONS } from "./comparison.ts";
 import { privacySections, PRIVACY_UPDATED } from "@claudetools/seo";
 
 function privacyLd(origin: string) {
@@ -275,6 +284,156 @@ for (const calc of ALL_CALCS) {
   });
 }
 
+// Feature matrix for the comparison pages. The wrapper scrolls, not the page —
+// three columns of prose do not fit 375px.
+function CompareTable({
+  rows,
+  competitor,
+}: {
+  rows: CompareRow[];
+  competitor: string;
+}) {
+  return (
+    <section class="mt-10">
+      <h2 class="font-display mb-4 text-xl">Feature comparison</h2>
+      <div class="overflow-x-auto rounded-md border border-line bg-panel">
+        <table class="w-full min-w-[34rem] border-collapse text-left text-[15px]">
+          <thead>
+            <tr class="border-b border-line bg-paper">
+              <th class="px-4 py-3 font-semibold">Feature</th>
+              <th class="px-4 py-3 font-semibold">{SITE.name}</th>
+              <th class="px-4 py-3 font-semibold">{competitor}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((r) => (
+              <tr class="border-b border-line align-top last:border-0">
+                <td class="px-4 py-3">
+                  {r.feature}
+                  {r.note ? (
+                    <span class="mt-1 block text-[13px] leading-6 text-navy-soft">
+                      {r.note}
+                    </span>
+                  ) : null}
+                </td>
+                <td class="px-4 py-3 font-semibold">{r.us}</td>
+                <td class="px-4 py-3 text-navy-soft">{r.them}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  );
+}
+
+const START_HERE = [
+  "malaysia-salary-calculator",
+  "kwsp-epf-calculator",
+  "pcb-calculator",
+  "socso-eis-calculator",
+  "uk-salary-tax-calculator",
+  "singapore-salary-tax-calculator",
+];
+
+for (const cmp of COMPARISONS) {
+  app.get(`/${cmp.slug}`, (c) => {
+    const origin = originOf(c.req.url);
+    return c.html(
+      <Layout
+        title={cmp.title}
+        desc={cmp.desc}
+        path={`/${cmp.slug}`}
+        origin={origin}
+        jsonLd={[
+          articleJsonLd(origin, `/${cmp.slug}`, cmp.h1, cmp.desc),
+          faqJsonLd(cmp.faq),
+        ]}
+      >
+        <div class="grid-dots border-b border-line bg-panel">
+          <div class="mx-auto max-w-3xl px-4 py-10">
+            <h1 class="font-display text-3xl leading-tight sm:text-4xl">
+              {cmp.h1}
+            </h1>
+            <p class="mt-3 text-[15px] leading-7 text-navy-soft">{cmp.intro}</p>
+          </div>
+        </div>
+        <div class="mx-auto max-w-3xl px-4 py-8">
+          <article class="prose-tool">
+            {cmp.sections.map((s) => (
+              <section>
+                <h2>{s.h}</h2>
+                {s.body.map((p) => (
+                  <p>{p}</p>
+                ))}
+              </section>
+            ))}
+          </article>
+          <CompareTable rows={cmp.matrix} competitor={cmp.competitor} />
+          <section class="mt-10">
+            <h2 class="font-display mb-3 text-lg">Start here</h2>
+            <div class="flex flex-wrap gap-2">
+              {START_HERE.map((slug) => {
+                const calc = CALC_BY_SLUG[slug];
+                return calc ? (
+                  <a
+                    href={`/${calc.slug}`}
+                    class="rounded-md border border-line bg-panel px-3 py-1.5 text-sm text-navy-soft hover:border-amber hover:text-amber-deep"
+                  >
+                    {calc.name}
+                  </a>
+                ) : null;
+              })}
+            </div>
+          </section>
+          <section class="mt-10 text-[13px] leading-6 text-navy-soft">
+            <h2 class="font-display mb-2 text-base text-navy">Sources</h2>
+            <p>
+              Every claim about {cmp.competitor} on this page is taken from its
+              own published pages, checked on {cmp.updated}:{" "}
+              {cmp.sources.map((s, i) => (
+                <>
+                  {i > 0 ? ", " : ""}
+                  <a
+                    class="underline"
+                    href={s.url}
+                    rel="nofollow noopener"
+                    target="_blank"
+                  >
+                    {s.label}
+                  </a>
+                </>
+              ))}
+              . Inventories and features change — if you spot something out of
+              date, treat their page as authoritative over ours.
+            </p>
+            <p class="mt-2">Last updated: {cmp.updated}</p>
+          </section>
+          {cmp.faq.length > 0 && (
+            <section class="mt-12">
+              <h2 class="font-display mb-4 text-xl">
+                Frequently asked questions
+              </h2>
+              <div class="space-y-2">
+                {cmp.faq.map((f) => (
+                  <details class="rounded-md border border-line bg-panel px-4 py-3">
+                    <summary class="cursor-pointer text-[15px] font-semibold marker:text-amber">
+                      {f.q}
+                    </summary>
+                    <p class="mt-2 text-[15px] leading-7 text-navy-soft">
+                      {f.a}
+                    </p>
+                  </details>
+                ))}
+              </div>
+            </section>
+          )}
+        </div>
+      </Layout>,
+    );
+  });
+}
+
 app.get("/privacy-policy", (c) => {
   const origin = originOf(c.req.url);
   const desc = `How ${SITE.name} handles your data: numbers, salaries and dates you enter are processed in your browser and are never uploaded. No accounts, no tracking by us.`;
@@ -325,6 +484,7 @@ app.get("/sitemap.xml", (c) => {
     sitemapXml(origin, [
       "/",
       ...ALL_CALCS.map((t) => `/${t.slug}`),
+      ...COMPARISONS.map((c) => `/${c.slug}`),
       "/privacy-policy",
     ]),
     200,
@@ -345,7 +505,10 @@ Includes Malaysia KWSP/EPF, SOCSO/EIS, PCB and take-home salary tools, plus sala
 estimators for the US, UK, Singapore, Australia, India, Germany, Canada and Japan.
 
 ## Calculators
-${ALL_CALCS.map((t) => `- ${origin}/${t.slug}: ${t.desc}`).join("\n")}`);
+${ALL_CALCS.map((t) => `- ${origin}/${t.slug}: ${t.desc}`).join("\n")}
+
+## Comparisons
+${COMPARISONS.map((c) => `- ${origin}/${c.slug}: ${c.desc}`).join("\n")}`);
 });
 
 app.notFound((c) =>

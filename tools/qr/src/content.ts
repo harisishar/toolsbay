@@ -1,4 +1,4 @@
-import type { Faq } from './seo.js';
+import type { Comparison, Faq } from './seo.js';
 
 export type Field = {
   model: string;
@@ -512,6 +512,164 @@ export const SYMBOLOGIES: Symbology[] = [
       {
         q: 'Does CODE 39 need a check digit?',
         a: 'Not usually. The optional modulo-43 check digit is required only by specific standards such as LOGMARS and HIBC; most applications omit it.',
+      },
+    ],
+  },
+];
+
+// --- Competitor comparison ---
+// Commercial-intent pages for people already using a competitor. Deliberately
+// NOT part of QR_TYPES/SYMBOLOGIES/PAYMENT_GUIDES: those arrays feed the hub
+// catalogue and the generator routes, and a prose page is neither.
+//
+// Every number about QRCode Monkey below is quoted from their own site — see
+// `sources`. Re-check before editing; stale competitor pricing is worse than
+// no comparison page at all.
+
+export const COMPARISONS: Comparison[] = [
+  {
+    slug: 'qr-code-monkey-alternative',
+    competitor: 'QRCode Monkey',
+    title: 'QRCode Monkey Alternative — Generate QR Codes Free, No Upload',
+    desc: 'A free QRCode Monkey alternative: generate static QR codes in your browser, with nothing cached on a server, no account and no PRO upsell. Honest side-by-side comparison.',
+    h1: 'The free QRCode Monkey alternative',
+    intro:
+      'QRCode Monkey is a good free generator, and this page is not going to pretend otherwise. But two things send people looking for an alternative: it caches your generated image on its servers for 24 hours, and everything past a plain static code — dynamic QR, scan statistics, bulk creation — is gated behind its paid PRO product. MakeQR is our free QR generator; here is exactly where it differs.',
+    sections: [
+      {
+        h: 'Should you switch? The short answer',
+        body: [
+          'Switch if you want the code generated and downloaded without any copy of it touching someone else’s server, or if you also need barcodes (CODE128, EAN-13, UPC-A, CODE39) from the same tool. Stay with QRCode Monkey if you want a logo in the middle of the code, gradient colours, custom eye shapes, or EPS/PDF export — it does all four and MakeQR does none of them.',
+          'Disclosure: MakeQR is our tool. The comparison below is built from QRCode Monkey’s own published claims, linked at the bottom of this page, and we have listed the features where it beats us.',
+        ],
+      },
+      {
+        h: 'Generate a QR code free — what you actually get',
+        body: [
+          'MakeQR generates static QR codes for URLs, WiFi networks, vCard contact details, email, SMS, phone numbers and map locations. There is no account, no watermark, no daily cap and no code limit. Set the size, foreground and background colour and error-correction level, then download PNG, JPG or SVG.',
+          'Static means the destination is baked into the pattern itself. Nobody — including us — can change it, expire it, or switch it off later. That is the trade: no scan analytics, but also nothing that can be taken away from a code you already printed.',
+        ],
+      },
+      {
+        h: 'Where QRCode Monkey puts limits',
+        body: [
+          'The generator itself genuinely is free and unlimited — QRCode Monkey says its codes "do not expire and will work forever!" with no scanning limits, and that is accurate for static codes. The limits are elsewhere.',
+          'First, storage. QRCode Monkey states plainly: "We cache your qr code image files for 24h on our server." For a restaurant menu link that is irrelevant. For a QR encoding an internal WiFi password, a private booking URL or a staff contact card, it means a copy existed off your machine. MakeQR draws the code in the browser canvas — there is no upload step to cache.',
+          'Second, the upsell. Dynamic QR codes, scan statistics, bulk creation and editing, and campaign folders all sit behind the separate paid QR Code Generator PRO product. If your reason for looking at QRCode Monkey was tracking scans, the free tool was never going to do it.',
+        ],
+      },
+      {
+        h: 'Static vs dynamic: the subscription trap',
+        body: [
+          'A dynamic QR code does not contain your destination. It contains a short redirect URL owned by the vendor, which forwards to wherever their dashboard currently points. That is what makes scan tracking and editable destinations possible — and it is also what makes the code stop working the month you stop paying, on signage that may already be printed and mounted.',
+          'This is worth being blunt about, because it cuts against us too: MakeQR does not offer dynamic QR codes, so if you genuinely need editable destinations or scan counts, neither the free QRCode Monkey tool nor MakeQR is your answer — you need a paid product, and you should price in what happens to your printed codes if you ever cancel.',
+          'For the large majority of uses — a link on a poster, a WiFi code on a table tent, a vCard on a business card — a static code is the safer object. It works offline, forever, with no vendor in the path between the scan and the destination.',
+        ],
+      },
+      {
+        h: 'Where QRCode Monkey is genuinely better',
+        body: [
+          'Design. QRCode Monkey lets you drop a logo into the centre of the code (up to 2 MB), apply gradient colours, recolour and reshape the eyes and the body modules, and export EPS and PDF alongside PNG and SVG. MakeQR gives you a solid foreground colour, a background colour, size and error-correction level. That is it.',
+          'If you are producing brand-controlled print collateral and the code has to carry a logo, use QRCode Monkey. It is the better tool for that job and the 24-hour cache of a public marketing URL costs you nothing.',
+        ],
+      },
+      {
+        h: 'How to switch',
+        body: [
+          'There is nothing to migrate — a static QR code is just a pattern, and codes you already made with QRCode Monkey keep working forever. Point your next code at the generator you prefer.',
+          'Start with the type you need: a URL QR code, a WiFi QR code, a vCard QR code, or a barcode. Everything is on the same page below with no sign-up step.',
+        ],
+      },
+    ],
+    matrix: [
+      {
+        feature: 'Price',
+        us: 'Free',
+        them: 'Free (static)',
+        note: 'QRCode Monkey gates dynamic QR, scan stats and bulk creation behind its paid PRO product.',
+      },
+      {
+        feature: 'Account required',
+        us: 'No',
+        them: 'No',
+      },
+      {
+        feature: 'Codes stored on a server',
+        us: 'No',
+        them: 'Cached 24h',
+        note: 'Their site: "We cache your qr code image files for 24h on our server." MakeQR draws the code in your browser — there is no upload.',
+      },
+      {
+        feature: 'Codes expire',
+        us: 'Never',
+        them: 'Never',
+        note: 'True of static codes on both. Dynamic codes from any vendor stop resolving when the subscription lapses.',
+      },
+      {
+        feature: 'Watermark',
+        us: 'None',
+        them: 'None',
+      },
+      {
+        feature: 'Download formats',
+        us: 'PNG, JPG, SVG',
+        them: 'PNG, SVG, PDF, EPS',
+      },
+      {
+        feature: 'Logo in the code',
+        us: 'No',
+        them: 'Yes',
+        note: 'Up to 2 MB. This is QRCode Monkey’s strongest feature and we do not match it.',
+      },
+      {
+        feature: 'Gradients, custom eye shapes',
+        us: 'No',
+        them: 'Yes',
+      },
+      {
+        feature: 'Barcodes (CODE128, EAN-13, UPC-A, CODE39)',
+        us: 'Yes',
+        them: 'No',
+      },
+      {
+        feature: 'Dynamic QR & scan statistics',
+        us: 'No',
+        them: 'Paid PRO',
+      },
+      {
+        feature: 'Works with no network after page load',
+        us: 'Yes',
+        them: 'No',
+      },
+    ],
+    sources: [
+      { label: 'QRCode Monkey homepage', url: 'https://www.qrcode-monkey.com/' },
+    ],
+    updated: '2026-08-01',
+    faq: [
+      {
+        q: 'How do I generate a QR code for free?',
+        a: 'Pick the type of code you need — URL, WiFi, vCard, email, SMS, phone or location — type the details, and download the PNG, JPG or SVG. There is no account and no cap on how many you make. On MakeQR the code is drawn in your browser, so what you type is never uploaded.',
+      },
+      {
+        q: 'Is QRCode Monkey actually free?',
+        a: 'Yes, for static QR codes. Its site states the generated codes are 100% free, do not expire and have no scanning limits, which is accurate. What costs money is the separate PRO product for dynamic codes, scan statistics and bulk creation.',
+      },
+      {
+        q: 'Does QRCode Monkey store my QR codes?',
+        a: 'It caches the generated image file. QRCode Monkey states: "We cache your qr code image files for 24h on our server." That is fine for a public marketing link and worth avoiding for a WiFi password or a private URL. MakeQR has no upload step, so there is nothing to cache.',
+      },
+      {
+        q: 'Can I add a logo to my QR code here?',
+        a: 'No. MakeQR supports a custom foreground colour, background colour, size and error-correction level, but not logo embedding, gradients or custom eye shapes. If you need a logo in the code, QRCode Monkey does that well and is the better choice for it.',
+      },
+      {
+        q: 'Will my QR codes stop working if I stop using this site?',
+        a: 'No. Every code MakeQR produces is static: the destination is encoded in the pattern itself, and nothing routes through our servers when someone scans it. The code keeps working whether or not this site exists. That is not true of dynamic QR codes from any vendor, which resolve through the vendor’s redirect.',
+      },
+      {
+        q: 'Do you offer dynamic QR codes or scan tracking?',
+        a: 'No. Dynamic codes require a server to own the redirect and count the scans, which would mean the destination lives with us rather than in your code. We have chosen not to do that, so if scan analytics are a requirement, you need a paid product — from QRCode Monkey PRO or elsewhere.',
       },
     ],
   },

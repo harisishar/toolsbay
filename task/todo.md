@@ -178,6 +178,43 @@ Output: `task/keywords/{README,calculator,image,pdf,qr,hub}.md` — 134 mapped q
       files, one bulk metrics call, fill Volume/KD/CPC in place (mapping does not need redoing)
 - [ ] `/keyword-clustering` on the maps → content briefs
 
+## Competitor comparison pages (2026-08-01)
+
+First pages on this repo targeting commercial-comparison intent rather than transactional
+("merge pdf", "heic to jpg"). The keyword maps mined competitor _inventories_ and deliberately
+skipped competitor _brand_ queries — this closes that gap. Positioning is limits-led, privacy
+second: "runs in your browser" is already every rival's headline (see `keywords/image.md:40-43`
+and the live "ilovepdf alternative" SERP), but nobody puts the competitor's actual free-tier
+numbers on screen.
+
+- [x] `packages/seo`: shared `Comparison` / `CompareRow` types next to `Faq`. Data only — each
+      tool renders with its own Layout/FaqSection, same split as `privacySections()`
+- [x] `pdf.toolsbay.app/ilovepdf-alternative` — iLovePDF free tier is Compress 2 tasks/200 MB,
+      Merge 25/100 MB, no OCR, no PDF/A; Premium $7 mo / $48 yr; files "deleted within 2 hours"
+- [x] `calc.toolsbay.app/calculator-net-alternative` — their income tax calculator is "for
+      United States residents only"; concedes their ~200 calculators vs our 51
+- [x] `qr.toolsbay.app/qr-code-monkey-alternative` — they cache generated images "for 24h on our
+      server", dynamic/stats/bulk are paid PRO; concedes their logo + gradient support.
+      Carries "generate qr code" as a secondary term; the head term stays the homepage's job
+- [x] `image.toolsbay.app/iloveimg-alternative` — Crop and Editor are 1 task on free, Upscale
+      and Remove-background 6 MB/3 tasks; $7 mo / $48 yr
+- [x] Each page: Article + FAQPage JSON-LD, feature matrix, "where they're better" section,
+      sourced claims with an as-of date, affiliation disclosed. **No AggregateRating** — there
+      is no review data here and inventing one is a structured-data policy violation
+- [x] `scripts/assert-comparisons.mjs` — shared invariants imported by all four test files
+      (title ≤75, desc ≤175, ≥3 sections, ≥3 FAQ, complete matrix rows, https sources,
+      disclosure present, a "where they're better" section)
+- [x] PDF honesty guard in `tools/pdf/tests/tools.test.mjs`: 10 of 34 tools are server-path, so
+      the page may not make an unqualified "never leaves your device" claim and the matrix cell
+      must be a count, not a tick. `keywords/pdf.md:34-39` is the reasoning
+- [x] Deliberately **not** added to `catalogue.ts` / `TOTAL_PAGES` — these are content, not
+      tools, and `check-catalogue.mjs` only imports the tool registries. Still 135
+- [x] All four verified 200 in wrangler dev with correct title, canonical, sitemap and llms.txt
+      entries, and every "Start here" link resolving. `pnpm typecheck` + `pnpm check` green
+- [ ] Deploy — still unshipped, along with everything under the two sections above
+- [ ] Re-check competitor pricing/limits quarterly; the `updated` field on each page is the
+      date the sources were last read (2026-08-01)
+
 ## Validation + unit tests (2026-07-31)
 
 - [x] **Found and fixed my own error:** the 8 country salary calculators were already built.

@@ -4,10 +4,12 @@ import {
   faqJsonLd,
   robotsTxt,
   type Faq,
+  type Comparison,
+  type CompareRow,
 } from "@claudetools/seo";
 
 export { faqJsonLd, robotsTxt };
-export type { Faq };
+export type { Faq, Comparison, CompareRow };
 
 export const SITE = {
   name: "MakeQR",
