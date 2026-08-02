@@ -169,7 +169,7 @@ Output: `task/keywords/{README,calculator,image,pdf,qr,hub}.md` — 134 mapped q
       salary" (IN), "brutto netto rechner" (DE), CPF (SG), Medicare levy (AU). They ship with
       generic templated titles and miss the phrase each market searches. See calculator.md
 - [ ] Calc: only genuinely missing countries are Indonesia and Philippines (P2)
-- [ ] Deploy: nothing here is live yet — 4 workers changed (calculator, image, pdf, qr, hub)
+- [x] Deploy: all five workers live as of 2026-08-02
 - [ ] Image P1 gaps still unbuilt: rotate-image, watermark-image, convert-to-jpg hub,
       compress-image-to-100kb / passport-photo-resizer (target-size intent)
 - [ ] QR P1 gaps still unbuilt: whatsapp-qr-code, google-review-qr-code, menu-qr-code,
@@ -339,7 +339,7 @@ comparison prose names the tool nine times in `content.ts`.
       At ~14 s on a laptop this is the most likely thing to need doing
 - [ ] AI upscaling stays unbuilt - same architecture, but 170 MB+ models at 1024x1024
 
-- [ ] **Deploy: not shipped.** `pnpm --filter @tools/image deploy` and the hub after it
+- [x] **Deployed 2026-08-02** — see the deploy section at the end of this file
 
 ## Content depth pass — fixing thin pages (2026-08-01)
 
@@ -351,8 +351,7 @@ comparison pages were the only content on the estate a crawler would recognise a
 
 - [x] `packages/seo`: `howToJsonLd`, `breadcrumbJsonLd`, `datePublished`/`dateModified` on
       `articleJsonLd`, `lastmod` support in `sitemapXml`, shared `Section`/`Step` types
-- [x] `scripts/assert-prose.mjs` — shared depth invariants: lead block 120–190 words,
-      >= 3 sections, >= 4 FAQ, title <= 75 / desc <= 175 (the calculator registry had **no**
+- [x] `scripts/assert-prose.mjs` — shared depth invariants: lead block 120–190 words, >= 3 sections, >= 4 FAQ, title <= 75 / desc <= 175 (the calculator registry had **no**
       SERP-length assertion before this), `updated` date format, and a **cross-page similarity
       guard** (trigram Jaccard, digits stripped, 50% ceiling) so templated depth cannot become
       duplicate content
@@ -375,22 +374,79 @@ comparison pages were the only content on the estate a crawler would recognise a
 - [x] `pnpm typecheck` + `pnpm check` green; 27/27 calculator tests pass; `TOTAL_PAGES` still 136
       (no new URLs, catalogue untouched)
 
+### Phase 4 — QR, 13 generator pages (done 2026-08-02)
+
+- [x] `QrType` and `Symbology` gained `sections`; `intro` is now the 137–147 word citable lead
+- [x] Per-format fact, not filler: SMSTO vs RFC 5724 encoding, the `WIFI:` string format and its
+      escaping rules, `geo:` precision by decimal place, vCard against MECARD, CODE 128 subsets
+      and GS1-128, the EAN-13 check digit calculation, UPC number system characters, why CODE 39
+      runs ~40% wider
+- [x] QR type pages gained the related-links block — they were the only tool without one
+- [x] `assertProse` wired into `tools/qr/tests/content.test.mjs` for `QR_TYPES` + `SYMBOLOGIES`
+- [x] Result: **343 / 913 / 1,456 words** (min/median/max, was 240 / 355 / 1,456)
+
+### Phase 3 — image, 34 pages (done 2026-08-02)
+
+- [x] `SOURCES`/`TARGETS` extended with `what` / `origin` / `limit` and `what` / `support` /
+      `bestFor`; each pair page is assembled from the source's facts, the target's facts and a
+      `conversionNote(src, tgt)` keyed to that combination
+- [x] `TOOL_SECTIONS` added for the five core pages, with a floor asserted in `core.test.mjs`
+      (they are keyed by path rather than being a registry array, so `assertProse` cannot reach
+      them)
+- [x] `assertProse` wired into `pairs.test.mjs`. **It rejected four drafts at 52–55% similarity
+      and was right every time** — the shared block genuinely was carrying the page. Passing
+      required the per-combination facts to outweigh the template
+- [x] Result: **456 / 948 / 1,449 words** (was 248 / 313 / 1,432); 0 pages under 300
+
+### Phase 2 — PDF, 34 pages (done 2026-08-02)
+
+- [x] `intro` stays the short line above the widget; new `lead` field carries the 131–145 word
+      citable block, plus `sections` and extra FAQ. `TOOL_DEPTH` merges into `TOOL_BASE` and
+      **throws if a slug has no entry**, so a new tool cannot ship without prose
+- [x] Honesty constraint held and extended: `tools.test.mjs` now applies the no-false-privacy
+      rule to `lead` and `sections` as well as the FAQ, and additionally requires each server
+      tool's lead to say where the work happens
+- [x] Result: **535 / 836 / 1,567 words** (was 253 / 298 / 1,567); 0 pages under 300
+
+### Phase 5 — linking (partly done)
+
+- [x] Every tool footer now links back to `toolsbay.app` — the cross-subdomain graph was
+      one-directional
+- [x] Visible breadcrumb `<nav>` + `BreadcrumbList` on pdf, image and qr, reusing the calculator
+      `crumbs` prop. Only the 5 homepages and 5 privacy pages have no trail, which is correct
+- [ ] Calculator footers still `.slice(0, 9)` per category and image shows `PAIRS.slice(0, 12)`,
+      so ~20 pages have no sitewide link
+- [ ] Hub `ItemList` covers 4 tools, not the directory; `WebSite` has no `SearchAction`
+
+### Estate-wide SEO fixes (2026-08-02)
+
+Found by auditing all 150 live URLs, not by reading the source — worth repeating periodically.
+
+- [x] `og:image` + `twitter:image` on all 150 pages (was **0**); `twitter:card` upgraded to
+      `summary_large_image`. Cards are committed PNGs regenerated by `scripts/og-cards.mjs`;
+      the pdf card omits "nothing uploaded" because 10 of its tools are server-path
+- [x] Hub `/privacy-policy` had no OG or Twitter tags at all — it hand-rolls its own `<head>`
+- [x] Sitemap `lastmod` on pdf, image, qr and hub (was calculator only); qr now uses the shared
+      `sitemapXml` instead of building the XML by hand
+- [x] 9 titles over 60 chars fixed. Note: the first count said 12 — `&amp;` was being counted as
+      5 characters in the raw HTML. Decode entities before measuring
+- [x] 26 descriptions over 160 chars fixed, and **`assert-prose.mjs` tightened from 175 to 160**
+      — the old ceiling sat above Google's truncation point, so it permitted the exact problem
+      it looked like it was preventing
+- [x] GA4 (`G-8DXNR0KTVT`) on all five Workers via `GA_ID`/`GA_INIT` in `packages/seo`
+
+### Deploy and CI (2026-08-02)
+
+- [x] **All five Workers live and verified.** hub, calculator, image, qr deploy from the CLI;
+      pdf deploys from `.github/workflows/deploy-pdf.yml` (it needs a Docker builder for the
+      container), now gated on typecheck + tests
+- [x] `packageManager: pnpm@11.17.0` added — Workers Builds reads it to pick the pnpm version
+- [ ] **Connect hub, calculator, image and qr to Cloudflare Workers Builds** so a push deploys
+      them the way it already deploys pdf. Dashboard-side; settings are in the plan file. Build
+      command is not optional — `public/styles.css`, `js/`, `vendor/` and `fonts/` are gitignored
+
 ### Still open
 
-- [ ] **Phase 2 — PDF, 34 pages.** Currently ~110 words each; `pdf-to-powerpoint` is 63.
-      Honesty constraint stands: `tools/pdf/tests/tools.test.mjs:84-116` forbids a blanket
-      privacy claim on the 10 `server: true` tools and requires the server-path disclosure
-- [ ] **Phase 3 — image, 34 pages.** 29 pair pages share one template; extend `SOURCES`/`TARGETS`
-      with per-format facts (compression type, alpha handling, size ratio, browser support) so
-      the similarity guard passes
-- [ ] **Phase 4 — QR, 17 pages.** `sms`/`phone`/`email` QR types are the thinnest in the repo
-      (54–63 words). QR type pages also have **no related-links block at all**, unlike the other
-      three tools
-- [ ] **Phase 5 — linking.** Tools never link back to the hub (`grep -rn toolsbay tools/*/src`
-      returns zero) — the cross-subdomain graph is one-directional. Calculator footers
-      `.slice(0, 9)` per category and image shows `PAIRS.slice(0, 12)`, so ~20 pages have no
-      sitewide link. Hub `ItemList` covers 4 tools, not the directory; `WebSite` has no
-      `SearchAction`
-- [ ] Roll the same `assert-prose.mjs` invariants into the other three tools' test files as each
-      phase lands — the failing list is the worklist
-- [ ] **Deploy: still nothing live** from this or the previous four sessions
+- [ ] Roll `assert-prose.mjs` over the comparison pages too — they are covered by
+      `assert-comparisons.mjs`, which has no SERP-length assertion, which is how a 169-char
+      description survived the pass that fixed the other 25
