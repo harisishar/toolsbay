@@ -6,6 +6,7 @@ import {
   PAYMENT_GUIDES,
   SYMBOLOGIES,
   COMPARISONS,
+  CONTENT_UPDATED,
 } from "./content.js";
 import {
   SITE,
@@ -13,6 +14,8 @@ import {
   faqJsonLd,
   articleJsonLd,
   robotsTxt,
+  breadcrumbJsonLd,
+  sitemapXml,
 } from "./seo.js";
 import { privacySections, PRIVACY_UPDATED } from "@claudetools/seo";
 
@@ -105,9 +108,17 @@ for (const t of QR_TYPES) {
         desc={t.desc}
         path={`/${t.slug}`}
         origin={origin}
+        crumbs={[
+          ["QR codes", "/"],
+          [t.h1, `/${t.slug}`],
+        ]}
         jsonLd={[
           webAppJsonLd(origin, `/${t.slug}`, t.h1, t.desc),
           faqJsonLd(t.faq),
+          breadcrumbJsonLd(origin, [
+            ["QR codes", "/"],
+            [t.h1, `/${t.slug}`],
+          ]),
         ]}
       >
         <div class="module-grid border-b border-line bg-white">
@@ -186,9 +197,19 @@ for (const b of barcodePages) {
         desc={desc}
         path={`/${b.slug}`}
         origin={origin}
+        crumbs={[
+          ["QR codes", "/"],
+          ["Barcodes", "/barcode-generator"],
+          [b.name, `/${b.slug}`],
+        ]}
         jsonLd={[
           webAppJsonLd(origin, `/${b.slug}`, b.name, desc),
           faqJsonLd(faq),
+          breadcrumbJsonLd(origin, [
+            ["QR codes", "/"],
+            ["Barcodes", "/barcode-generator"],
+            [b.name, `/${b.slug}`],
+          ]),
         ]}
       >
         <div class="module-grid border-b border-line bg-white">
@@ -333,9 +354,17 @@ for (const g of PAYMENT_GUIDES) {
         desc={g.desc}
         path={`/${g.slug}`}
         origin={origin}
+        crumbs={[
+          ["QR codes", "/"],
+          [g.h1, `/${g.slug}`],
+        ]}
         jsonLd={[
           articleJsonLd(origin, `/${g.slug}`, g.h1, g.desc),
           faqJsonLd(g.faq),
+          breadcrumbJsonLd(origin, [
+            ["QR codes", "/"],
+            [g.h1, `/${g.slug}`],
+          ]),
         ]}
       >
         <div class="module-grid border-b border-line bg-white">
@@ -377,9 +406,17 @@ for (const cmp of COMPARISONS) {
         desc={cmp.desc}
         path={`/${cmp.slug}`}
         origin={origin}
+        crumbs={[
+          ["QR codes", "/"],
+          [cmp.competitor, `/${cmp.slug}`],
+        ]}
         jsonLd={[
           articleJsonLd(origin, `/${cmp.slug}`, cmp.h1, cmp.desc),
           faqJsonLd(cmp.faq),
+          breadcrumbJsonLd(origin, [
+            ["QR codes", "/"],
+            [cmp.competitor, `/${cmp.slug}`],
+          ]),
         ]}
       >
         <div class="module-grid border-b border-line bg-white">
@@ -495,19 +532,18 @@ app.get("/privacy-policy", (c) => {
 
 app.get("/sitemap.xml", (c) => {
   const origin = originOf(c.req.url);
+  const at = (path: string) => ({ path, lastmod: CONTENT_UPDATED });
   const paths = [
-    "/",
-    ...QR_TYPES.map((t) => `/${t.slug}`),
-    ...barcodePages.map((b) => `/${b.slug}`),
-    ...PAYMENT_GUIDES.map((g) => `/${g.slug}`),
-    ...COMPARISONS.map((c) => `/${c.slug}`),
-    "/privacy-policy",
+    at("/"),
+    ...QR_TYPES.map((t) => at(`/${t.slug}`)),
+    ...barcodePages.map((b) => at(`/${b.slug}`)),
+    ...PAYMENT_GUIDES.map((g) => at(`/${g.slug}`)),
+    ...COMPARISONS.map((c) => ({ path: `/${c.slug}`, lastmod: c.updated })),
+    { path: "/privacy-policy", lastmod: PRIVACY_UPDATED },
   ];
-  const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${paths.map((p) => `  <url><loc>${origin}${p}</loc></url>`).join("\n")}
-</urlset>`;
-  return c.body(xml, 200, { "Content-Type": "application/xml" });
+  return c.body(sitemapXml(origin, paths), 200, {
+    "Content-Type": "application/xml",
+  });
 });
 
 app.get("/robots.txt", (c) => c.text(robotsTxt(originOf(c.req.url))));

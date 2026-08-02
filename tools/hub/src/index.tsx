@@ -22,6 +22,9 @@ import {
   sitemapXml,
 } from "@claudetools/seo";
 
+// Sitemap lastmod for the directory page — bump when the catalogue changes.
+const CATALOGUE_UPDATED = "2026-08-01";
+
 const SITE = {
   name: "ToolsBay",
   tagline: "Free online tools — no signup, nothing uploaded",
@@ -186,9 +189,11 @@ app.get("/", (c) => {
           <meta property="og:title" content={title} />
           <meta property="og:description" content={SITE.desc} />
           <meta property="og:url" content={origin + "/"} />
-          <meta name="twitter:card" content="summary" />
+          <meta property="og:image" content={origin + "/og.png"} />
+          <meta name="twitter:card" content="summary_large_image" />
           <meta name="twitter:title" content={title} />
           <meta name="twitter:description" content={SITE.desc} />
+          <meta name="twitter:image" content={origin + "/og.png"} />
           <link rel="stylesheet" href="/styles.css" />
           <script
             async
@@ -357,6 +362,16 @@ app.get("/privacy-policy", (c) => {
           <meta name="description" content={desc} />
           <link rel="canonical" href={origin + "/privacy-policy"} />
           <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+          <meta property="og:type" content="website" />
+          <meta property="og:site_name" content={SITE.name} />
+          <meta property="og:title" content={title} />
+          <meta property="og:description" content={desc} />
+          <meta property="og:url" content={origin + "/privacy-policy"} />
+          <meta property="og:image" content={origin + "/og.png"} />
+          <meta name="twitter:card" content="summary_large_image" />
+          <meta name="twitter:title" content={title} />
+          <meta name="twitter:description" content={desc} />
+          <meta name="twitter:image" content={origin + "/og.png"} />
           <link rel="stylesheet" href="/styles.css" />
           <script
             async
@@ -440,9 +455,14 @@ ${section("QR codes and barcodes", "qr.toolsbay.app", [...QR_TYPES, ...BARCODES,
 });
 
 app.get("/sitemap.xml", (c) =>
-  c.body(sitemapXml(new URL(c.req.url).origin, ["/", "/privacy-policy"]), 200, {
-    "Content-Type": "application/xml",
-  }),
+  c.body(
+    sitemapXml(new URL(c.req.url).origin, [
+      { path: "/", lastmod: CATALOGUE_UPDATED },
+      { path: "/privacy-policy", lastmod: PRIVACY_UPDATED },
+    ]),
+    200,
+    { "Content-Type": "application/xml" },
+  ),
 );
 
 export default app;

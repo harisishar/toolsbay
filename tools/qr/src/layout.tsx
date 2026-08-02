@@ -47,6 +47,8 @@ type LayoutProps = {
   path: string;
   origin: string;
   jsonLd?: object[];
+  // [label, href] including the current page as the last entry.
+  crumbs?: [string, string][];
   children: Child;
 };
 
@@ -56,6 +58,7 @@ export function Layout({
   path,
   origin,
   jsonLd = [],
+  crumbs,
   children,
 }: LayoutProps) {
   const canonical = origin + path;
@@ -73,9 +76,11 @@ export function Layout({
         <meta property="og:title" content={title} />
         <meta property="og:description" content={desc} />
         <meta property="og:url" content={canonical} />
-        <meta name="twitter:card" content="summary" />
+        <meta property="og:image" content={origin + "/og.png"} />
+        <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={title} />
         <meta name="twitter:description" content={desc} />
+        <meta name="twitter:image" content={origin + "/og.png"} />
         <link rel="stylesheet" href="/styles.css" />
         <script
           async
@@ -117,6 +122,27 @@ export function Layout({
             </nav>
           </div>
         </header>
+        {crumbs && (
+          <nav
+            aria-label="Breadcrumb"
+            class="mx-auto max-w-5xl px-4 pt-3 text-[13px] text-ink-soft"
+          >
+            <ol class="flex flex-wrap items-center gap-1.5">
+              {crumbs.map(([label, href], i) => (
+                <li class="flex items-center gap-1.5">
+                  {i > 0 && <span aria-hidden="true">/</span>}
+                  {i === crumbs.length - 1 ? (
+                    <span aria-current="page">{label}</span>
+                  ) : (
+                    <a href={href} class="hover:text-accent-deep">
+                      {label}
+                    </a>
+                  )}
+                </li>
+              ))}
+            </ol>
+          </nav>
+        )}
         <main>{children}</main>
         <AdSlot
           slot={AD_SLOTS.contentBottom}
@@ -167,7 +193,14 @@ export function Layout({
                 >
                   Read our privacy policy
                 </a>
-                .
+                . Part of{" "}
+                <a
+                  href="https://toolsbay.app"
+                  class="font-semibold text-ink hover:text-accent-deep"
+                >
+                  ToolsBay
+                </a>
+                — free browser-based tools for files, images, PDFs and numbers.
               </p>
             </div>
           </div>

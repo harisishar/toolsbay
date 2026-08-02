@@ -24,6 +24,10 @@ const serverFaq: Faq = {
   a: "This conversion needs a rendering engine that browsers do not have, so the file is processed on our server: it is streamed through the converter and the result is streamed back — nothing is stored, and files are discarded the moment the response is sent.",
 };
 
+// Sitemap lastmod for the tool pages. These are written in one pass, so one
+// date is honest for all of them — bump it when the copy below actually changes.
+export const CONTENT_UPDATED = "2026-08-01";
+
 export const TOOLS: Tool[] = [
   {
     slug: "merge-pdf",

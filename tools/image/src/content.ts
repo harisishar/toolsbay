@@ -259,6 +259,10 @@ export type Core = {
 // lists (homepage tiles, sitemap, llms.txt, layout nav/footer, and IMAGE_CORE
 // in scripts/check-catalogue.mjs), which is four chances to add a page and
 // forget one of them.
+// Sitemap lastmod for the tool and pair pages. These are written in one pass, so
+// one date is honest for all of them — bump it when the copy below changes.
+export const CONTENT_UPDATED = "2026-08-01";
+
 export const CORE: Core[] = [
   {
     path: "/compress-image",

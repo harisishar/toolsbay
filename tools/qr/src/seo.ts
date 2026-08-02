@@ -3,12 +3,14 @@ import {
   articleJsonLd as article,
   faqJsonLd,
   robotsTxt,
+  sitemapXml,
+  breadcrumbJsonLd,
   type Faq,
   type Comparison,
   type CompareRow,
 } from "@claudetools/seo";
 
-export { faqJsonLd, robotsTxt };
+export { faqJsonLd, robotsTxt, sitemapXml, breadcrumbJsonLd };
 export type { Faq, Comparison, CompareRow };
 
 export const SITE = {

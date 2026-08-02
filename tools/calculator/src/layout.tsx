@@ -76,9 +76,11 @@ export function Layout({
         <meta property="og:title" content={title} />
         <meta property="og:description" content={desc} />
         <meta property="og:url" content={canonical} />
-        <meta name="twitter:card" content="summary" />
+        <meta property="og:image" content={origin + "/og.png"} />
+        <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={title} />
         <meta name="twitter:description" content={desc} />
+        <meta name="twitter:image" content={origin + "/og.png"} />
         <link rel="stylesheet" href="/styles.css" />
         <script
           async
@@ -188,7 +190,14 @@ export function Layout({
                 privacy policy
               </a>
               ). Results are estimates, not financial, tax, medical or legal
-              advice.
+              advice. Part of{" "}
+              <a
+                href="https://toolsbay.app"
+                class="font-semibold text-navy hover:text-amber-deep"
+              >
+                ToolsBay
+              </a>
+              — free browser-based tools for files, images, PDFs and numbers.
             </p>
           </div>
         </footer>

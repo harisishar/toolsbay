@@ -19,6 +19,7 @@ import {
   COMPARISONS,
   CORE,
   MODEL_MB,
+  CONTENT_UPDATED,
 } from "./content.js";
 import {
   SITE,
@@ -27,6 +28,7 @@ import {
   faqJsonLd,
   sitemapXml,
   robotsTxt,
+  breadcrumbJsonLd,
   type Faq,
 } from "./seo.js";
 import { privacySections, PRIVACY_UPDATED } from "@claudetools/seo";
@@ -107,7 +109,18 @@ function toolPage(o: {
       desc={o.desc}
       path={o.path}
       origin={origin}
-      jsonLd={[webAppJsonLd(origin, o.path, o.h1, o.desc), faqJsonLd(o.faq)]}
+      crumbs={[
+        ["Image tools", "/"],
+        [o.h1, o.path],
+      ]}
+      jsonLd={[
+        webAppJsonLd(origin, o.path, o.h1, o.desc),
+        faqJsonLd(o.faq),
+        breadcrumbJsonLd(origin, [
+          ["Image tools", "/"],
+          [o.h1, o.path],
+        ]),
+      ]}
     >
       <Hero h1={o.h1} intro={o.intro} />
       {o.body}
@@ -231,9 +244,17 @@ app.get("/crop-image", (c) => {
       desc={desc}
       path={path}
       origin={origin}
+      crumbs={[
+        ["Image tools", "/"],
+        ["Crop Images", path],
+      ]}
       jsonLd={[
         webAppJsonLd(origin, path, "Crop Images", desc),
         faqJsonLd(TOOL_FAQ.crop!),
+        breadcrumbJsonLd(origin, [
+          ["Image tools", "/"],
+          ["Crop Images", path],
+        ]),
       ]}
     >
       <Hero
@@ -326,8 +347,18 @@ for (const p of PAIRS) {
         desc={p.desc}
         path={`/${p.slug}`}
         origin={origin}
+        crumbs={[
+          ["Image tools", "/"],
+          ["Convert", "/image-converter"],
+          [p.h1, `/${p.slug}`],
+        ]}
         jsonLd={[
           webAppJsonLd(origin, `/${p.slug}`, p.h1, p.desc),
+          breadcrumbJsonLd(origin, [
+            ["Image tools", "/"],
+            ["Convert", "/image-converter"],
+            [p.h1, `/${p.slug}`],
+          ]),
           faqJsonLd(p.faq),
         ]}
       >
@@ -381,9 +412,17 @@ for (const cmp of COMPARISONS) {
         desc={cmp.desc}
         path={`/${cmp.slug}`}
         origin={origin}
+        crumbs={[
+          ["Image tools", "/"],
+          [cmp.competitor, `/${cmp.slug}`],
+        ]}
         jsonLd={[
           articleJsonLd(origin, `/${cmp.slug}`, cmp.h1, cmp.desc),
           faqJsonLd(cmp.faq),
+          breadcrumbJsonLd(origin, [
+            ["Image tools", "/"],
+            [cmp.competitor, `/${cmp.slug}`],
+          ]),
         ]}
       >
         <Hero h1={cmp.h1} intro={cmp.intro} />
@@ -481,11 +520,11 @@ app.get("/privacy-policy", (c) => {
 app.get("/sitemap.xml", (c) => {
   const origin = originOf(c.req.url);
   const paths = [
-    "/",
-    ...CORE.map((t) => t.path),
-    ...PAIRS.map((p) => `/${p.slug}`),
-    ...COMPARISONS.map((c) => `/${c.slug}`),
-    "/privacy-policy",
+    { path: "/", lastmod: CONTENT_UPDATED },
+    ...CORE.map((t) => ({ path: t.path, lastmod: CONTENT_UPDATED })),
+    ...PAIRS.map((p) => ({ path: `/${p.slug}`, lastmod: CONTENT_UPDATED })),
+    ...COMPARISONS.map((c) => ({ path: `/${c.slug}`, lastmod: c.updated })),
+    { path: "/privacy-policy", lastmod: PRIVACY_UPDATED },
   ];
   return c.body(sitemapXml(origin, paths), 200, {
     "Content-Type": "application/xml",

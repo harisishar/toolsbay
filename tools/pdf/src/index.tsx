@@ -4,7 +4,7 @@ import { Layout } from "./layout.js";
 
 export { Converter };
 import { Hero, FaqSection, ToolBody, CompareTable } from "./components.js";
-import { TOOLS, CATEGORIES, COMPARISONS } from "./content.js";
+import { TOOLS, CATEGORIES, COMPARISONS, CONTENT_UPDATED } from "./content.js";
 import {
   SITE,
   webAppJsonLd,
@@ -12,6 +12,7 @@ import {
   faqJsonLd,
   sitemapXml,
   robotsTxt,
+  breadcrumbJsonLd,
 } from "./seo.js";
 import { privacySections, PRIVACY_UPDATED } from "@claudetools/seo";
 
@@ -90,9 +91,17 @@ for (const tool of TOOLS) {
         desc={tool.desc}
         path={`/${tool.slug}`}
         origin={origin}
+        crumbs={[
+          ["PDF tools", "/"],
+          [tool.label, `/${tool.slug}`],
+        ]}
         jsonLd={[
           webAppJsonLd(origin, `/${tool.slug}`, tool.h1, tool.desc),
           faqJsonLd(tool.faq),
+          breadcrumbJsonLd(origin, [
+            ["PDF tools", "/"],
+            [tool.label, `/${tool.slug}`],
+          ]),
         ]}
       >
         <Hero h1={tool.h1} intro={tool.intro} />
@@ -140,9 +149,17 @@ for (const cmp of COMPARISONS) {
         desc={cmp.desc}
         path={`/${cmp.slug}`}
         origin={origin}
+        crumbs={[
+          ["PDF tools", "/"],
+          [cmp.competitor, `/${cmp.slug}`],
+        ]}
         jsonLd={[
           articleJsonLd(origin, `/${cmp.slug}`, cmp.h1, cmp.desc),
           faqJsonLd(cmp.faq),
+          breadcrumbJsonLd(origin, [
+            ["PDF tools", "/"],
+            [cmp.competitor, `/${cmp.slug}`],
+          ]),
         ]}
       >
         <Hero h1={cmp.h1} intro={cmp.intro} />
@@ -245,10 +262,10 @@ app.get("/sitemap.xml", (c) => {
   const origin = originOf(c.req.url);
   return c.body(
     sitemapXml(origin, [
-      "/",
-      ...TOOLS.map((t) => `/${t.slug}`),
-      ...COMPARISONS.map((c) => `/${c.slug}`),
-      "/privacy-policy",
+      { path: "/", lastmod: CONTENT_UPDATED },
+      ...TOOLS.map((t) => ({ path: `/${t.slug}`, lastmod: CONTENT_UPDATED })),
+      ...COMPARISONS.map((c) => ({ path: `/${c.slug}`, lastmod: c.updated })),
+      { path: "/privacy-policy", lastmod: PRIVACY_UPDATED },
     ]),
     200,
     {

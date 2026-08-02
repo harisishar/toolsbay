@@ -4,12 +4,13 @@ import {
   faqJsonLd,
   sitemapXml,
   robotsTxt,
+  breadcrumbJsonLd,
   type Faq,
   type Comparison,
   type CompareRow,
 } from "@claudetools/seo";
 
-export { faqJsonLd, sitemapXml, robotsTxt };
+export { faqJsonLd, sitemapXml, robotsTxt, breadcrumbJsonLd };
 export type { Faq, Comparison, CompareRow };
 
 export const SITE = {
