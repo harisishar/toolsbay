@@ -177,7 +177,7 @@ const pages: Record<string, (origin: string) => unknown> = {
   "/remove-background": toolPage({
     path: "/remove-background",
     title: "Remove Background from Image — Free, No Upload",
-    desc: `Cut the background out of any photo and download a transparent PNG. The model runs in your browser — images are never uploaded. Free, no sign-up, batch supported.`,
+    desc: `Cut the background out of any photo and download a transparent PNG. The model runs in your browser — images are never uploaded. Free, no sign-up, batch.`,
     h1: "Remove Image Backgrounds",
     intro: `Drop a photo and get the subject back on a transparent background, as a PNG. Unlike every other background remover, this one does not upload your image: a ${MODEL_MB} MB segmentation model downloads to your browser the first time and runs on your own device from then on.`,
     faq: TOOL_FAQ.removeBackground!,

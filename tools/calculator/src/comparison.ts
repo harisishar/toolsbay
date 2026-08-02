@@ -15,7 +15,7 @@ export const COMPARISONS: Comparison[] = [
     slug: "calculator-net-alternative",
     competitor: "Calculator.net",
     title: "Calculator.net Alternative — Free, With Non-US Tax",
-    desc: "A free Calculator.net alternative with Malaysian EPF, SOCSO and PCB plus take-home pay for 8 countries — the statutory maths Calculator.net only does for US residents.",
+    desc: "A free Calculator.net alternative with Malaysian EPF, SOCSO and PCB, plus take-home pay for 8 countries — statutory maths Calculator.net does only for the US.",
     h1: "The Calculator.net alternative that handles non-US tax",
     intro:
       'Calculator.net is one of the better free tools on the web: around 200 calculators, no registration, no paywall. We are not going to pretend it is bad, because it is not. It has one specific gap, and it is a big one if you do not live in the United States — its Income Tax Calculator is, in its own words, "for United States residents only". CalcHub is our calculator suite, built around that gap.',

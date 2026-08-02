@@ -234,7 +234,7 @@ for (const cmp of COMPARISONS) {
 
 app.get("/privacy-policy", (c) => {
   const origin = originOf(c.req.url);
-  const desc = `How ${SITE.name} handles your data: PDFs are processed in your browser; marked server-side conversions are streamed through and never stored. No accounts, no tracking.`;
+  const desc = `How ${SITE.name} handles your data: PDFs are processed in your browser; marked server conversions are streamed through, never stored. No accounts, no tracking.`;
   const sections = privacySections({
     siteName: SITE.name,
     what: "PDF documents",

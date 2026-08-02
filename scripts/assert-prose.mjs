@@ -133,9 +133,11 @@ export function assertProse(test, pages, opts = {}) {
         p.title.length <= 75,
         `${p.slug}: title ${p.title.length} chars (>75)`,
       );
+      // Google truncates the snippet around 155-160 characters on desktop and
+      // shorter on mobile. 175 was letting descriptions ship pre-truncated.
       assert.ok(
-        p.desc.length <= 175,
-        `${p.slug}: desc ${p.desc.length} chars (>175)`,
+        p.desc.length <= 160,
+        `${p.slug}: desc ${p.desc.length} chars (>160)`,
       );
     }
   });

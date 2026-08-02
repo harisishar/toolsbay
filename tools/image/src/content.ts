@@ -12,6 +12,7 @@ type SourceMeta = {
   label: string;
   long: string;
   blurb: string; // why people convert away from it
+  short: string; // the same, compressed to fit a meta description under 160 chars
   alpha: boolean;
   what: string; // what the format is and how it compresses
   origin: string; // where files in this format come from
@@ -34,6 +35,7 @@ export const SOURCES: Record<string, SourceMeta> = {
     label: "JPG",
     long: "JPEG photographs",
     blurb: "JPG is universal, but it is lossy and cannot store transparency",
+    short: "JPG cannot store transparency",
     alpha: false,
     what: "JPEG has been the default photographic format since 1992. It divides the image into 8×8 blocks and discards the high-frequency detail within each one, which is why it compresses photographs so well and why hard edges and flat colour — screenshots, logos, text — pick up the smeared halos known as ringing artifacts.",
     origin:
@@ -46,6 +48,7 @@ export const SOURCES: Record<string, SourceMeta> = {
     long: "PNG graphics",
     blurb:
       "PNG is lossless and supports transparency, but files are often far larger than needed",
+    short: "PNGs are often far larger than needed",
     alpha: true,
     what: "PNG arrived in 1996 as a patent-free replacement for GIF and compresses with DEFLATE — the same algorithm as ZIP. Nothing is discarded, so a PNG decodes to exactly the pixels that went in, and it carries a full 8-bit alpha channel rather than GIF's single transparent colour.",
     origin:
@@ -58,6 +61,7 @@ export const SOURCES: Record<string, SourceMeta> = {
     long: "WebP images",
     blurb:
       "WebP compresses well, but some older apps, printers and CMSs still reject it",
+    short: "some apps and printers still reject WebP",
     alpha: true,
     what: "WebP is Google's 2010 format, derived from the VP8 video codec. It offers both lossy and lossless modes and, unusually, supports transparency in both — the reason it can replace JPG and PNG with one format. Google's own comparisons put it roughly 25–35% smaller than JPEG at matched quality.",
     origin:
@@ -70,6 +74,7 @@ export const SOURCES: Record<string, SourceMeta> = {
     long: "iPhone HEIC photos",
     blurb:
       "HEIC is what iPhones shoot by default, and almost nothing outside Apple opens it reliably",
+    short: "little outside Apple opens HEIC",
     alpha: false,
     what: "HEIC is a HEIF container holding HEVC-compressed stills. It stores roughly the same visible quality as JPEG in about half the space, and it can hold extras a JPEG cannot: depth maps, edit history, and the paired frames behind Live Photos.",
     origin:
@@ -82,6 +87,7 @@ export const SOURCES: Record<string, SourceMeta> = {
     long: "AVIF images",
     blurb:
       "AVIF makes tiny files, but many editors and older apps cannot open it",
+    short: "many editors cannot open AVIF",
     alpha: true,
     what: "AVIF wraps the royalty-free AV1 video codec as a still-image format. It compresses harder than anything else in wide use — commonly around half the size of an equivalent JPEG — and adds real range: 10- and 12-bit colour, HDR, wide gamut and an alpha channel.",
     origin:
@@ -94,6 +100,7 @@ export const SOURCES: Record<string, SourceMeta> = {
     long: "GIF images",
     blurb:
       "GIF is limited to 256 colours; converting a static GIF gives smaller, better-looking files",
+    short: "GIF is capped at 256 colours",
     alpha: true,
     what: "GIF dates to 1987 and stores at most 256 colours from a palette, compressed losslessly with LZW. Transparency is a single on/off flag on one palette entry rather than a real alpha channel, which is why GIF edges against a coloured background look jagged.",
     origin:
@@ -105,6 +112,7 @@ export const SOURCES: Record<string, SourceMeta> = {
     label: "BMP",
     long: "BMP bitmaps",
     blurb: "BMP is uncompressed — files are enormous for no visual benefit",
+    short: "BMP files are enormous for no benefit",
     alpha: false,
     what: "BMP is Microsoft's original raster format and in normal use stores pixels with no compression at all: three bytes per pixel, plus a header. A 12-megapixel photo lands around 36 MB. An optional run-length mode exists but is rarely produced.",
     origin:
@@ -117,6 +125,7 @@ export const SOURCES: Record<string, SourceMeta> = {
     long: "SVG vector graphics",
     blurb:
       "SVG is a vector format; converting rasterizes it so it works anywhere an image is expected",
+    short: "rasterized so it works anywhere",
     alpha: true,
     what: "SVG is not a grid of pixels at all: it is an XML document describing shapes, paths and text, which the renderer draws at whatever size it is asked for. That is why a 4 KB logo stays perfectly sharp on a billboard, and why the file is often smaller than a thumbnail of itself.",
     origin:
@@ -407,7 +416,7 @@ export const PAIRS: Pair[] = Object.keys(SOURCES).flatMap((src) =>
         src,
         tgt,
         title: `${s.label} to ${t.label} Converter — Free, Private, No Upload`,
-        desc: `Convert ${s.label} to ${t.label} free in your browser. No upload, no watermark, batch supported. ${s.blurb}.`,
+        desc: `Convert ${s.label} to ${t.label} free in your browser — no upload, no watermark, batch supported. ${s.short}.`,
         h1: `${s.label} to ${t.label} Converter`,
         intro: `${s.blurb}. Converting to ${t.long} gives you ${t.pros}. ${s.limit} ${t.bestFor} Drop your files below and the work happens on your own machine: the conversion runs in the browser through the Canvas API, so nothing is uploaded, there is no file-size cap, no watermark and no sign-up. Batches are fine — drop a folder's worth and take them back as a single ZIP.`,
         sections: [

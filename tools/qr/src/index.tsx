@@ -553,7 +553,7 @@ for (const cmp of COMPARISONS) {
 
 app.get("/privacy-policy", (c) => {
   const origin = originOf(c.req.url);
-  const desc = `How ${SITE.name} handles your data: QR codes, barcodes and everything you type into them are processed in your browser and are never uploaded. No accounts, no tracking by us.`;
+  const desc = `How ${SITE.name} handles your data: QR codes, barcodes and everything you type into them are made in your browser and never uploaded. No accounts, no tracking.`;
   const sections = privacySections({
     siteName: SITE.name,
     what: "QR codes, barcodes and everything you type into them",

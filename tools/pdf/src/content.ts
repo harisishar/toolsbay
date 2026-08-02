@@ -2016,7 +2016,7 @@ export const COMPARISONS: Comparison[] = [
     slug: "ilovepdf-alternative",
     competitor: "iLovePDF",
     title: "iLovePDF Alternative — Free PDF Tools, No Task Limits",
-    desc: "A free iLovePDF alternative with no task caps and no $7/mo upgrade: 34 PDF tools, 24 running entirely in your browser. Honest comparison, including where iLovePDF wins.",
+    desc: "A free iLovePDF alternative with no task caps and no $7/mo upgrade: 34 PDF tools, 24 running in your browser. Honest comparison, including where iLovePDF wins.",
     h1: "The free iLovePDF alternative",
     intro:
       "iLovePDF is a genuinely good product and this page is not going to pretend otherwise. But its free tier is metered — two Compress tasks, no OCR, no PDF/A — and lifting those limits costs $7 a month. PaperKit is our PDF suite: 34 tools, no task counters, no account. Here is the honest comparison, including the parts where iLovePDF is the better choice.",

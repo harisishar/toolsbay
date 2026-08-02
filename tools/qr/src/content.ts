@@ -1036,7 +1036,7 @@ export const COMPARISONS: Comparison[] = [
     slug: "qr-code-monkey-alternative",
     competitor: "QRCode Monkey",
     title: "QRCode Monkey Alternative — Free QR Codes, No Upload",
-    desc: "A free QRCode Monkey alternative: generate static QR codes in your browser, with nothing cached on a server, no account and no PRO upsell. Honest side-by-side comparison.",
+    desc: "A free QRCode Monkey alternative: static QR codes made in your browser, nothing cached on a server, no account, no PRO upsell. Honest side-by-side comparison.",
     h1: "The free QRCode Monkey alternative",
     intro:
       "QRCode Monkey is a good free generator, and this page is not going to pretend otherwise. But two things send people looking for an alternative: it caches your generated image on its servers for 24 hours, and everything past a plain static code — dynamic QR, scan statistics, bulk creation — is gated behind its paid PRO product. MakeQR is our free QR generator; here is exactly where it differs.",
