@@ -42,7 +42,7 @@ app.get("/", (c) => {
     "Every PDF tool you need, free: merge, split, compress, convert, edit, sign, protect and more. Browser-based and private — most tools never upload your files.";
   return c.html(
     <Layout
-      title="PaperKit — Free PDF Tools: Merge, Split, Compress, Convert & More"
+      title="PaperKit — Free PDF Tools: Merge, Split, Compress & More"
       desc={desc}
       path="/"
       origin={origin}

@@ -9,6 +9,8 @@ export type Field = {
   half?: boolean;
 };
 
+export type Section = { h: string; body: string[] };
+
 export type QrType = {
   slug: string;
   type: string;
@@ -16,8 +18,11 @@ export type QrType = {
   title: string;
   desc: string;
   h1: string;
+  // 120-190 words: the self-contained block AI answers can quote. Enforced by
+  // scripts/assert-prose.mjs.
   intro: string;
   fields: Field[];
+  sections: Section[];
   faq: Faq[];
 };
 
@@ -34,9 +39,39 @@ export const QR_TYPES: QrType[] = [
     desc: "Turn any link into a QR code for free. Downloads as PNG, SVG or JPG, no sign-up, no watermark, and the code never expires.",
     h1: "URL QR Code Generator",
     intro:
-      "Paste a link and get a scannable QR code instantly. Everything runs in your browser — the URL is never uploaded to a server — and the generated code is static, so it keeps working forever.",
+      "Paste a link and get a scannable QR code instantly. What you get here is a static code: the address is written directly into the pattern of light and dark modules, so there is no redirect service sitting in the middle, no account, and nothing that can be switched off later. It also means the work happens in your browser — the URL you type is never sent to a server. Longer addresses produce a denser grid, which needs a bigger print size to stay comfortable to scan, so trimming tracking parameters before you generate is usually worth the few seconds. Download as SVG when the code is going to print, since it stays sharp at any size, or PNG for screens and slide decks. Free for commercial use, no watermark, no cap on how many you make.",
     fields: [
       { model: "f.url", label: "Website URL", placeholder: "example.com/page" },
+    ],
+    sections: [
+      {
+        h: "Static and dynamic QR codes are not the same thing",
+        body: [
+          "A static code stores the destination inside the image itself. Nothing is looked up when someone scans it, which is why it works offline, costs nothing to keep alive and cannot be disabled by a company going out of business. The trade-off is that the destination is fixed: changing it means printing a new code.",
+          "A dynamic code stores a short redirect address instead, and the provider maps that to your real destination. You can repoint it later and count scans, but the code only keeps working while that provider does — and most charge a subscription for the privilege. For a poster, a menu or packaging that will be reprinted anyway, static is usually the honest choice.",
+        ],
+      },
+      {
+        h: "How URL length changes the code",
+        body: [
+          "QR codes come in 40 sizes, called versions, from 21×21 modules up to 177×177. The generator picks the smallest version your data fits into, so a 30-character link produces a visibly simpler grid than a 200-character one with campaign parameters attached.",
+          "Density matters because a scanner has to resolve individual modules. A dense code printed small, or shown on a low-resolution screen, is the usual reason a code that worked on your monitor fails on a poster. If your link is long and the print area is fixed, shorten the URL first — that is a formatting decision, not a marketing one.",
+        ],
+      },
+      {
+        h: "Printing: the 10:1 rule and the quiet zone",
+        body: [
+          "Size the code for the distance it will be scanned from at roughly ten to one: readable at 25 cm means about 2.5 cm across, at 3 m means about 30 cm. Below about 2 cm, phone cameras start to struggle regardless of how simple the code is.",
+          "Leave the margin alone. The specification calls for a quiet zone of four modules of blank space on every side, and cropping it tight against artwork or a coloured background is one of the most common reasons a printed code will not scan.",
+        ],
+      },
+      {
+        h: "Counting scans without paying for a dynamic code",
+        body: [
+          "Add UTM parameters to the link before generating — for example ?utm_source=poster&utm_medium=qr — and your existing analytics will attribute the visits without any QR service in the loop. A separate parameter per placement tells you which poster worked.",
+          "The cost is a longer URL and therefore a denser code, which is the trade-off described above. If the link is already long, point the code at a short page on your own domain that redirects; you keep both the tracking and control of the destination.",
+        ],
+      },
     ],
     faq: [
       {
@@ -51,6 +86,14 @@ export const QR_TYPES: QrType[] = [
         q: "What size should I print a QR code?",
         a: "A rule of thumb is a 10:1 distance-to-size ratio: a code scanned from 25 cm away should be at least 2.5 cm wide. Download the SVG for crisp printing at any size.",
       },
+      {
+        q: "Can I change where the code points after printing it?",
+        a: "Not with a static code — the address lives inside the image. If you need to repoint it later, encode a URL on your own domain and set up a redirect there; you keep control of the destination without depending on a QR provider that may start charging or shut down.",
+      },
+      {
+        q: "Do I need to shorten the URL first?",
+        a: "Only if the code has to be printed small. Shorter links produce a lower QR version with fewer modules, which is easier for a camera to resolve. Under about 60 characters the difference rarely matters at normal print sizes.",
+      },
     ],
   },
   {
@@ -61,13 +104,43 @@ export const QR_TYPES: QrType[] = [
     desc: "Create a QR code from plain text for free. Works offline in your browser, downloads as PNG, SVG or JPG with no watermark.",
     h1: "Text QR Code Generator",
     intro:
-      "Encode any plain text — a note, a serial number, a coupon code — into a QR code. Scanners will display the text directly, no internet connection required.",
+      "Encode any plain text — a note, a serial number, a coupon code, a machine's maintenance history — into a QR code that displays the words themselves rather than opening anything. Because the characters live inside the symbol, a scanner shows them with no network connection at all, which is what makes text codes useful on equipment labels, in warehouses, on trail markers and anywhere else a signal cannot be assumed. Capacity is generous but not unlimited: roughly 4,296 alphanumeric characters at the lowest error-correction level, though anything past a few hundred produces a symbol dense enough that scanning gets fussy. Line breaks survive, so short instructions stay readable. Everything is generated in your browser, so serial numbers and internal codes never reach a server, and the result downloads as SVG for print or PNG for screens.",
     fields: [
       {
         model: "f.text",
         label: "Your text",
         input: "textarea",
         placeholder: "Type or paste any text…",
+      },
+    ],
+    sections: [
+      {
+        h: "What actually fits inside the symbol",
+        body: [
+          "Capacity depends on the character set you use. At the largest version and the lowest error-correction level a QR code holds 7,089 digits, 4,296 alphanumeric characters, or 2,953 bytes of arbitrary data. The alphanumeric mode is a restricted set — digits, uppercase letters, space and a handful of symbols — so lowercase text falls back to byte mode and takes more room per character.",
+          "Those ceilings are theoretical rather than practical. A symbol holding two thousand characters is 149 modules across, and resolving that many cells needs either a large print or a very good camera. Treat a few hundred characters as the working limit for anything that will be scanned in the field.",
+        ],
+      },
+      {
+        h: "Error correction is a trade, not a free upgrade",
+        body: [
+          "Reed–Solomon error correction lets a code survive damage: level L recovers about 7% of the symbol, M 15%, Q 25% and H 30%. That is what allows scratched, smudged or partly covered codes to keep working, and it is why a logo can be dropped into the middle of a code without breaking it.",
+          "The recovery data occupies the same symbol, so raising the level either shrinks how much text you can store or pushes the code to a higher version with more modules. For a label that will live on a clean surface indoors, L or M is enough. For something destined for a workshop floor or outdoor equipment, the extra density of Q is worth it.",
+        ],
+      },
+      {
+        h: "Where offline text codes earn their keep",
+        body: [
+          "Asset tags are the obvious case: a serial number, install date and model on the machine itself, readable in a basement with no signal. Warehouse bin labels work the same way, and so do the small placards on trail markers and utility cabinets where the whole point is that no server is involved.",
+          "The limitation is that the text cannot change. If the information is expected to be updated — a maintenance log rather than a serial number — encode an identifier and keep the changing part in your own system, rather than reprinting labels every time something moves.",
+        ],
+      },
+      {
+        h: "What scanners do with plain text",
+        body: [
+          "A text code has no URI scheme, so there is nothing for the phone to open. Camera apps show the decoded string and offer to copy it or run a search; dedicated scanner apps usually add a share action. This is different from a URL code, which prompts to open a browser, and it is the behaviour you want when the content is a number rather than a destination.",
+          "Line breaks are preserved, so a two- or three-line label reads as written. Very long paragraphs technically work but end up displayed in a cramped notification-style panel, which is another argument for keeping the content short.",
+        ],
       },
     ],
     faq: [
@@ -79,6 +152,14 @@ export const QR_TYPES: QrType[] = [
         q: "Does scanning a text QR code need internet?",
         a: "No. The text is stored inside the code itself, so any camera app can decode it fully offline.",
       },
+      {
+        q: "Are line breaks kept?",
+        a: "Yes. Newlines are encoded along with the rest of the characters, so a short multi-line label displays the way you typed it. Very long text still ends up in a small panel on most phones, so keep lines short.",
+      },
+      {
+        q: "Which error-correction level should I pick for a label?",
+        a: "L or M for anything indoors and clean. Step up to Q for labels that will be handled, scuffed or exposed to weather — you trade some capacity for the ability to keep scanning once a quarter of the symbol is damaged.",
+      },
     ],
   },
   {
@@ -89,7 +170,7 @@ export const QR_TYPES: QrType[] = [
     desc: "Create a WiFi QR code so guests connect to your network with one scan. Free, no sign-up, password never leaves your browser.",
     h1: "WiFi QR Code Generator",
     intro:
-      "Let guests join your WiFi by pointing their camera at a code — no typing long passwords. iPhones and Android phones both support WiFi QR codes natively. Your network name and password are encoded locally in your browser and never uploaded anywhere.",
+      "Let guests join your network by pointing a camera at a code instead of typing a password that was designed to be hard to type. The code holds three things — the network name, the password and the security type — in a short structured string beginning WIFI:, which iOS and Android both recognise natively, so no app is needed at either end. Everything is assembled in your browser: the password is never sent anywhere, and you can load this page, disconnect, and still generate a working code. Print it small and put it where guests already look — inside a menu, on the back of a room door, taped under the counter. The obvious caution is that anyone who can see the code can join the network, so a printed code belongs on the guest network rather than the one your NAS and printers live on.",
     fields: [
       {
         model: "f.ssid",
@@ -121,6 +202,36 @@ export const QR_TYPES: QrType[] = [
         half: true,
       },
     ],
+    sections: [
+      {
+        h: "What the code actually contains",
+        body: [
+          "A WiFi code is plain text in a documented format: WIFI:T:WPA;S:MyNetwork;P:hunter2;H:false;; where T is the security type, S the SSID, P the password and H whether the network is hidden. There is no encryption and no lookup — the password is sitting in the symbol in readable form, which is exactly why the code works without an internet connection.",
+          "That format is the reason semicolons, commas, colons and backslashes in a password have to be escaped with a backslash. This generator handles that for you, which matters more than it sounds: a mis-escaped password produces a code that scans cleanly and then silently fails to connect.",
+        ],
+      },
+      {
+        h: "Which phones support it, and which do not",
+        body: [
+          "iOS has recognised WiFi codes in the built-in Camera app since iOS 11, and Android since version 10 — both show a join prompt rather than a link. Android additionally goes the other way: in the WiFi settings, the Share button produces a code for the network you are already on, which is often faster than typing the password into this form.",
+          "Laptops are the gap. Windows and macOS do not scan WiFi codes from the camera, so a code on a meeting-room wall helps phones and tablets and does nothing for a visitor with a laptop. Keep the written password available as well.",
+        ],
+      },
+      {
+        h: "Hidden networks and the security type",
+        body: [
+          "If the SSID is not broadcast, tick the hidden option. It sets H:true, which tells the phone to probe for the network by name instead of waiting to see it in a scan — without that flag, a code for a hidden network appears to do nothing at all.",
+          "Pick WPA for anything modern; the same setting covers WPA2 and WPA3. WEP exists in the format for legacy equipment and should be treated as a signal to replace the router rather than as a working option. For an open network with no password, choose the no-password option so the phone does not sit waiting for a credential that will never come.",
+        ],
+      },
+      {
+        h: "Where to put a printed code — and where not to",
+        body: [
+          "Cafés, waiting rooms, holiday rentals and meeting rooms are the natural fit, because the alternative is reading a 16-character password aloud. Laminate it if it will be handled; a code with a torn corner may still scan thanks to error correction, but a missing corner marker will not.",
+          "Treat the printed code as equivalent to the password written out, because that is what it is. Anyone who photographs it keeps access until the password changes. Put guests on a guest network, and if your router supports it, isolate that network from the devices you actually care about.",
+        ],
+      },
+    ],
     faq: [
       {
         q: "Is it safe to make a WiFi QR code online?",
@@ -134,6 +245,14 @@ export const QR_TYPES: QrType[] = [
         q: "What if I change my WiFi password?",
         a: "The old code stops working, since the password is stored inside it. Just generate a new code — it takes seconds and is free.",
       },
+      {
+        q: "Does a WiFi QR code work on a laptop?",
+        a: "No. Windows and macOS have no built-in way to join a network by scanning, so the code only helps phones and tablets. Keep the password written somewhere for laptop users.",
+      },
+      {
+        q: "My password has a semicolon in it — will that break the code?",
+        a: "Not here. Semicolons, colons, commas and backslashes are special characters in the WIFI: format and have to be escaped; this generator escapes them for you. A tool that does not is the usual cause of a code that scans but then fails to connect.",
+      },
     ],
   },
   {
@@ -144,7 +263,7 @@ export const QR_TYPES: QrType[] = [
     desc: "Create a vCard QR code that adds your contact details to any phone with one scan. Free, unlimited, no watermark, data stays in your browser.",
     h1: "vCard QR Code Generator",
     intro:
-      'A vCard QR code puts your name, phone, email and company into a scannable code. Scanning it opens the "Add contact" screen on iPhone and Android — perfect for business cards, email signatures and conference badges. All details are encoded locally; nothing is uploaded.',
+      'A vCard QR code carries a whole contact record — name, company, job title, numbers, email, website and address — inside the symbol, so scanning it opens the "Add contact" screen with the fields already populated instead of leaving someone to retype a business card. The format is vCard 3.0, the version with the broadest support across iOS and Android camera apps, and the code is static: it works forever, needs no account, and keeps working if this site disappears. Everything is assembled in your browser, so a personal mobile number never touches a server. Fill in only the fields you actually want to hand out — every extra one adds characters, and a fully populated card with a long address produces a noticeably denser code that needs more room on a printed badge or card to stay easy to scan.',
     fields: [
       { model: "f.firstName", label: "First name", half: true },
       { model: "f.lastName", label: "Last name", half: true },
@@ -160,6 +279,36 @@ export const QR_TYPES: QrType[] = [
       { model: "f.zip", label: "Postcode", half: true },
       { model: "f.country", label: "Country", half: true },
     ],
+    sections: [
+      {
+        h: "vCard, MECARD and which one to use",
+        body: [
+          "Two contact formats show up in QR codes. vCard is the RFC-standard format also used by .vcf files, verbose but universally understood. MECARD is a compact alternative from the same NTT Docomo lineage as the WiFi format, which packs the same basic details into far fewer characters and therefore a simpler code.",
+          "MECARD's brevity comes at the cost of fields — it covers name, phone, email and address, and little else. This generator emits vCard 3.0 because job title, company and website are usually the point of a business card, and because support is consistent across scanners. If you only need a name and a mobile number and the code has to print very small, MECARD is the denser-information choice.",
+        ],
+      },
+      {
+        h: "Keep the card short",
+        body: [
+          "Every field is stored literally, so a contact with a long company name, a job title, two numbers and a full postal address can run past 300 characters. That pushes the symbol to a higher version with many more modules, and a dense code printed at business-card size is exactly the combination that fails to scan in bad lighting.",
+          "The fix is editorial rather than technical: put the details someone actually needs on the card and leave the rest to the conversation. Name, company, one number, one email and a website is usually enough, and it keeps the code sparse enough to print at two centimetres.",
+        ],
+      },
+      {
+        h: "Photos, logos and why they do not belong in the code",
+        body: [
+          "The vCard spec allows an embedded photo, and it is a bad idea in a QR code. Even a heavily compressed image runs to thousands of bytes, which exceeds what a QR symbol can hold at any reasonable print size. Contact codes with photos are almost always dynamic codes pointing at a hosted card.",
+          "Adding your logo on top of the code is a different matter and generally fine, because error correction can absorb a covered area. Keep the overlay under roughly the level's recovery capacity, leave the three corner finder patterns completely clear, and test the result with more than one phone before committing it to print.",
+        ],
+      },
+      {
+        h: "Where a contact code beats a link",
+        body: [
+          "Conference badges are the strongest case: the person scanning is standing in front of you, may have poor signal in a hall, and wants the details in their address book rather than in a browser tab. A static vCard works with no network at all.",
+          "Email signatures and slide decks are the weaker case. There the reader is already on a device with connectivity, and a plain link to a contact page gives you the ability to change the details later. Use the code where the destination is a phone's contacts app, and a link where it is a website.",
+        ],
+      },
+    ],
     faq: [
       {
         q: "What is a vCard QR code?",
@@ -173,6 +322,14 @@ export const QR_TYPES: QrType[] = [
         q: "Can I update the details later?",
         a: "Static vCard codes embed the details at generation time, so a change means generating a new code. The upside: it is free, never expires, and needs no account.",
       },
+      {
+        q: "Can I put my photo in the vCard QR code?",
+        a: "In practice, no. The vCard format allows an embedded image, but even a small compressed photo runs to thousands of bytes — far more than a scannable QR symbol can carry. Contact codes with photos are hosted cards behind a link, not static codes.",
+      },
+      {
+        q: "Why is my vCard code so much denser than a URL code?",
+        a: "Because it stores every field literally. A full card with company, job title, two numbers and a postal address can pass 300 characters, which forces a higher QR version. Dropping the fields you do not need is the quickest way to simplify the code.",
+      },
     ],
   },
   {
@@ -183,7 +340,7 @@ export const QR_TYPES: QrType[] = [
     desc: "Create a QR code that opens a pre-filled email. Set the recipient, subject and message. Free, no sign-up, no watermark.",
     h1: "Email QR Code Generator",
     intro:
-      "Scanning an email QR code opens the phone’s mail app with the address, subject and message already filled in. Great for feedback requests, support contacts and event RSVPs.",
+      "An email QR code encodes a mailto: address, optionally with a subject line and message body attached, so scanning it opens a new draft in whatever mail app the phone uses with the fields already filled in. Nothing sends by itself — the person always sees the draft and taps send — which makes it a good fit for feedback cards, support stickers on equipment, event RSVPs and anywhere a written-out address would be mistyped. Pre-filling the subject is the underused part: give each placement its own subject line and your inbox sorts itself without any tracking. The code is generated in your browser and is static, so it costs nothing, never expires and works without a signal at the moment of scanning. The one thing to think about before printing is that a published address is a scrapeable address.",
     fields: [
       {
         model: "f.emailTo",
@@ -202,10 +359,52 @@ export const QR_TYPES: QrType[] = [
         placeholder: "Pre-filled message…",
       },
     ],
+    sections: [
+      {
+        h: "How mailto: encoding works",
+        body: [
+          "The code contains a mailto: URI: the address, then subject and body as query parameters. Spaces, line breaks and punctuation in those parameters have to be percent-encoded, which is why a subject typed with an ampersand can silently truncate everything after it in tools that skip the escaping. This generator encodes the parameters properly.",
+          "Because it is a URI rather than a message, nothing is transmitted at scan time. The phone hands the string to its default mail client, which composes a draft locally. If the person has no mail app configured, the scan appears to do nothing at all — the commonest support question about email codes, and not something the code itself can fix.",
+        ],
+      },
+      {
+        h: "Use the subject line as your routing",
+        body: [
+          "A pre-filled subject is free segmentation. Print one code with the subject Warranty claim on the packaging, another with Showroom enquiry on the display card, and the two arrive in your inbox pre-labelled without a tracking service or a redirect in between.",
+          'Keep the pre-filled body short and treat it as a prompt rather than a script. A body that already contains three paragraphs reads as a form to be edited and gets abandoned; a single line like "Order number:" gets filled in.',
+        ],
+      },
+      {
+        h: "Publishing an address means publishing it",
+        body: [
+          "A printed email code exposes the address to anyone who scans it, and photographs of posters end up online. Address-harvesting is largely automated, so treat a code on public signage the same way you would treat the address in plain text on a web page.",
+          "The practical answer is a role address rather than a personal one: support@, hello@ or a purpose-made alias you can retire if it starts attracting spam. It also survives staff changes, which a personal address printed on a thousand leaflets does not.",
+        ],
+      },
+      {
+        h: "When a form works better",
+        body: [
+          "Email is the right choice when the reply needs to be a conversation, when attachments are likely, or when the scanner may be offline at the moment of scanning and will send later from their drafts.",
+          "A link to a web form is better when you need structured answers, want the response to land in a ticketing system, or need fields the person cannot forget to include. The trade-off is that a form requires a working connection and a browser; email degrades more gracefully.",
+        ],
+      },
+    ],
     faq: [
       {
         q: "What happens when someone scans an email QR code?",
         a: "Their default mail app opens a new draft with your address in the To field, plus any subject and body you pre-filled. They just press send.",
+      },
+      {
+        q: "Does the email send automatically?",
+        a: "No, and it cannot. The code only opens a draft — the person reads it and taps send themselves. Anything that claimed to send on scan would be sending from their account without consent.",
+      },
+      {
+        q: "Will pre-filled subject and body work on every phone?",
+        a: "The subject is reliable across iOS and Android mail apps. The body is nearly as reliable but occasionally dropped by third-party clients, so put anything essential in the subject rather than the body.",
+      },
+      {
+        q: "Should I use my personal address?",
+        a: "Better not to on anything printed and public. Use a role address like support@ or a dedicated alias — it can be retired if it starts collecting spam, and it survives the person who set it up moving on.",
       },
     ],
   },
@@ -217,7 +416,7 @@ export const QR_TYPES: QrType[] = [
     desc: "Create a QR code that opens a pre-written SMS to your number. Free, unlimited, generated locally in your browser.",
     h1: "SMS QR Code Generator",
     intro:
-      'An SMS QR code opens the messaging app with your number and a pre-written text. Used for opt-in campaigns, quick enquiries and "text us" signs.',
+      "An SMS QR code opens the phone's messaging app with your number in the recipient field and, if you want, a keyword already typed in the message. The person still has to tap send, which is the whole point: it removes the transcription errors that kill short-code campaigns without sending anything on anyone's behalf. It suits opt-in keywords, \"text us for a quote\" signage, appointment confirmations and out-of-hours contact cards on a locked shopfront. The encoding is the SMSTO: form, which has the widest scanner support, and the number should be in full international format so it works for someone roaming. Pre-filled message text is well supported on modern Android and iOS but is the part most likely to be dropped by an unusual scanner app, so never put anything essential there. Generated in your browser; nothing is uploaded.",
     fields: [
       {
         model: "f.smsPhone",
@@ -231,10 +430,52 @@ export const QR_TYPES: QrType[] = [
         placeholder: "JOIN",
       },
     ],
+    sections: [
+      {
+        h: "SMSTO: and why the format matters",
+        body: [
+          "There are two competing encodings. SMSTO:number:message comes from the same de facto family as the WiFi and MECARD formats and is understood by essentially every scanner. The RFC 5724 form, sms:number?body=text, is the standards-track version but has patchier handling of the body parameter across apps.",
+          "This generator emits SMSTO:, which is why a pre-filled keyword survives on the widest range of devices. If you have ever scanned a code that opened an empty message thread with the right number, you have met a scanner that recognised the number but discarded the body.",
+        ],
+      },
+      {
+        h: "Write the number the way a stranger's phone needs it",
+        body: [
+          "Use full international format with the country code — +60 12 345 6789, not 012 345 6789. A national-format number works for a local handset and fails for a visitor whose phone assumes a different country, which is the exact audience a sign in a hotel lobby or airport is aimed at.",
+          "Spaces and dashes are cosmetic; the messaging app strips them. What matters is the leading plus sign and country code. Shortcodes are the exception — they are national by definition and cannot be dialled internationally, so a code built around one only works domestically.",
+        ],
+      },
+      {
+        h: "Keywords, opt-in and the message you pre-fill",
+        body: [
+          "Keyword campaigns are the classic use: a single word like JOIN or QUOTE that your SMS platform routes on. Pre-filling it removes the two failure modes of printed campaigns — mistyped keywords and mistyped numbers — and costs nothing to produce.",
+          "Keep the pre-filled text to one short line. It is a starting point the person can edit, and a long pre-written paragraph reads as something to delete rather than send. Where consent matters, remember the tap-to-send step is what makes the opt-in the person's own action rather than yours.",
+        ],
+      },
+      {
+        h: "SMS against the alternatives",
+        body: [
+          "Against a phone call code: messaging works when the recipient cannot take calls, leaves a written record on both sides, and is far less intimidating for a simple enquiry. Against an email code: SMS reaches a phone that has signal but no data, and gets read faster.",
+          "The costs are real though. Messages may carry a charge for the sender, particularly internationally, and there is no delivery guarantee. For anything with a long or detailed response, a link to a page will serve the reader better than a thread of texts.",
+        ],
+      },
+    ],
     faq: [
       {
         q: "Does the SMS send automatically when scanned?",
         a: "No — scanning only opens the messaging app with the number and text pre-filled. The person always has to tap send themselves.",
+      },
+      {
+        q: "Will the pre-filled message appear on every phone?",
+        a: "On current iOS and Android, yes. A few third-party scanner apps recognise the number and drop the body, so treat the pre-filled text as a convenience and never put anything essential in it.",
+      },
+      {
+        q: "Do I need the country code?",
+        a: "Yes, if anyone scanning might be from elsewhere. Use full international format so a roaming phone resolves the number correctly. Shortcodes cannot be used internationally at all.",
+      },
+      {
+        q: "Does sending the message cost the person anything?",
+        a: "It may — standard message rates apply, and international messages can be expensive. If your audience is likely to be overseas visitors, a WhatsApp or email code is usually kinder than SMS.",
       },
     ],
   },
@@ -246,7 +487,7 @@ export const QR_TYPES: QrType[] = [
     desc: "Create a QR code that dials your phone number when scanned. Free, no sign-up, works with any camera app.",
     h1: "Phone Call QR Code Generator",
     intro:
-      "Scanning a phone QR code brings up your number ready to call — one tap and the phone dials. Ideal for service stickers, delivery notes and storefronts.",
+      "A phone QR code holds a tel: URI, so scanning it brings your number up in the dialler ready to call. No phone will place the call on its own — every platform shows the number and waits for a tap, which is a deliberate safeguard rather than a limitation, and it means a code on a sticker cannot be used to make someone's handset dial a premium line. The natural homes for one are places where a number is read off a surface and typed wrong: service stickers on boilers and lifts, delivery notes, out-of-hours signs on a locked door, vehicle livery, equipment nameplates. Use full international format so a visitor's phone resolves it correctly. The code is static and generated in your browser, so it costs nothing, never expires, and keeps working when the number itself does.",
     fields: [
       {
         model: "f.phone",
@@ -254,10 +495,52 @@ export const QR_TYPES: QrType[] = [
         placeholder: "+60 12 345 6789",
       },
     ],
+    sections: [
+      {
+        h: "Nothing dials by itself",
+        body: [
+          "The tel: scheme is a request, not a command. Both iOS and Android present the number and require an explicit tap, and browsers behave the same way with tel: links. This is by design: auto-dialling from a scanned image would be an obvious route to premium-rate fraud.",
+          "It also shapes how you should design the sign around the code. The person will see a bare number on screen before they commit, so if it matters that they are calling the right department, put that in the printed text next to the code — the dialler will not tell them.",
+        ],
+      },
+      {
+        h: "Write the number in E.164",
+        body: [
+          "E.164 is the international numbering format: a plus sign, country code, then the national number with no leading zero — +60 12 345 6789 rather than 012 345 6789. Written that way, the number resolves identically whether the scanner's phone is registered locally or roaming.",
+          "Punctuation inside the number is ignored by the dialler, so spaces and dashes are purely for the human reading it. Extensions are the weak spot: the pause characters used to dial one automatically are inconsistently supported, so for a direct line, publish the direct number rather than a switchboard and an extension.",
+        ],
+      },
+      {
+        h: "Where a call code beats printed digits",
+        body: [
+          "The value is proportional to how awkward the surface is. A number on a lift plate, a parking meter, a machine in a plant room or the back of a van gets read at an angle, in poor light, often by someone holding something else. Scanning removes the transcription step entirely.",
+          "It also helps on anything with an international audience. A visitor who does not know whether to drop a leading zero or add a country code has a real chance of getting it wrong; a code carrying E.164 gives them no opportunity to.",
+        ],
+      },
+      {
+        h: "Durability of a printed code",
+        body: [
+          "Codes on equipment live in bad conditions. Print with strong contrast — dark on light, never light on dark, which many scanners will not invert — and leave the four-module quiet zone clear of the sticker's border.",
+          "Error correction covers scuffing but not the corners: the three large finder patterns are how a scanner locates the symbol at all, so a code with a worn corner is unreadable regardless of level. For outdoor or workshop use, laminate it or use a printed vinyl label, and size it for the distance someone will actually stand at.",
+        ],
+      },
+    ],
     faq: [
       {
         q: "Should I include the country code?",
         a: "Yes — use the full international format (e.g. +60 12 345 6789) so the code works for both local and overseas callers.",
+      },
+      {
+        q: "Will scanning place the call straight away?",
+        a: "No. Both iOS and Android show the number in the dialler and wait for the person to tap call. There is no way to make a scanned code dial automatically, which is a deliberate protection against premium-rate abuse.",
+      },
+      {
+        q: "Can I encode an extension?",
+        a: "You can add pause characters, but support is inconsistent across phones and it often ends up dialling the switchboard and stopping. If people need a specific person, publish the direct line instead.",
+      },
+      {
+        q: "Does it work without a data connection?",
+        a: "Yes. The number is inside the symbol, so the scan itself needs no signal — only the call does. That is what makes these codes suitable for basements, lift lobbies and plant rooms.",
       },
     ],
   },
@@ -269,7 +552,7 @@ export const QR_TYPES: QrType[] = [
     desc: "Create a QR code that opens a map pin at your coordinates. Free geo QR generator, no sign-up, no watermark.",
     h1: "Location QR Code Generator",
     intro:
-      "A location QR code encodes latitude and longitude in the geo: format. Scanning opens the spot in the phone’s default maps app — handy for event flyers, rentals and meeting points. Tip: in Google Maps, right-click a spot and the coordinates appear first in the menu.",
+      "A location QR code encodes a latitude and longitude as a geo: URI, the format defined in RFC 5870, so scanning it drops a pin at exact coordinates instead of handing over an address that a maps app has to guess at. That distinction is the reason to use one: coordinates are unambiguous where a street address is not — a field entrance, a trailhead, a marina berth, a wedding venue down an unnamed track, a site office on a plot with no number yet. To get the numbers, right-click the spot in Google Maps and the coordinates sit at the top of the menu, ready to copy. Four decimal places is accurate to roughly eleven metres, which is enough for a building; six gets you to about a metre. The code is static and made in your browser, so it needs no account and never expires.",
     fields: [
       { model: "f.lat", label: "Latitude", placeholder: "3.1390", half: true },
       {
@@ -279,10 +562,52 @@ export const QR_TYPES: QrType[] = [
         half: true,
       },
     ],
+    sections: [
+      {
+        h: "How many decimal places you actually need",
+        body: [
+          "A degree of latitude is about 111 km, and each decimal place divides that by ten. Two places lands within roughly a kilometre, three within a hundred metres, four within eleven metres, five within about a metre, six within ten centimetres. Longitude behaves the same way at the equator and tightens as you move toward the poles.",
+          "Four decimal places is the sweet spot for getting a person to a building or a gate. Beyond six you are encoding precision that consumer GPS cannot deliver anyway — a phone in the open is typically accurate to a few metres, and considerably worse between tall buildings.",
+        ],
+      },
+      {
+        h: "Getting the coordinates right",
+        body: [
+          "Latitude comes first and runs from -90 to 90; longitude second, from -180 to 180. Southern latitudes and western longitudes are negative. Transposing the two is the classic error and produces a pin that is confidently wrong rather than obviously broken, so it is worth scanning your own code once before printing a thousand flyers.",
+          "In Google Maps, right-click the exact spot and the coordinates appear at the top of the context menu; clicking copies them. On a phone, dropping a pin and opening the detail sheet shows the same pair. Decimal degrees are what this format expects — if you have degrees, minutes and seconds from a survey document, convert first.",
+        ],
+      },
+      {
+        h: "What happens on the scanning phone",
+        body: [
+          "The geo: scheme is deliberately app-neutral, which is its strength and its weakness. Android hands it to whichever maps application the person has set as default and drops the pin there. On iOS, behaviour depends on the app doing the scanning: the coordinates resolve to a map, but the route from scan to pin is less consistent than it is for a URL.",
+          "If your audience is mostly iPhone users and the destination has a proper listing, a plain link to that listing in Apple or Google Maps is more predictable than a raw geo: code. Use coordinates where the place has no address to link to, which is exactly when they are worth the most.",
+        ],
+      },
+      {
+        h: "Where a pin beats an address",
+        body: [
+          "Anywhere the postal address does not describe where a person should physically stand. Large sites where the delivery entrance is not the front door, festival gates, remote holiday lets, construction plots, boat moorings, car park levels, and meeting points in parks all fall into this category.",
+          "Print the human directions next to the code rather than relying on it alone. A scan gets someone to the right coordinates; a line of text telling them it is the blue gate behind the depot is what stops them phoning you when they arrive.",
+        ],
+      },
+    ],
     faq: [
       {
         q: "Which maps app opens when scanned?",
-        a: "The geo: format is app-neutral: Android opens the user’s default maps app; iPhones open Apple Maps. Either way the pin lands on the same coordinates.",
+        a: "The geo: format is app-neutral: Android hands it to whichever maps app is set as default. On iPhone the result depends on the scanning app, so if your audience is mostly iOS and the venue has a map listing, a link to that listing behaves more predictably.",
+      },
+      {
+        q: "How precise should my coordinates be?",
+        a: "Four decimal places puts the pin within about eleven metres, which is enough to identify a building or gate. Six gets to roughly a metre — more precision than a phone's GPS can resolve in most conditions.",
+      },
+      {
+        q: "Does a location QR code work offline?",
+        a: "The scan does — the coordinates are inside the symbol. Displaying the map around them needs either a data connection or offline maps already downloaded on the phone.",
+      },
+      {
+        q: "I mixed up latitude and longitude. How do I tell?",
+        a: "Latitude is the first value and never exceeds 90; if your first number is larger than that, the pair is reversed. The safest check is to scan your own code before it goes to print — a transposed pin looks perfectly valid, just in the wrong place.",
       },
     ],
   },
@@ -457,8 +782,11 @@ export type Symbology = {
   title: string;
   desc: string;
   h1: string;
+  // 120-190 words: the self-contained block AI answers can quote. Enforced by
+  // scripts/assert-prose.mjs.
   intro: string;
   placeholder: string;
+  sections: Section[];
   faq: Faq[];
 };
 
@@ -476,8 +804,38 @@ export const SYMBOLOGIES: Symbology[] = [
     desc: "Generate CODE 128 barcodes free in your browser. Encodes letters, digits and symbols compactly. Download print-ready SVG or PNG — nothing is uploaded.",
     h1: "CODE 128 Barcode Generator",
     intro:
-      "CODE 128 is the workhorse of internal barcoding: it encodes the full ASCII set — letters, digits and punctuation — in a compact symbol, which is why warehouses, shipping labels and asset tags use it. Type your content and download vector SVG that stays sharp at any print size.",
+      "CODE 128 is the workhorse of internal barcoding. It encodes the full ASCII set — uppercase, lowercase, digits and punctuation — more compactly than any other widely supported linear symbology, which is why warehouses, shipping labels, asset registers and library systems settled on it. There is no fixed length and no registration body involved: unlike retail codes, the numbers are yours to define, because they only have to mean something inside your own system. The encoder picks between three character subsets automatically to keep the symbol as narrow as possible, and appends a modulo-103 check character that scanners verify silently. Type your content and download a vector SVG that stays sharp at any label size, or a PNG for screen use. Nothing is uploaded — the barcode is drawn in your browser, so internal part numbers and consignment references never leave the machine you typed them on.",
     placeholder: "e.g. ITEM-0042 or SHIP-99120",
+    sections: [
+      {
+        h: "Subsets A, B and C, and why they matter",
+        body: [
+          "CODE 128 defines three overlapping character sets. Subset A covers digits, uppercase letters and ASCII control characters; B swaps the control characters for lowercase; C is the interesting one, encoding pairs of digits in a single symbol character for double density.",
+          "A good encoder switches between them mid-symbol to minimise width, which is what this one does. The practical consequence is that a purely numeric value with an even number of digits produces a dramatically narrower barcode than the same length of mixed text — worth knowing when label width is fixed and your reference format is still up for discussion.",
+        ],
+      },
+      {
+        h: "GS1-128 is CODE 128 with rules attached",
+        body: [
+          "GS1-128, formerly UCC/EAN-128, uses exactly this symbology but adds a layer of meaning: a leading FNC1 character and standard Application Identifiers that mark what follows as a batch number, expiry date, weight or serial. It is what appears on pallet labels and in regulated supply chains.",
+          "This generator produces plain CODE 128, not GS1-128. For internal asset tags, bin locations and shipping references that is exactly what you want. If a trading partner has asked for GS1-128 with specific AIs, you need software that understands those structures — a visually identical barcode carrying unstructured text will be rejected by their scanning rules.",
+        ],
+      },
+      {
+        h: "Sizing, quiet zones and print quality",
+        body: [
+          "The X-dimension is the width of the narrowest bar and everything else scales from it. For labels read by handheld scanners at close range, around 0.25 mm is comfortable; smaller demands better printing. Height is a legibility matter rather than a data one — roughly 15% of the symbol width, or about 12 mm, gives a scanner enough to aim at.",
+          "Leave a quiet zone of at least ten times the X-dimension at each end, clear of borders and text. Print dark-on-light with real black rather than a rich black that can register imperfectly, and if you are using thermal transfer, check the first labels off the roll: a worn printhead thins bars in a way that reads fine to the eye and fails at the scanner.",
+        ],
+      },
+      {
+        h: "Choosing your own numbering scheme",
+        body: [
+          "Because nobody assigns these numbers, the design is yours — which means it is worth doing deliberately. Fixed-length references sort and validate more easily than variable ones, and a short prefix per category makes a scanned code readable by a human as well as a machine.",
+          "Two practical cautions. Avoid encoding information that changes, such as a location, in the identifier itself; the label outlives the fact. And if the value will ever be typed by hand as a fallback, keep it short and avoid characters that are easy to confuse — the density advantage of a long alphanumeric string disappears the moment someone has to read it aloud.",
+        ],
+      },
+    ],
     faq: [
       barcodePrivacyFaq,
       {
@@ -502,8 +860,38 @@ export const SYMBOLOGIES: Symbology[] = [
     desc: "Generate EAN-13 retail barcodes free in your browser. Enter 12 digits and the check digit is calculated automatically. Print-ready SVG or PNG, no upload.",
     h1: "EAN-13 Barcode Generator",
     intro:
-      "EAN-13 is the barcode on retail products outside North America. Enter the 12-digit number issued to you and the 13th check digit is calculated automatically — then download a vector SVG that stays sharp at packaging print sizes.",
+      "EAN-13 is the barcode on retail products almost everywhere outside North America — thirteen digits, made up of a GS1 company prefix, your item reference and a final check digit. Enter the first twelve and the thirteenth is calculated for you using the standard weighted modulo-10 formula, then download a vector SVG that stays crisp at packaging print sizes. The important thing to understand before you print anything: this tool draws the barcode, but it cannot issue the number. Retail EAN numbers are allocated by GS1, and a made-up number will either be rejected by the retailer or collide with someone else's product in their system. If you already have a prefix, this is the fastest way to turn a number into artwork. Everything renders in your browser, so unreleased product codes stay on your machine.",
     placeholder: "e.g. 590123412345",
+    sections: [
+      {
+        h: "What the thirteen digits mean",
+        body: [
+          "The number splits into three parts. The GS1 company prefix identifies you and runs from seven to ten digits depending on how many products you registered for. The item reference fills the space that leaves. The last digit is a check digit, computed rather than chosen.",
+          "The first two or three digits of the prefix are commonly read as a country code, and that is a persistent misunderstanding: they identify the GS1 member organisation that issued the prefix, not where the product was made. A UK company can perfectly legitimately sell goods manufactured anywhere carrying a 50x prefix.",
+        ],
+      },
+      {
+        h: "How the check digit is calculated",
+        body: [
+          "Take the first twelve digits and multiply each alternately by 1 and 3, starting with 1 at the leftmost position. Sum the results, then the check digit is whatever value brings that sum up to the next multiple of ten — equivalently, (10 − sum mod 10) mod 10.",
+          "That single digit is what lets a scanner reject a misread rather than silently return the wrong product. It is also why pasting all thirteen digits here either validates or fails: if the final digit does not match the calculation, something upstream is wrong and printing it would produce a barcode that scanners refuse.",
+        ],
+      },
+      {
+        h: "You need a GS1 prefix before you print",
+        body: [
+          "GS1 is the body that allocates prefixes, through national member organisations, for a joining fee and an annual renewal. Retailers verify that a barcode resolves to the brand that claims it, and the major grocers and marketplaces check this at onboarding.",
+          "Resold or 'lifetime' barcode numbers bought from third-party sellers are a recurring trap. They are usually blocks issued before GS1 tightened its licensing, and while they scan perfectly, they are registered to another company — which surfaces as a rejected listing at exactly the wrong moment. If the product is going to a retailer, buy the prefix directly.",
+        ],
+      },
+      {
+        h: "Print size and the quiet zone",
+        body: [
+          "The nominal EAN-13 symbol is about 37.29 mm wide by 25.93 mm high at 100% magnification, and the standard permits scaling between 80% and 200%. Going below 80% is the usual cause of a code that scans in the design studio and fails at a busy checkout.",
+          "The quiet zones are part of the symbol, not the margin around it: eleven modules on the left and seven on the right, which is why the '>' marker often appears at the right edge of packaging artwork. Do not let a design put text or a fold there. Keep bars dark on a light background, avoid red for the bars — many older scanners read with red light and will see nothing — and never rotate a linear barcode into a gradient.",
+        ],
+      },
+    ],
     faq: [
       barcodePrivacyFaq,
       {
@@ -528,8 +916,38 @@ export const SYMBOLOGIES: Symbology[] = [
     desc: "Generate UPC-A barcodes free in your browser for North American retail. Enter 11 digits and the check digit is added automatically. SVG or PNG, no upload.",
     h1: "UPC-A Barcode Generator",
     intro:
-      "UPC-A is the 12-digit barcode used on retail products in the United States and Canada. Enter your 11-digit number and the check digit is computed automatically — download as vector SVG for packaging or PNG for quick use.",
+      "UPC-A is the twelve-digit barcode on retail products in the United States and Canada, and the oldest barcode still in everyday use — the format scanned at a supermarket checkout in Ohio in 1974 and largely unchanged since. Enter your eleven digits and the twelfth check digit is computed automatically, then download vector SVG for packaging artwork or PNG for a quick mock-up. As with EAN-13, the number itself comes from GS1 rather than from us: a barcode drawn around an invented number scans perfectly and gets rejected at retailer onboarding. If you already hold a company prefix, this turns it into print-ready artwork in a few seconds. The rendering happens in your browser, so an unannounced product's code is not sent anywhere.",
     placeholder: "e.g. 03600029145",
+    sections: [
+      {
+        h: "UPC-A and EAN-13 are the same system",
+        body: [
+          "A UPC-A is an EAN-13 with a leading zero. Take any twelve-digit UPC, put a zero in front, and you have the equivalent thirteen-digit GTIN — the check digit is unchanged, because the calculation treats the added zero as contributing nothing.",
+          "That is why scanners everywhere read both, and why a product registered once with GS1 can be printed in either format for different markets. The practical difference is width: UPC-A is slightly narrower, which occasionally matters on small packaging, and North American retailers are more used to seeing it.",
+        ],
+      },
+      {
+        h: "Reading the twelve digits",
+        body: [
+          "The first digit is the number system character, which historically signalled the type of product: 0, 1, 6, 7, 8 for general goods, 2 for variable-weight items priced in store, 3 for pharmaceuticals under the National Drug Code, 4 for retailer-internal use, and 5 or 9 for coupons.",
+          "Number system 2 and 4 are the two worth knowing. Type 2 is what a supermarket deli scale prints, where part of the code is the price rather than the item. Type 4 is reserved for a retailer's own internal numbering and is explicitly not for products crossing between companies — using it because it is unallocated will cause exactly the collision it exists to prevent.",
+        ],
+      },
+      {
+        h: "The check digit, and why zero-suppressed UPC-E differs",
+        body: [
+          "The check digit uses the same weighted modulo-10 scheme as EAN-13: alternate weights of 3 and 1 across the first eleven digits, summed, then whatever brings the total to a multiple of ten. Paste twelve digits here and the tool validates rather than recalculates — a mismatch means the number is wrong, not the barcode.",
+          "UPC-E is the compressed six-digit variant found on small items like lip balm and single cans. It is not a different number: it is a UPC-A with specific patterns of zeros suppressed, expanded back by the scanner. Because only certain number shapes can be compressed, you cannot decide to use UPC-E for an arbitrary product.",
+        ],
+      },
+      {
+        h: "Printing for a checkout, not for a design review",
+        body: [
+          "Nominal size is about 37.29 mm by 25.91 mm, scalable from 80% to 200%. The truncation temptation — trimming the bar height to fit a design — is the single most common cause of retail scan failures, because an omnidirectional checkout scanner needs height to catch the symbol at an angle.",
+          "Keep nine modules of quiet zone at each end, print the bars in solid black on white or a very light background, and never in red. If the packaging is glossy or curved, ask the printer for a proof and test it on a real scanner: specular reflection off a curved bottle defeats more barcodes than any encoding mistake.",
+        ],
+      },
+    ],
     faq: [
       barcodePrivacyFaq,
       {
@@ -554,8 +972,38 @@ export const SYMBOLOGIES: Symbology[] = [
     desc: "Generate CODE 39 barcodes free in your browser for legacy industrial, logistics and military systems. Download print-ready SVG or PNG — nothing is uploaded.",
     h1: "CODE 39 Barcode Generator",
     intro:
-      "CODE 39 is the older industrial standard, still required by many logistics, automotive and defence systems (it underpins LOGMARS and older MIL-STD labelling). It encodes uppercase letters, digits and a few symbols, and every scanner ever built reads it.",
+      "CODE 39 is the old industrial standard, and it survives because so much still depends on it: automotive supply chains, defence labelling under LOGMARS and older MIL-STD requirements, healthcare systems and a long tail of equipment too expensive to replace. It encodes uppercase letters, digits, space and the symbols - . $ / + %, which is a deliberately small set, and it wraps the data in asterisk start and stop characters. Two properties keep it in service. It is self-checking, meaning a single misprinted element cannot decode as a different valid character, and every scanner ever built reads it without configuration. The cost is width: CODE 39 needs roughly 40% more space than CODE 128 for the same content. If a specification does not require it, use CODE 128 instead. Generated in your browser — part numbers are never uploaded.",
     placeholder: "e.g. PART-1234",
+    sections: [
+      {
+        h: "Self-checking, and what that actually buys you",
+        body: [
+          "Each CODE 39 character is nine elements, three of them wide, and that fixed structure is checked as the scanner decodes. A printing defect that alters one element produces an invalid pattern rather than a different valid character, so the symbol fails to read instead of reading wrong.",
+          "That is a meaningful safety property in an environment where labels get printed on worn thermal printers and read in poor conditions. It is not the same as a check digit covering the whole message, though: an optional modulo-43 check character exists for that, required by some specifications and ignored by most general use.",
+        ],
+      },
+      {
+        h: "Why it is so wide",
+        body: [
+          "Every character takes the same nine elements regardless of what it is, and there is no numeric compression of the kind CODE 128's subset C provides. A twelve-character part number can therefore run half as wide again as the same string in CODE 128.",
+          "On a large carton that is irrelevant. On a small component label or a cable flag it is the deciding constraint, and it is the usual reason a legacy scheme gets migrated. Full ASCII CODE 39, which encodes lowercase and symbols as two-character sequences, roughly doubles the width again — a workaround rather than a feature.",
+        ],
+      },
+      {
+        h: "The asterisks and the character set",
+        body: [
+          "The symbol is delimited by an asterisk at each end. Most software adds these automatically, and this generator does; the confusion arises when a system prints the human-readable line as *PART-1234* and someone types the asterisks into a field expecting the bare value.",
+          "The character set is uppercase only. Lowercase input is a common source of failure — it either gets silently uppercased or rejected, depending on the encoder. If your identifiers are case-sensitive, CODE 39 cannot represent them and the choice is already made for you.",
+        ],
+      },
+      {
+        h: "When a specification is the reason",
+        body: [
+          "Choose CODE 39 when something external requires it: a customer's inbound labelling standard, a defence contract citing MIL-STD-129, an existing scanner fleet configured for it, or a database of historical labels that must stay readable alongside new ones.",
+          "For anything genuinely new and internal, CODE 128 is denser, supports lowercase and carries a proper check character. The exception is where labels may be read by very old or oddly configured equipment you do not control — CODE 39's universality is its last real advantage, and occasionally it is the one that matters.",
+        ],
+      },
+    ],
     faq: [
       barcodePrivacyFaq,
       {
@@ -587,7 +1035,7 @@ export const COMPARISONS: Comparison[] = [
   {
     slug: "qr-code-monkey-alternative",
     competitor: "QRCode Monkey",
-    title: "QRCode Monkey Alternative — Generate QR Codes Free, No Upload",
+    title: "QRCode Monkey Alternative — Free QR Codes, No Upload",
     desc: "A free QRCode Monkey alternative: generate static QR codes in your browser, with nothing cached on a server, no account and no PRO upsell. Honest side-by-side comparison.",
     h1: "The free QRCode Monkey alternative",
     intro:

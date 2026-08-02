@@ -11,6 +11,10 @@ import {
   COMPARISONS,
 } from "../src/content.ts";
 import { assertComparisons } from "../../../scripts/assert-comparisons.mjs";
+import { assertProse } from "../../../scripts/assert-prose.mjs";
+
+assertProse(test, QR_TYPES, { tool: "qr types" });
+assertProse(test, SYMBOLOGIES, { tool: "barcodes" });
 
 const ALL = [...QR_TYPES, ...SYMBOLOGIES, ...PAYMENT_GUIDES, ...COMPARISONS];
 

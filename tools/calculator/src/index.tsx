@@ -181,7 +181,7 @@ app.get("/", (c) => {
   const desc = `${ALL_CALCS.length}+ free online calculators: loans, mortgages, BMI, salary after tax for Malaysia and 8 countries, dates, math and more. Instant results, no sign-up.`;
   return c.html(
     <Layout
-      title="CalcHub — Free Online Calculators: Finance, Health, Salary & Math"
+      title="CalcHub — Free Online Calculators: Finance, Health & Salary"
       desc={desc}
       path="/"
       origin={origin}

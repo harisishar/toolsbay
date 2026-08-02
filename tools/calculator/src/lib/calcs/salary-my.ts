@@ -93,7 +93,7 @@ export const SALARY_MY: Calc[] = [
     slug: "kwsp-epf-calculator",
     name: "KWSP EPF Calculator (Malaysia)",
     category: "Salary & Tax",
-    title: `KWSP EPF Calculator Malaysia ${FILING_YEAR} — Employee & Employer Contribution`,
+    title: `KWSP EPF Calculator Malaysia ${FILING_YEAR} — Employee & Employer`,
     desc: `Calculate monthly KWSP/EPF contributions in Malaysia for ${FILING_YEAR}: 11% employee, 12–13% employer, with yearly totals. Free, instant, no sign-up.`,
     intro:
       "The Employees Provident Fund — KWSP in Malay, EPF in English — is Malaysia's mandatory retirement savings scheme, and for most employees it is the largest single line on the payslip. The statutory employee rate is 11% of monthly wages. The employer adds 13% on top for wages of RM5,000 and below, or 12% for wages above RM5,000. So an employee earning RM5,000 has RM1,200 going into their EPF account every month, of which only RM550 comes out of their own pay. Contributions are calculated on wages as defined by the EPF Act, which includes basic salary, bonuses and commissions but excludes travel claims and benefits in kind. This calculator shows the employee share, the employer share, the combined monthly figure and the annual total, and lets you switch to the 9% rate if you are on the reduced employee rate.",
@@ -297,7 +297,7 @@ export const SALARY_MY: Calc[] = [
     slug: "pcb-calculator",
     name: "PCB Income Tax Calculator (Malaysia)",
     category: "Salary & Tax",
-    title: `PCB / MTD Calculator Malaysia ${FILING_YEAR} — Monthly Income Tax Deduction (${ASSESSMENT_YEAR})`,
+    title: `PCB / MTD Calculator Malaysia ${FILING_YEAR} — Monthly Tax Deduction`,
     desc: `Estimate your Malaysian monthly tax deduction (PCB/MTD) and annual income tax from monthly salary. Filing in ${FILING_YEAR} uses ${ASSESSMENT_YEAR} resident rates.`,
     intro: `PCB (Potongan Cukai Bulanan), also called MTD or Monthly Tax Deduction, is the income tax your employer withholds from your salary and remits to LHDN on your behalf. It is not a separate tax — it is a prepayment of the annual income tax you would otherwise owe in a lump sum, which is why most Malaysian employees end up neither paying nor reclaiming much when they file. This calculator estimates your PCB by annualising your monthly salary, subtracting the standard reliefs — RM9,000 individual relief, EPF capped at RM4,000, SOCSO and EIS capped at RM350 — and applying the ${ASSESSMENT_YEAR} resident tax brackets, which are the rates you file against during ${FILING_YEAR}. It assumes a single resident with no dependants, so it is close for most single filers and deliberately conservative for anyone with a spouse or children.`,
     updated: UPDATED,
@@ -400,7 +400,7 @@ export const SALARY_MY: Calc[] = [
     slug: "malaysia-salary-calculator",
     name: "Malaysia Salary Calculator",
     category: "Salary & Tax",
-    title: `Malaysia Salary Calculator ${FILING_YEAR} — Take-Home Pay (EPF, SOCSO, EIS, PCB)`,
+    title: `Malaysia Salary Calculator ${FILING_YEAR} — EPF, SOCSO, EIS & PCB`,
     desc: `Calculate Malaysian take-home salary (gaji bersih) after EPF, SOCSO, EIS and PCB deductions for ${FILING_YEAR}, with the full monthly breakdown. Free, no sign-up.`,
     intro:
       "Gaji bersih — your take-home pay — is what is left after four statutory deductions come out of your gross salary: EPF at 11%, SOCSO at roughly 0.5%, EIS at 0.2%, and PCB, the monthly income tax withheld by your employer. For a typical mid-range Malaysian salary those four together take somewhere between 13% and 16% of gross, and the largest share by far is EPF, which is not a tax at all but savings in your own name. This calculator applies all four to the salary you enter and shows the monthly breakdown line by line, so you can see which deduction is actually moving the number. It also shows total employer cost, because your employer pays EPF, SOCSO and EIS on top of your gross rather than out of it.",

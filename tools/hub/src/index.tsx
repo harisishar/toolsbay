@@ -28,7 +28,7 @@ const CATALOGUE_UPDATED = "2026-08-01";
 const SITE = {
   name: "ToolsBay",
   tagline: "Free online tools — no signup, nothing uploaded",
-  desc: `${TOTAL_PAGES} free online tools that run entirely in your browser — calculators, image compression and conversion, PDF utilities, QR codes and barcodes. No signup, no accounts, and your files never leave your device.`,
+  desc: `${TOTAL_PAGES} free online tools that run in your browser: calculators, image compression, PDF utilities, QR codes and barcodes. No signup, nothing uploaded.`,
 };
 
 const TOOLS = [

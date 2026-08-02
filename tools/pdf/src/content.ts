@@ -710,7 +710,7 @@ export const COMPARISONS: Comparison[] = [
   {
     slug: "ilovepdf-alternative",
     competitor: "iLovePDF",
-    title: "iLovePDF Alternative — Free PDF Tools, No Task Limits, No Account",
+    title: "iLovePDF Alternative — Free PDF Tools, No Task Limits",
     desc: "A free iLovePDF alternative with no task caps and no $7/mo upgrade: 34 PDF tools, 24 running entirely in your browser. Honest comparison, including where iLovePDF wins.",
     h1: "The free iLovePDF alternative",
     intro:

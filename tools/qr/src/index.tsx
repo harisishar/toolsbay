@@ -134,7 +134,36 @@ for (const t of QR_TYPES) {
         <div class="mx-auto max-w-5xl px-4 py-8">
           <Generator active={t} />
           <div class="max-w-3xl">
+            <article class="prose-tool mt-12">
+              {t.sections.map((s) => (
+                <section>
+                  <h2>{s.h}</h2>
+                  {s.body.map((p) => (
+                    <p>{p}</p>
+                  ))}
+                </section>
+              ))}
+            </article>
             <FaqSection faq={t.faq} />
+            <section class="mt-10">
+              <h2 class="font-display mb-3 text-lg">Other QR code types</h2>
+              <div class="flex flex-wrap gap-2">
+                {QR_TYPES.filter((x) => x.slug !== t.slug).map((x) => (
+                  <a
+                    href={`/${x.slug}`}
+                    class="rounded-md border border-line bg-white px-3 py-1.5 text-sm text-ink-soft hover:border-accent hover:text-accent-deep"
+                  >
+                    {x.label}
+                  </a>
+                ))}
+                <a
+                  href="/barcode-generator"
+                  class="rounded-md border border-line bg-white px-3 py-1.5 text-sm text-ink-soft hover:border-accent hover:text-accent-deep"
+                >
+                  Barcodes
+                </a>
+              </div>
+            </section>
           </div>
         </div>
       </Layout>,
@@ -152,6 +181,29 @@ const BARCODE_HUB = {
   intro:
     "Create print-ready barcodes in CODE128, EAN-13, UPC-A or CODE39 — free, in your browser, with SVG output that stays sharp at any size.",
   placeholder: "e.g. 5901234123457 or ITEM-0042",
+  sections: [
+    {
+      h: "Retail codes and internal codes are different problems",
+      body: [
+        "EAN-13 and UPC-A identify products moving between companies, so the numbers are allocated centrally by GS1 and a retailer will check that the prefix belongs to you. Any tool can draw the bars; none can issue a number that will survive onboarding.",
+        "CODE128 and CODE39 carry identifiers that only mean something inside your own operation — asset tags, bin locations, work orders, consignment references. Nobody assigns those, so you can start printing immediately. Picking the wrong side of this line is the most expensive barcode mistake: an invented EAN scans perfectly and fails commercially.",
+      ],
+    },
+    {
+      h: "Choosing between CODE128 and CODE39",
+      body: [
+        "CODE128 is the default for anything new. It encodes the full ASCII set, compresses digit pairs, and produces a symbol roughly 40% narrower than CODE39 for the same content — which is what decides it on small labels.",
+        "CODE39 is worth using when an external specification demands it, when the scanner fleet is old or unknown, or when existing labels have to stay consistent. It is uppercase-only and wider, but it is self-checking and readable by essentially every scanner ever built.",
+      ],
+    },
+    {
+      h: "What makes a barcode fail in the field",
+      body: [
+        "Almost never the encoding. The usual culprits are a quiet zone cropped by artwork, bar height truncated to fit a layout, insufficient contrast, or bars printed in red — which is invisible to the red-light scanners still common at checkouts and in warehouses.",
+        "Print from the SVG rather than a scaled-up PNG, keep the bars solid black on a light background, and test on the actual scanner before committing to a print run. A curved or glossy surface defeats more barcodes than any choice of symbology.",
+      ],
+    },
+  ],
   faq: [
     {
       q: "Which barcode format should I use?",
@@ -183,6 +235,7 @@ const barcodePages: BarcodePage[] = [
     desc: s.desc,
     intro: s.intro,
     placeholder: s.placeholder,
+    sections: s.sections,
     faq: s.faq,
   })),
 ];
@@ -319,6 +372,18 @@ for (const b of barcodePages) {
             </aside>
           </div>
           <div class="max-w-3xl">
+            {b.sections && (
+              <article class="prose-tool mt-12 mb-10">
+                {b.sections.map((s) => (
+                  <section>
+                    <h2>{s.h}</h2>
+                    {s.body.map((p) => (
+                      <p>{p}</p>
+                    ))}
+                  </section>
+                ))}
+              </article>
+            )}
             <p class="mb-6 text-sm leading-6 text-ink-soft">
               Other barcode formats:{" "}
               {barcodePages

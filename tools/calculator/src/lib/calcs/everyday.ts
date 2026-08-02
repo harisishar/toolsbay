@@ -65,7 +65,7 @@ export const EVERYDAY: Calc[] = [
     slug: "unit-converter",
     name: "Unit Converter",
     category: "Everyday",
-    title: "Unit Converter — Length, Weight, Volume, Area, Speed, Temperature",
+    title: "Unit Converter — Length, Weight, Volume, Area & Speed",
     desc: "Convert between metric and imperial units: length, weight, volume, area, speed and temperature, instantly and offline.",
     intro:
       "This converts between units across length, weight, volume, temperature, area, speed and data size, updating as you type. Most conversions are a single multiplication by a fixed factor, which is why a converter can cover so many units without much complexity. Temperature is the exception and the interesting case: Celsius and Fahrenheit have different zero points as well as different degree sizes, so converting between them needs both a multiplication and an offset. Get the order wrong and the answer is confidently incorrect. The other place errors hide is in units that share a name but not a size — a US gallon is about 17% smaller than an imperial one, and a US pint is smaller still relative to its British counterpart. Where that ambiguity exists, this converter names the variant explicitly.",

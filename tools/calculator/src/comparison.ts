@@ -14,7 +14,7 @@ export const COMPARISONS: Comparison[] = [
   {
     slug: "calculator-net-alternative",
     competitor: "Calculator.net",
-    title: "Calculator.net Alternative — Free Calculators, Non-US Tax Too",
+    title: "Calculator.net Alternative — Free, With Non-US Tax",
     desc: "A free Calculator.net alternative with Malaysian EPF, SOCSO and PCB plus take-home pay for 8 countries — the statutory maths Calculator.net only does for US residents.",
     h1: "The Calculator.net alternative that handles non-US tax",
     intro:
