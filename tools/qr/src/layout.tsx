@@ -1,5 +1,5 @@
 import type { Child } from "hono/jsx";
-import { ADSENSE_CLIENT, AD_SLOTS } from "@claudetools/seo";
+import { ADSENSE_CLIENT, AD_SLOTS, GA_ID, GA_INIT } from "@claudetools/seo";
 import { QR_TYPES, PAYMENT_GUIDES } from "./content.js";
 import { SITE } from "./seo.js";
 
@@ -77,6 +77,11 @@ export function Layout({
         <meta name="twitter:title" content={title} />
         <meta name="twitter:description" content={desc} />
         <link rel="stylesheet" href="/styles.css" />
+        <script
+          async
+          src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
+        />
+        <script dangerouslySetInnerHTML={{ __html: GA_INIT }} />
         <script
           async
           src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`}

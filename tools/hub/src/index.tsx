@@ -14,6 +14,8 @@ import {
 } from "./catalogue.js";
 import {
   ADSENSE_CLIENT,
+  GA_ID,
+  GA_INIT,
   privacySections,
   PRIVACY_UPDATED,
   robotsTxt,
@@ -190,6 +192,11 @@ app.get("/", (c) => {
           <link rel="stylesheet" href="/styles.css" />
           <script
             async
+            src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
+          />
+          <script dangerouslySetInnerHTML={{ __html: GA_INIT }} />
+          <script
+            async
             src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`}
             crossorigin="anonymous"
           />
@@ -351,6 +358,11 @@ app.get("/privacy-policy", (c) => {
           <link rel="canonical" href={origin + "/privacy-policy"} />
           <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
           <link rel="stylesheet" href="/styles.css" />
+          <script
+            async
+            src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
+          />
+          <script dangerouslySetInnerHTML={{ __html: GA_INIT }} />
           <script
             async
             src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`}
