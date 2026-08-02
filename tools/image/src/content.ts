@@ -735,7 +735,7 @@ export const COMPARISONS: Comparison[] = [
     slug: "iloveimg-alternative",
     competitor: "iLoveIMG",
     title: "iLoveIMG Alternative — Free Image Compressor, No Task Limits",
-    desc: "A free iLoveIMG alternative with no task counter and no $7/mo upgrade. Compress, resize, crop and convert in your browser — images are never uploaded. Honest comparison.",
+    desc: "A free iLoveIMG alternative with no task counter and no $7/mo upgrade. Compress, resize, crop and convert in your browser — nothing uploaded. Honest comparison.",
     h1: "The free iLoveIMG alternative",
     intro:
       "iLoveIMG is a solid image toolkit, and its free tier is more generous than most — 200 MB and 30 tasks on compression. The catch is what happens on the tools you reach for once: Crop and the Image Editor allow exactly one task, and background removal and upscaling allow three at 6 MB. ImgSquash is our image suite: every tool runs in your browser, so there is no task to count. Here is the honest comparison.",

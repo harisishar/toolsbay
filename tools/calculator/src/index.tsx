@@ -414,9 +414,17 @@ for (const cmp of COMPARISONS) {
         desc={cmp.desc}
         path={`/${cmp.slug}`}
         origin={origin}
+        crumbs={[
+          ["Calculators", "/"],
+          [cmp.competitor, `/${cmp.slug}`],
+        ]}
         jsonLd={[
           articleJsonLd(origin, `/${cmp.slug}`, cmp.h1, cmp.desc),
           faqJsonLd(cmp.faq),
+          breadcrumbJsonLd(origin, [
+            ["Calculators", "/"],
+            [cmp.competitor, `/${cmp.slug}`],
+          ]),
         ]}
       >
         <div class="grid-dots border-b border-line bg-panel">
