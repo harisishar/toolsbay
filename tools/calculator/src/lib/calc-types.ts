@@ -3,6 +3,8 @@
 // the client bundle, and node:test self-checks.
 
 export type Faq = { q: string; a: string };
+export type Section = { h: string; body: string[] };
+export type Step = { name: string; text: string };
 
 export type Input = {
   key: string;
@@ -33,7 +35,17 @@ export type Calc = {
     | "Salary & Tax";
   title: string;
   desc: string;
+  // 130-170 words, self-contained. This is the block AI search engines quote,
+  // so it has to answer the question without the rest of the page around it.
   intro: string;
+  // The article body. "How this is calculated" belongs here on every page —
+  // showing the actual arithmetic is the one thing the big calculator sites
+  // mostly do not do, and it is unique per page by construction.
+  sections: Section[];
+  steps?: Step[];
+  // Statutory calculators cite the authority that sets the rates.
+  source?: { label: string; url: string };
+  updated: string;
   inputs: Input[];
   faq: Faq[];
   button?: string; // optional action button label (e.g. "Generate again")

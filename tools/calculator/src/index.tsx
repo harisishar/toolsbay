@@ -10,6 +10,8 @@ import {
   faqJsonLd,
   sitemapXml,
   robotsTxt,
+  breadcrumbJsonLd,
+  howToJsonLd,
   type CompareRow,
 } from "./seo.ts";
 import { COMPARISONS } from "./comparison.ts";
@@ -27,6 +29,14 @@ function privacyLd(origin: string) {
 
 const app = new Hono();
 const originOf = (url: string) => new URL(url).origin;
+
+// "Health & Fitness" -> "health-fitness", for the homepage category anchors the
+// breadcrumb trail points at.
+const slugifyCategory = (cat: string) =>
+  cat
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
 
 app.use("*", async (c, next) => {
   await next();
@@ -193,7 +203,7 @@ app.get("/", (c) => {
       </div>
       <div id="all" class="mx-auto max-w-5xl px-4 py-10">
         {CATEGORIES.map((cat) => (
-          <section class="mb-10">
+          <section id={slugifyCategory(cat)} class="mb-10 scroll-mt-4">
             <h2 class="font-display mb-4 text-xl">{cat}</h2>
             <div class="grid gap-3 sm:grid-cols-3 lg:grid-cols-4">
               {ALL_CALCS.filter((t) => t.category === cat).map((t) => (
@@ -227,9 +237,29 @@ for (const calc of ALL_CALCS) {
         desc={calc.desc}
         path={`/${calc.slug}`}
         origin={origin}
+        crumbs={[
+          ["Calculators", "/"],
+          [calc.category, `/#${slugifyCategory(calc.category)}`],
+          [calc.name, `/${calc.slug}`],
+        ]}
         jsonLd={[
           webAppJsonLd(origin, `/${calc.slug}`, calc.name, calc.desc),
           faqJsonLd(calc.faq),
+          breadcrumbJsonLd(origin, [
+            ["Calculators", "/"],
+            [calc.name, `/${calc.slug}`],
+          ]),
+          ...(calc.steps
+            ? [
+                howToJsonLd({
+                  origin,
+                  path: `/${calc.slug}`,
+                  name: `How to use the ${calc.name}`,
+                  description: calc.desc,
+                  steps: calc.steps,
+                }),
+              ]
+            : []),
         ]}
       >
         <div class="grid-dots border-b border-line bg-panel">
@@ -245,6 +275,45 @@ for (const calc of ALL_CALCS) {
         <div class="mx-auto max-w-5xl px-4 py-8">
           <CalcWidget calc={calc} />
           <div class="max-w-3xl">
+            <article class="prose-tool mt-12">
+              {calc.sections.map((s) => (
+                <section>
+                  <h2>{s.h}</h2>
+                  {s.body.map((p) => (
+                    <p>{p}</p>
+                  ))}
+                </section>
+              ))}
+              {calc.steps && (
+                <section>
+                  <h2>How to use the {calc.name.toLowerCase()}</h2>
+                  <ol>
+                    {calc.steps.map((s) => (
+                      <li>
+                        <strong>{s.name}.</strong> {s.text}
+                      </li>
+                    ))}
+                  </ol>
+                </section>
+              )}
+            </article>
+            <p class="mt-8 text-[13px] text-navy-soft">
+              {calc.source && (
+                <>
+                  Rates and thresholds from{" "}
+                  <a
+                    class="underline"
+                    href={calc.source.url}
+                    rel="nofollow noopener"
+                    target="_blank"
+                  >
+                    {calc.source.label}
+                  </a>
+                  {". "}
+                </>
+              )}
+              Last updated: {calc.updated}
+            </p>
             {calc.faq.length > 0 && (
               <section class="mt-12">
                 <h2 class="font-display mb-4 text-xl">
@@ -483,9 +552,9 @@ app.get("/sitemap.xml", (c) => {
   return c.body(
     sitemapXml(origin, [
       "/",
-      ...ALL_CALCS.map((t) => `/${t.slug}`),
-      ...COMPARISONS.map((c) => `/${c.slug}`),
-      "/privacy-policy",
+      ...ALL_CALCS.map((t) => ({ path: `/${t.slug}`, lastmod: t.updated })),
+      ...COMPARISONS.map((c) => ({ path: `/${c.slug}`, lastmod: c.updated })),
+      { path: "/privacy-policy", lastmod: PRIVACY_UPDATED },
     ]),
     200,
     {

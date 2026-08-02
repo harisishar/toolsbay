@@ -21,8 +21,10 @@ import {
 import { ALL_CALCS, CALC_BY_SLUG } from "../src/lib/calcs/index.ts";
 import { COMPARISONS } from "../src/comparison.ts";
 import { assertComparisons } from "../../../scripts/assert-comparisons.mjs";
+import { assertProse } from "../../../scripts/assert-prose.mjs";
 
 assertComparisons(test, COMPARISONS, { toolName: "CalcHub" });
+assertProse(test, ALL_CALCS, { tool: "calculators" });
 
 // The Calculator.net page's entire argument is that we cover statutory payroll
 // they do not, and that they have far more calculators than we do. Both halves

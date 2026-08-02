@@ -2,6 +2,8 @@ import {
   webAppJsonLd as webApp,
   articleJsonLd as article,
   faqJsonLd,
+  howToJsonLd,
+  breadcrumbJsonLd,
   sitemapXml,
   robotsTxt,
   type Faq,
@@ -9,7 +11,7 @@ import {
   type CompareRow,
 } from "@claudetools/seo";
 
-export { faqJsonLd, sitemapXml, robotsTxt };
+export { faqJsonLd, howToJsonLd, breadcrumbJsonLd, sitemapXml, robotsTxt };
 export type { Faq, Comparison, CompareRow };
 
 export const SITE = {

@@ -340,3 +340,57 @@ comparison prose names the tool nine times in `content.ts`.
 - [ ] AI upscaling stays unbuilt - same architecture, but 170 MB+ models at 1024x1024
 
 - [ ] **Deploy: not shipped.** `pnpm --filter @tools/image deploy` and the hub after it
+
+## Content depth pass — fixing thin pages (2026-08-01)
+
+Measured before starting: 119 of 150 routes rendered under 200 words of prose. Calculator pages
+averaged **71 words** (min 33) — an `<h1>`, one sentence, a widget and a single FAQ. The four
+comparison pages were the only content on the estate a crawler would recognise as such.
+
+### Phase 0 — infrastructure (done)
+
+- [x] `packages/seo`: `howToJsonLd`, `breadcrumbJsonLd`, `datePublished`/`dateModified` on
+      `articleJsonLd`, `lastmod` support in `sitemapXml`, shared `Section`/`Step` types
+- [x] `scripts/assert-prose.mjs` — shared depth invariants: lead block 120–190 words,
+      >= 3 sections, >= 4 FAQ, title <= 75 / desc <= 175 (the calculator registry had **no**
+      SERP-length assertion before this), `updated` date format, and a **cross-page similarity
+      guard** (trigram Jaccard, digits stripped, 50% ceiling) so templated depth cannot become
+      duplicate content
+- [x] Calculator `prose-tool` CSS gained `h3`, `strong`, `ol`/`ul` (it styled only h2/p/a)
+- [x] Visible breadcrumb `<nav>` + `crumbs` prop on the calculator Layout; category anchors
+      added to the homepage so the trail resolves
+
+### Phase 1 — calculator, all 51 pages (done)
+
+- [x] `Calc` gained `sections`, `steps?`, `source?`, `updated`; `intro` is now the 130–170 word
+      citable lead block. Rendered through the same `<article class="prose-tool">` loop the
+      comparison pages already used — no new component
+- [x] Every page carries a **"How this is calculated"** section with the real formula and a
+      worked example. Unique per page by construction, and the thing Calculator.net mostly
+      does not do
+- [x] Statutory pages cite the authority: KWSP, PERKESO, LHDN, HMRC, IRAS, ATO, IRS, CRA, NTA
+- [x] `HowTo` + `BreadcrumbList` JSON-LD on every calculator page; sitemap now carries `lastmod`
+- [x] Result: **min 647 / median 743 / max 1,032 words** (was min 33 / avg 71). 38,949 words
+      total. Worst cross-page similarity 10.1% against a 50% ceiling
+- [x] `pnpm typecheck` + `pnpm check` green; 27/27 calculator tests pass; `TOTAL_PAGES` still 136
+      (no new URLs, catalogue untouched)
+
+### Still open
+
+- [ ] **Phase 2 — PDF, 34 pages.** Currently ~110 words each; `pdf-to-powerpoint` is 63.
+      Honesty constraint stands: `tools/pdf/tests/tools.test.mjs:84-116` forbids a blanket
+      privacy claim on the 10 `server: true` tools and requires the server-path disclosure
+- [ ] **Phase 3 — image, 34 pages.** 29 pair pages share one template; extend `SOURCES`/`TARGETS`
+      with per-format facts (compression type, alpha handling, size ratio, browser support) so
+      the similarity guard passes
+- [ ] **Phase 4 — QR, 17 pages.** `sms`/`phone`/`email` QR types are the thinnest in the repo
+      (54–63 words). QR type pages also have **no related-links block at all**, unlike the other
+      three tools
+- [ ] **Phase 5 — linking.** Tools never link back to the hub (`grep -rn toolsbay tools/*/src`
+      returns zero) — the cross-subdomain graph is one-directional. Calculator footers
+      `.slice(0, 9)` per category and image shows `PAIRS.slice(0, 12)`, so ~20 pages have no
+      sitewide link. Hub `ItemList` covers 4 tools, not the directory; `WebSite` has no
+      `SearchAction`
+- [ ] Roll the same `assert-prose.mjs` invariants into the other three tools' test files as each
+      phase lands — the failing list is the worklist
+- [ ] **Deploy: still nothing live** from this or the previous four sessions

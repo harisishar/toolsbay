@@ -1,5 +1,5 @@
 import type { Child } from "hono/jsx";
-import { ADSENSE_CLIENT, AD_SLOTS } from "@claudetools/seo";
+import { ADSENSE_CLIENT, AD_SLOTS, GA_ID, GA_INIT } from "@claudetools/seo";
 import { SITE } from "./seo.ts";
 import { ALL_CALCS, CATEGORIES } from "./lib/calcs/index.ts";
 
@@ -47,6 +47,8 @@ type LayoutProps = {
   path: string;
   origin: string;
   jsonLd?: object[];
+  // [label, href] including the current page as the last entry.
+  crumbs?: [string, string][];
   children: Child;
 };
 
@@ -56,6 +58,7 @@ export function Layout({
   path,
   origin,
   jsonLd = [],
+  crumbs,
   children,
 }: LayoutProps) {
   const canonical = origin + path;
@@ -77,6 +80,11 @@ export function Layout({
         <meta name="twitter:title" content={title} />
         <meta name="twitter:description" content={desc} />
         <link rel="stylesheet" href="/styles.css" />
+        <script
+          async
+          src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
+        />
+        <script dangerouslySetInnerHTML={{ __html: GA_INIT }} />
         <script
           async
           src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`}
@@ -124,6 +132,27 @@ export function Layout({
             </nav>
           </div>
         </header>
+        {crumbs && (
+          <nav
+            aria-label="Breadcrumb"
+            class="mx-auto max-w-5xl px-4 pt-3 text-[13px] text-navy-soft"
+          >
+            <ol class="flex flex-wrap items-center gap-1.5">
+              {crumbs.map(([label, href], i) => (
+                <li class="flex items-center gap-1.5">
+                  {i > 0 && <span aria-hidden="true">/</span>}
+                  {i === crumbs.length - 1 ? (
+                    <span aria-current="page">{label}</span>
+                  ) : (
+                    <a href={href} class="hover:text-amber-deep">
+                      {label}
+                    </a>
+                  )}
+                </li>
+              ))}
+            </ol>
+          </nav>
+        )}
         <main>{children}</main>
         <AdSlot
           slot={AD_SLOTS.contentBottom}

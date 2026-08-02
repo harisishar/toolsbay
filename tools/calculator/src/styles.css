@@ -1,30 +1,30 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 
 @font-face {
-  font-family: 'Familjen Grotesk';
+  font-family: "Familjen Grotesk";
   font-style: normal;
   font-weight: 700;
   font-display: swap;
-  src: url('/fonts/familjen-700.woff2') format('woff2');
+  src: url("/fonts/familjen-700.woff2") format("woff2");
 }
 @font-face {
-  font-family: 'Source Sans 3';
+  font-family: "Source Sans 3";
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url('/fonts/source-sans-400.woff2') format('woff2');
+  src: url("/fonts/source-sans-400.woff2") format("woff2");
 }
 @font-face {
-  font-family: 'Source Sans 3';
+  font-family: "Source Sans 3";
   font-style: normal;
   font-weight: 600;
   font-display: swap;
-  src: url('/fonts/source-sans-600.woff2') format('woff2');
+  src: url("/fonts/source-sans-600.woff2") format("woff2");
 }
 
 @theme {
-  --font-display: 'Familjen Grotesk', ui-sans-serif, sans-serif;
-  --font-sans: 'Source Sans 3', ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Familjen Grotesk", ui-sans-serif, sans-serif;
+  --font-sans: "Source Sans 3", ui-sans-serif, system-ui, sans-serif;
   --color-navy: #14213d;
   --color-navy-soft: #40506e;
   --color-paper: #f8f7f2;
@@ -39,7 +39,10 @@
 }
 
 .grid-dots {
-  background-image: radial-gradient(color-mix(in srgb, var(--color-navy) 10%, transparent) 1px, transparent 1px);
+  background-image: radial-gradient(
+    color-mix(in srgb, var(--color-navy) 10%, transparent) 1px,
+    transparent 1px
+  );
   background-size: 20px 20px;
   mask-image: linear-gradient(to bottom, black, transparent 90%);
 }
@@ -59,8 +62,24 @@
 .prose-tool h2 {
   @apply font-display mt-10 mb-3 text-xl text-navy;
 }
+.prose-tool h3 {
+  @apply font-display mt-6 mb-2 text-base text-navy;
+}
 .prose-tool p {
   @apply mb-4;
+}
+.prose-tool strong {
+  @apply font-semibold text-navy;
+}
+.prose-tool ol,
+.prose-tool ul {
+  @apply mb-4 space-y-2 pl-5;
+}
+.prose-tool ol {
+  @apply list-decimal;
+}
+.prose-tool ul {
+  @apply list-disc;
 }
 .prose-tool a {
   @apply text-amber-deep underline decoration-amber/40 underline-offset-2;
