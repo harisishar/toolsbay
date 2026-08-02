@@ -107,6 +107,17 @@ for (const tool of TOOLS) {
         <Hero h1={tool.h1} intro={tool.intro} />
         <div class="mx-auto max-w-3xl px-4 py-8">
           <ToolBody tool={tool} />
+          <article class="prose-tool mt-12">
+            <p class="lead">{tool.lead}</p>
+            {tool.sections.map((s) => (
+              <section>
+                <h2>{s.h}</h2>
+                {s.body.map((para) => (
+                  <p>{para}</p>
+                ))}
+              </section>
+            ))}
+          </article>
           <FaqSection faq={tool.faq} />
           <section class="mt-10">
             <h2 class="font-display mb-3 text-lg">More PDF tools</h2>

@@ -1,37 +1,37 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 
 @font-face {
-  font-family: 'Fraunces';
+  font-family: "Fraunces";
   font-style: normal;
   font-weight: 700;
   font-display: swap;
-  src: url('/fonts/fraunces-700.woff2') format('woff2');
+  src: url("/fonts/fraunces-700.woff2") format("woff2");
 }
 @font-face {
-  font-family: 'Public Sans';
+  font-family: "Public Sans";
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url('/fonts/public-sans-400.woff2') format('woff2');
+  src: url("/fonts/public-sans-400.woff2") format("woff2");
 }
 @font-face {
-  font-family: 'Public Sans';
+  font-family: "Public Sans";
   font-style: normal;
   font-weight: 600;
   font-display: swap;
-  src: url('/fonts/public-sans-600.woff2') format('woff2');
+  src: url("/fonts/public-sans-600.woff2") format("woff2");
 }
 @font-face {
-  font-family: 'Caveat';
+  font-family: "Caveat";
   font-style: normal;
   font-weight: 700;
   font-display: swap;
-  src: url('/fonts/caveat-700.woff2') format('woff2');
+  src: url("/fonts/caveat-700.woff2") format("woff2");
 }
 
 @theme {
-  --font-display: 'Fraunces', ui-serif, Georgia, serif;
-  --font-sans: 'Public Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Fraunces", ui-serif, Georgia, serif;
+  --font-sans: "Public Sans", ui-sans-serif, system-ui, sans-serif;
   --color-cream: #faf6ee;
   --color-panel: #ffffff;
   --color-line: #e6ddcc;
@@ -85,6 +85,11 @@
 .prose-tool a {
   @apply text-brick-deep underline decoration-brick/40 underline-offset-2;
 }
+/* The citable opening block — set a little larger than the body so it reads as
+   the summary it is. */
+.prose-tool .lead {
+  @apply border-l-2 border-brick/30 pl-4 text-base text-ink;
+}
 .sig-font {
-  font-family: 'Caveat', cursive;
+  font-family: "Caveat", cursive;
 }

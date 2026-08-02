@@ -6,6 +6,11 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { TOOLS, CATEGORIES, COMPARISONS } from "../src/content.ts";
 import { assertComparisons } from "../../../scripts/assert-comparisons.mjs";
+import { assertProse } from "../../../scripts/assert-prose.mjs";
+
+// `intro` stays the short line above the widget; `lead` is the citable block
+// that opens the article, so that is what carries the 120-190 word bound.
+assertProse(test, TOOLS, { tool: "pdf tools", leadField: "lead" });
 
 // Alpine components registered in src/client/app.ts, plus the ApiBody fallback
 // used by every server-path conversion.
@@ -91,6 +96,27 @@ test("server-path tools never claim files stay on the device", () => {
         `${t.slug} is server-processed but its FAQ claims files stay local`,
       );
     }
+    // The depth pass added a lead block and article sections; they are prose
+    // about where the file goes, so they carry the same constraint as the FAQ.
+    assert.doesNotMatch(
+      t.lead,
+      CLIENT_CLAIM,
+      `${t.slug} is server-processed but its lead claims files stay local`,
+    );
+    for (const s of t.sections) {
+      for (const para of s.body) {
+        assert.doesNotMatch(
+          para,
+          CLIENT_CLAIM,
+          `${t.slug} is server-processed but a section claims files stay local`,
+        );
+      }
+    }
+    assert.match(
+      t.lead,
+      /our server|streamed/i,
+      `${t.slug} is server-processed but its lead does not say so`,
+    );
     assert.doesNotMatch(
       `${t.title} ${t.desc}`,
       /no upload|never uploaded/i,
