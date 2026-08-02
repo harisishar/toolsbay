@@ -6,6 +6,13 @@ import assert from "node:assert/strict";
 import { PAIRS, SOURCES, TARGETS, COMPARISONS, CORE } from "../src/content.ts";
 import { SITE } from "../src/seo.ts";
 import { assertComparisons } from "../../../scripts/assert-comparisons.mjs";
+import { assertProse } from "../../../scripts/assert-prose.mjs";
+
+// The pair pages are the estate's hardest similarity case: 29 pages from one
+// template, differing only by which two formats they name. The guard inside
+// assertProse is what forces the per-format facts in SOURCES/TARGETS to do
+// real work rather than swapping adjectives.
+assertProse(test, PAIRS, { tool: "pairs" });
 
 // Read the brand rather than repeating it: this assertion exists to catch prose
 // that forgets to name the tool, not to pin the tool's name. Hardcoding it here

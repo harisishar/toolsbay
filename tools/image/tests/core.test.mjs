@@ -3,7 +3,34 @@
 // assertions are what make consolidating them safe.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { CORE, TOOL_FAQ, MODEL_MB } from "../src/content.ts";
+import { CORE, TOOL_FAQ, TOOL_SECTIONS, MODEL_MB } from "../src/content.ts";
+
+// The five core pages are the ones the tool is actually searched for, so they
+// carry the same article-body floor as the generated pair pages.
+test("every core page has an article body, not just a widget", () => {
+  for (const t of CORE) {
+    const sections = TOOL_SECTIONS[t.path];
+    assert.ok(
+      Array.isArray(sections) && sections.length >= 3,
+      `${t.path}: ${sections?.length ?? 0} sections, want >= 3`,
+    );
+    for (const s of sections) {
+      assert.ok(s.h?.trim(), `${t.path}: section with no heading`);
+      assert.ok(
+        Array.isArray(s.body) && s.body.length > 0,
+        `${t.path}: section "${s.h}" has an empty body`,
+      );
+      for (const para of s.body)
+        assert.ok(para?.trim(), `${t.path}: empty paragraph in "${s.h}"`);
+    }
+    const words = sections
+      .flatMap((s) => [s.h, ...s.body])
+      .join(" ")
+      .split(/\s+/)
+      .filter(Boolean).length;
+    assert.ok(words >= 380, `${t.path}: ${words} words of body, want >= 380`);
+  }
+});
 
 test("core pages have unique, route-shaped paths", () => {
   const seen = new Set();
@@ -44,8 +71,16 @@ test("the background-removal FAQ discloses the download and the privacy claim", 
   assert.ok(faq && faq.length >= 2, "remove-background needs a real FAQ");
   const text = faq.map((f) => `${f.q} ${f.a}`).join(" ");
 
-  assert.match(text, new RegExp(`${MODEL_MB}\\s*MB`), "FAQ hides the download size");
-  assert.match(text, /browser|device/i, "FAQ does not say where the work happens");
+  assert.match(
+    text,
+    new RegExp(`${MODEL_MB}\\s*MB`),
+    "FAQ hides the download size",
+  );
+  assert.match(
+    text,
+    /browser|device/i,
+    "FAQ does not say where the work happens",
+  );
   assert.match(
     text,
     /never leaves|no upload|not upload|never uploaded/i,
@@ -57,6 +92,14 @@ test("the background-removal FAQ discloses the download and the privacy claim", 
 test("the page promising transparency is the one that outputs PNG", () => {
   const bg = CORE.find((t) => t.path === "/remove-background");
   assert.ok(bg, "/remove-background missing from CORE");
-  assert.match(bg.llms, /transparent PNG/i, "llms.txt entry undersells the output");
-  assert.match(bg.llms, new RegExp(`${MODEL_MB}`), "llms.txt entry hides the download");
+  assert.match(
+    bg.llms,
+    /transparent PNG/i,
+    "llms.txt entry undersells the output",
+  );
+  assert.match(
+    bg.llms,
+    new RegExp(`${MODEL_MB}`),
+    "llms.txt entry hides the download",
+  );
 });

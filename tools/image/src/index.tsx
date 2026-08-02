@@ -20,6 +20,7 @@ import {
   CORE,
   MODEL_MB,
   CONTENT_UPDATED,
+  TOOL_SECTIONS,
 } from "./content.js";
 import {
   SITE,
@@ -103,6 +104,7 @@ function toolPage(o: {
   faq: Faq[];
   body: Child;
 }) {
+  const sections = TOOL_SECTIONS[o.path] ?? [];
   return (origin: string) => (
     <Layout
       title={o.title}
@@ -125,6 +127,16 @@ function toolPage(o: {
       <Hero h1={o.h1} intro={o.intro} />
       {o.body}
       <div class="mx-auto max-w-3xl px-4">
+        <article class="prose-tool">
+          {sections.map((s) => (
+            <section>
+              <h2>{s.h}</h2>
+              {s.body.map((para) => (
+                <p>{para}</p>
+              ))}
+            </section>
+          ))}
+        </article>
         <FaqSection faq={o.faq} />
       </div>
     </Layout>
@@ -332,6 +344,16 @@ app.get("/crop-image", (c) => {
         </div>
       </div>
       <div class="mx-auto max-w-3xl px-4">
+        <article class="prose-tool">
+          {TOOL_SECTIONS["/crop-image"]!.map((s) => (
+            <section>
+              <h2>{s.h}</h2>
+              {s.body.map((para) => (
+                <p>{para}</p>
+              ))}
+            </section>
+          ))}
+        </article>
         <FaqSection faq={TOOL_FAQ.crop!} />
       </div>
     </Layout>,
@@ -369,6 +391,16 @@ for (const p of PAIRS) {
           showFormat={false}
         />
         <div class="mx-auto max-w-3xl px-4">
+          <article class="prose-tool mt-4">
+            {p.sections.map((s) => (
+              <section>
+                <h2>{s.h}</h2>
+                {s.body.map((para) => (
+                  <p>{para}</p>
+                ))}
+              </section>
+            ))}
+          </article>
           <FaqSection faq={p.faq} />
           <section class="mt-10">
             <h2 class="font-display mb-3 text-lg">Related conversions</h2>
