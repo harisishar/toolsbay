@@ -10,9 +10,11 @@ export const PUBLISHER_NAME = "ToolsBay";
 // The published contact address, used by /contact, /about, /ai-information and
 // the privacy policy on all five hostnames.
 //
-// REQUIRES Cloudflare Email Routing on the toolsbay.app zone: enable it (which
-// adds the MX records) and verify a destination address, or mail here bounces.
-// Check with `dig +short MX toolsbay.app` — an empty answer means it is off.
+// Delivered by Cloudflare Email Routing on the toolsbay.app zone, enabled
+// 2026-08-08 (MX -> route1/2/3.mx.cloudflare.net). If this address ever changes,
+// the routing rule for it has to change with it — `dig +short MX toolsbay.app`
+// returning nothing means routing is off and every contact route on the site is
+// silently broken.
 //
 // This has to be a mailbox somebody actually reads. The copy this replaced
 // pointed at "contact details on the homepage" that never existed, and a policy

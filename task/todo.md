@@ -545,12 +545,13 @@ Body starts at `##` — the page renders the frontmatter title as the `<h1>`.
 
 ### Open — blocking the review request
 
-- [ ] **Enable Cloudflare Email Routing on the toolsbay.app zone.** `hello@toolsbay.app` is
-      now the published address on all 168 live pages and the old Gmail appears nowhere, but
-      the zone still publishes no MX records, so mail to it bounces. Dashboard → toolsbay.app
-      → Email → Email Routing → enable, then add and verify a destination address. Until that
-      is done the contact route is a promise the site cannot keep, which is the one defect
-      this whole change set existed to remove. Verify with `dig +short MX toolsbay.app`
+- [x] `hello@toolsbay.app` published as the only contact address on all 168 live pages; the
+      old Gmail appears nowhere in source or in production. Cloudflare Email Routing enabled
+      on the zone (MX → route1/2/3.mx.cloudflare.net)
+- [ ] **Send one test mail to hello@toolsbay.app and confirm it arrives.** MX records only
+      prove routing is switched on — a verified destination address and a rule for `hello@`
+      are separate steps, and a missing rule fails silently. This is the last check before
+      requesting the review
 - [ ] `SAME_AS` in `packages/seo/src/index.ts` is empty. Real profiles (LinkedIn, GitHub, X)
       on the Organization would materially strengthen the operator signal — a bare `Person`
       with a first name is the weakest form of it
