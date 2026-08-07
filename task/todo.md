@@ -534,16 +534,28 @@ Drop a `.md` file in `tools/hub/articles/`, deploy, done. Filename becomes the U
 **Frontmatter:** `title`, `description`, `date` required; `updated`, `tags` optional.
 Body starts at `##` — the page renders the frontmatter title as the `<h1>`.
 
+### Deployed 2026-08-08
+
+- [x] All five Workers live. Apex sitemap **2 → 20 URLs**; every trust page, guide
+      and article returns 200; the five apex links in the tool footers resolve
+- [x] Operator named: `OPERATOR = "Haris"` in `packages/seo/src/site.ts`, rendered on
+      /about and /ai-information and emitted as the Organization's `founder`
+- [x] All four tool Workers carry the `#organization` graph and the publisher bar;
+      subdomain privacy pages canonicalise to the apex
+
 ### Open — blocking the review request
 
-- [ ] **Set `OPERATOR` in `packages/seo/src/site.ts`.** It is still `SET_OPERATOR_NAME` and
-      `tools/hub/tests/content.test.mjs` fails until it is a real name or registered entity.
-      This is deliberate: an /about page with no identifiable publisher does not do the job
-      it exists to do, and a failing test is harder to forget than a comment
-- [ ] Confirm `CONTACT_EMAIL` in the same file. Defaults to the Gmail so nothing is a false
-      promise; `hello@toolsbay.app` needs Cloudflare Email Routing on the zone first
-- [ ] Deploy all five Workers, then **request the AdSense review from the apex**. Not before —
-      a second failed review is materially harder to recover from than a slow first fix
+- [ ] **`CONTACT_EMAIL` is set to `hello@toolsbay.app` in the repo but NOT deployed.**
+      toolsbay.app publishes no MX records — Cloudflare Email Routing is not enabled — so
+      that address bounces today. Production still serves the working Gmail. Enable Email
+      Routing on the zone and verify a destination address, then redeploy all five. Shipping
+      it before then recreates the exact defect this work removed: a policy page promising
+      contact that does not work
+- [ ] `SAME_AS` in `packages/seo/src/index.ts` is empty. Real profiles (LinkedIn, GitHub, X)
+      on the Organization would materially strengthen the operator signal — a bare `Person`
+      with a first name is the weakest form of it
+- [ ] **Request the AdSense review from the apex** once the contact address is settled.
+      Everything else is live
 - [ ] Dashboard: confirm Auto ads are OFF and enable the GDPR consent message
 - [ ] Hub renders no ad unit today; the `AdSlot` is in the new Layout, so it will once deployed
 

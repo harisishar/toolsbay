@@ -17,15 +17,16 @@ export const PUBLISHER_NAME = "ToolsBay";
 // page that breaks its own promise is the worst thing to put in front of a
 // policy reviewer — shipping an address that bounces would be the same defect
 // wearing a nicer domain.
-export const CONTACT_EMAIL = "jvrhqmarketing@gmail.com";
+export const CONTACT_EMAIL = "hello@toolsbay.app";
 
-// ToolsBay is published unattributed: the organization is the named publisher,
-// and no individual is claimed. This is a deliberate trade — a named operator
-// with real `sameAs` profiles is the stronger E-E-A-T signal — but inventing a
-// person, or naming one who has not agreed to it, is worse than describing the
-// operation honestly. `OPERATOR_DESC` is the phrase /about and /ai-information
-// use in place of a name; if a real name or registered entity ever goes here,
-// it should also gain a Person or Organization node with `sameAs`.
+// The named operator, used by /about and /ai-information and emitted as the
+// Organization's `founder`.
+//
+// A fuller name or a registered entity is a stronger signal than a first name,
+// and real `sameAs` profiles (LinkedIn, GitHub, X) would be stronger still —
+// `SAME_AS` in index.ts is where those go, and it is deliberately empty rather
+// than filled with guesses. Worth revisiting before the review.
+export const OPERATOR = "Haris";
 export const OPERATOR_DESC = "an independent developer";
 export const OPERATOR_LOCATION = "Malaysia";
 

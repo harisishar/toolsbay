@@ -10,7 +10,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { GUIDES, GUIDES_INDEX } from "../src/guides.ts";
 import { TRUST_PAGES, SERVER_TOOLS } from "../src/pages.ts";
-import { CONTACT_EMAIL, privacySections } from "@claudetools/seo";
+import { CONTACT_EMAIL, OPERATOR, privacySections } from "@claudetools/seo";
 import { assertProse, proseOf } from "../../../scripts/assert-prose.mjs";
 import { readArticles } from "../../../scripts/articles.mjs";
 import { ARTICLES } from "../src/articles.gen.ts";
@@ -95,13 +95,13 @@ test("no placeholder text reaches a live page", () => {
   );
 });
 
-test("the publisher is identifiable even without a name", () => {
-  // The unattributed route is the weaker E-E-A-T option, so the compensating
-  // signals have to actually be there: /about must say who runs it and where,
-  // and must reach a working contact route.
+test("the publisher is identifiable", () => {
+  // "Who is behind this site" is the first thing a policy reviewer looks for,
+  // so /about has to name the operator, say where they are, and reach contact.
   const about = TRUST_PAGES.find((p) => p.slug === "about");
   const text = proseOf(about, "lead");
-  assert.match(text, /independent/i, "/about does not describe the operator");
+  assert.ok(OPERATOR.trim().length > 1, "OPERATOR is empty");
+  assert.match(text, new RegExp(OPERATOR), "/about does not name the operator");
   assert.match(text, /Malaysia/, "/about does not say where it operates from");
   assert.match(text, /\/contact|mailto:/, "/about does not reach contact");
 });

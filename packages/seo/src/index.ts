@@ -9,11 +9,12 @@ export {
   PUBLISHER_ORIGIN,
   PUBLISHER_NAME,
   CONTACT_EMAIL,
+  OPERATOR,
   OPERATOR_DESC,
   OPERATOR_LOCATION,
   SITES,
 } from "./site.ts";
-import { PUBLISHER_ORIGIN } from "./site.ts";
+import { PUBLISHER_ORIGIN, OPERATOR } from "./site.ts";
 
 export type Faq = { q: string; a: string };
 
@@ -97,6 +98,10 @@ export function siteGraph(o: {
           width: 1200,
           height: 630,
         },
+        // A bare Person is a weak signal, but naming who runs the site is what
+        // "who is behind this" asks for. Add sameAs to SAME_AS when there are
+        // real profiles to point at.
+        founder: { "@type": "Person", name: OPERATOR },
         ...(SAME_AS.length ? { sameAs: SAME_AS } : {}),
       },
       {
