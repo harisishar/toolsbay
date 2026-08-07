@@ -7,22 +7,26 @@
 export const PUBLISHER_ORIGIN = "https://toolsbay.app";
 export const PUBLISHER_NAME = "ToolsBay";
 
-// CHANGE ME BEFORE DEPLOY if you want a branded address: hello@toolsbay.app
-// needs Cloudflare Email Routing on the zone. Whatever is here must be a
-// mailbox somebody actually reads — the previous copy pointed at "contact
-// details on the homepage" that never existed, and a policy page that breaks
-// its own promise is the worst thing to leave in front of a policy reviewer.
+// The intended address is hello@toolsbay.app, but Cloudflare Email Routing is
+// not enabled on the zone yet — toolsbay.app publishes no MX records, so mail
+// to it bounces. Switching is this one line plus a redeploy, once routing is on
+// and a destination address is verified.
+//
+// Whatever is here must be a mailbox somebody actually reads. The previous copy
+// pointed at "contact details on the homepage" that never existed, and a policy
+// page that breaks its own promise is the worst thing to put in front of a
+// policy reviewer — shipping an address that bounces would be the same defect
+// wearing a nicer domain.
 export const CONTACT_EMAIL = "jvrhqmarketing@gmail.com";
 
-// REQUIRED before deploy — see tools/hub/tests/content.test.mjs, which fails
-// while this is still the placeholder. /about names the operator, and an About
-// page with no identifiable publisher does not do the job it exists to do:
-// "who is behind this site" is the first thing a policy reviewer looks for.
-// A registered company name is ideal; a real personal name is fine.
-export const OPERATOR = "SET_OPERATOR_NAME";
-
-// Where the operator is based. Drives the governing-law line in /terms and the
-// "who you are dealing with" line in /about.
+// ToolsBay is published unattributed: the organization is the named publisher,
+// and no individual is claimed. This is a deliberate trade — a named operator
+// with real `sameAs` profiles is the stronger E-E-A-T signal — but inventing a
+// person, or naming one who has not agreed to it, is worse than describing the
+// operation honestly. `OPERATOR_DESC` is the phrase /about and /ai-information
+// use in place of a name; if a real name or registered entity ever goes here,
+// it should also gain a Person or Organization node with `sameAs`.
+export const OPERATOR_DESC = "an independent developer";
 export const OPERATOR_LOCATION = "Malaysia";
 
 // The four sub-brands. Sub-brands are fine; an invisible publisher is not.

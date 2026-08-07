@@ -10,7 +10,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { GUIDES, GUIDES_INDEX } from "../src/guides.ts";
 import { TRUST_PAGES, SERVER_TOOLS } from "../src/pages.ts";
-import { OPERATOR, CONTACT_EMAIL, privacySections } from "@claudetools/seo";
+import { CONTACT_EMAIL, privacySections } from "@claudetools/seo";
 import { assertProse, proseOf } from "../../../scripts/assert-prose.mjs";
 import { readArticles } from "../../../scripts/articles.mjs";
 import { ARTICLES } from "../src/articles.gen.ts";
@@ -77,14 +77,33 @@ test("the four pages a policy reviewer looks for exist", () => {
     assert.ok(slugs.includes(required), `missing /${required}`);
 });
 
-test("the operator is named", () => {
-  // An /about page with no identifiable publisher does not do the job it
-  // exists to do. Set OPERATOR in packages/seo/src/site.ts before deploying.
-  assert.notEqual(
-    OPERATOR,
-    "SET_OPERATOR_NAME",
-    "OPERATOR is still the placeholder — set it in packages/seo/src/site.ts",
+test("no placeholder text reaches a live page", () => {
+  // ToolsBay publishes unattributed, so there is no operator name to assert —
+  // but /about and /ai-information still interpolate identity constants, and a
+  // SET_ME placeholder rendering on the page whose whole job is answering "who
+  // runs this site" would be worse than saying nothing. Catch the shape, not
+  // one specific constant.
+  const prose = [
+    ...TRUST_PAGES.flatMap((p) => proseOf(p, "lead")),
+    ...GUIDES.flatMap((g) => proseOf(g, "lead")),
+    ...articles.map((a) => a.body),
+  ].join(" ");
+  assert.doesNotMatch(
+    prose,
+    /SET_[A-Z_]+|TODO|FIXME|\bLorem ipsum\b|\bXXX\b/,
+    "placeholder text is rendering on a live page",
   );
+});
+
+test("the publisher is identifiable even without a name", () => {
+  // The unattributed route is the weaker E-E-A-T option, so the compensating
+  // signals have to actually be there: /about must say who runs it and where,
+  // and must reach a working contact route.
+  const about = TRUST_PAGES.find((p) => p.slug === "about");
+  const text = proseOf(about, "lead");
+  assert.match(text, /independent/i, "/about does not describe the operator");
+  assert.match(text, /Malaysia/, "/about does not say where it operates from");
+  assert.match(text, /\/contact|mailto:/, "/about does not reach contact");
 });
 
 test("no page promises contact details that do not exist", () => {
