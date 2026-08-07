@@ -21,6 +21,7 @@ import {
   MODEL_MB,
   CONTENT_UPDATED,
   TOOL_SECTIONS,
+  HOME_SECTIONS,
 } from "./content.js";
 import {
   SITE,
@@ -230,6 +231,23 @@ app.get("/", (c) => {
             </a>
           ))}
         </div>
+        <article class="prose-tool mt-12 max-w-3xl">
+          {HOME_SECTIONS.map((s) => (
+            <section>
+              <h2>{s.h}</h2>
+              {s.body.map((p) => (
+                <p>{p}</p>
+              ))}
+            </section>
+          ))}
+          <p>
+            Not sure which format you actually want?{" "}
+            <a href="https://toolsbay.app/guides/which-image-format-to-use">
+              The format guide
+            </a>{" "}
+            walks through the decision in three questions.
+          </p>
+        </article>
         <div class="max-w-3xl">
           <FaqSection faq={TOOL_FAQ.compress!} />
         </div>
@@ -525,6 +543,7 @@ app.get("/privacy-policy", (c) => {
       title={`Privacy Policy — ${SITE.name}`}
       desc={desc}
       path="/privacy-policy"
+      canonicalUrl="https://toolsbay.app/privacy-policy"
       origin={origin}
       jsonLd={[privacyLd(origin)]}
     >

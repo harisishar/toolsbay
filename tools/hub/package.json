@@ -4,12 +4,13 @@
   "type": "module",
   "scripts": {
     "build:vendor": "node scripts/vendor.mjs",
+    "build:articles": "node ../../scripts/build-articles.mjs",
     "build:css": "tailwindcss -i src/styles.css -o public/styles.css --minify",
-    "build": "pnpm build:vendor && pnpm build:css",
+    "build": "pnpm build:vendor && pnpm build:articles && pnpm build:css",
     "dev": "pnpm build && wrangler dev",
     "deploy": "pnpm build && wrangler deploy",
     "typecheck": "tsc --noEmit",
-    "check": "node ../../scripts/check-catalogue.mjs"
+    "check": "node --test && node ../../scripts/check-catalogue.mjs"
   },
   "dependencies": {
     "@claudetools/seo": "workspace:*",

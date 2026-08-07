@@ -7,6 +7,7 @@ import {
   SYMBOLOGIES,
   COMPARISONS,
   CONTENT_UPDATED,
+  HOME_SECTIONS,
 } from "./content.js";
 import {
   SITE,
@@ -91,8 +92,20 @@ app.get("/", (c) => {
             offline, never expire, and need no account or subscription. Dynamic
             QR services can edit the target later, but they charge monthly and
             the code dies if you stop paying. For most uses — menus, posters,
-            business cards, WiFi sharing — static is the safer choice.
+            business cards, WiFi sharing — static is the safer choice.{" "}
+            <a href="https://toolsbay.app/guides/static-vs-dynamic-qr-codes">
+              The full comparison is here
+            </a>
+            .
           </p>
+          {HOME_SECTIONS.map((s) => (
+            <section>
+              <h2>{s.h}</h2>
+              {s.body.map((p) => (
+                <p>{p}</p>
+              ))}
+            </section>
+          ))}
         </section>
       </div>
     </Layout>,
@@ -437,6 +450,7 @@ for (const g of PAYMENT_GUIDES) {
             <h1 class="font-display text-3xl leading-tight sm:text-4xl">
               {g.h1}
             </h1>
+            <p class="mt-4 leading-relaxed text-ink-soft">{g.intro}</p>
           </div>
         </div>
         <div class="mx-auto max-w-3xl px-4 py-8">
@@ -563,6 +577,7 @@ app.get("/privacy-policy", (c) => {
       title={`Privacy Policy — ${SITE.name}`}
       desc={desc}
       path="/privacy-policy"
+      canonicalUrl="https://toolsbay.app/privacy-policy"
       origin={origin}
       jsonLd={[privacyLd(origin)]}
     >

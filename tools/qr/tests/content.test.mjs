@@ -15,6 +15,10 @@ import { assertProse } from "../../../scripts/assert-prose.mjs";
 
 assertProse(test, QR_TYPES, { tool: "qr types" });
 assertProse(test, SYMBOLOGIES, { tool: "barcodes" });
+// The payment guides were the one family no assertion covered, and they were
+// the thinnest pages on the estate at 183-286 words with no lead and no widget
+// — pure prose at the length that reads as filler. Same bar as everything else.
+assertProse(test, PAYMENT_GUIDES, { tool: "payment guides" });
 
 const ALL = [...QR_TYPES, ...SYMBOLOGIES, ...PAYMENT_GUIDES, ...COMPARISONS];
 

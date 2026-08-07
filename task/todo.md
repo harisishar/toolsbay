@@ -414,9 +414,10 @@ comparison pages were the only content on the estate a crawler would recognise a
       one-directional
 - [x] Visible breadcrumb `<nav>` + `BreadcrumbList` on pdf, image and qr, reusing the calculator
       `crumbs` prop. Only the 5 homepages and 5 privacy pages have no trail, which is correct
-- [ ] Calculator footers still `.slice(0, 9)` per category and image shows `PAIRS.slice(0, 12)`,
-      so ~20 pages have no sitewide link
+- [x] Calculator footers still `.slice(0, 9)` per category and image shows `PAIRS.slice(0, 12)`,
+      so ~20 pages have no sitewide link — both slices removed 2026-08-08
 - [ ] Hub `ItemList` covers 4 tools, not the directory; `WebSite` has no `SearchAction`
+      (`SearchAction` deliberately not added — there is no search endpoint to point it at)
 
 ### Estate-wide SEO fixes (2026-08-02)
 
@@ -450,3 +451,110 @@ Found by auditing all 150 live URLs, not by reading the source — worth repeati
 - [ ] Roll `assert-prose.mjs` over the comparison pages too — they are covered by
       `assert-comparisons.mjs`, which has no SERP-length assertion, which is how a 169-char
       description survived the pass that fixed the other 25
+
+---
+
+## AdSense "Low value content" remediation (2026-08-08)
+
+Google AdSense flagged **toolsbay.app** for low value content. Measuring first changed the
+diagnosis: the 145 tool pages were never the problem — median 591-803 words per family with
+cross-page trigram overlap of 0-11%, already guarded by `assert-prose.mjs`. **The apex was.**
+It served exactly two URLs — a 136-link directory and a privacy policy — with no identifiable
+publisher, no About, no Contact, no Terms and no article of any kind.
+
+Plan of record: `~/.claude/plans/we-have-gotten-feedback-cryptic-hamster.md`.
+
+### P0 — the apex was a two-page link directory
+
+- [x] `tools/hub/src/layout.tsx` — the hub had no `Layout` at all and hand-rolled `<head>`
+      twice inline. One shell now, with `AdSlot`, breadcrumbs, `Prose` and `FaqSection`
+- [x] `tools/hub/src/pages.ts` — `/about`, `/contact`, `/terms`, `/how-we-build`,
+      `/ai-information`. 428-1,209 words each, all naming primary sources
+- [x] `tools/hub/src/guides.ts` — 8 hand-written guides at `/guides/<slug>`, 1,081-1,415
+      words of prose each (1,225-1,531 rendered), each with a 120-190 word citable lead,
+      4-5 FAQ, outbound primary-source links and a hand-off into the relevant tool
+- [x] Hub sitemap **2 → 16 URLs**; apex `robots.txt` now also lists the four subdomain
+      sitemaps (`robotsTxt` gained a `sitemaps` option)
+- [x] `llms.txt` extended with the trust pages and the guides
+
+### P1 — one publisher identity
+
+- [x] `siteGraph()` in `packages/seo` — a linked `@graph` with a stable
+      `https://toolsbay.app/#organization` `@id`, emitted from all five Layouts.
+      `webAppJsonLd` and `articleJsonLd` now reference it by `@id` instead of redeclaring an
+      anonymous Organization stub on every page. `grep '"@id"'` returned **zero** hits before
+- [x] Publisher bar in all four tool footers: ToolsBay named as publisher, plus About /
+      How we build / Guides / Contact / Terms / Privacy and **sibling-tool links** — no tool
+      linked to any other tool before, the hub was the only connector and only one-way
+- [x] **Fixed the live broken promise**: `packages/seo/src/privacy.ts` told readers to use
+      "the contact details on the homepage of this site". There were none. Now a real address
+      and a link to `/contact`, asserted against in the hub tests
+- [x] Privacy policy was byte-identical on five hostnames with five self-canonicals; the four
+      subdomain copies now carry a cross-domain canonical to the apex (`canonicalUrl` prop)
+
+### P2 — the pages that genuinely were thin
+
+- [x] **The four payment QR guides** — 183/227/286 words, no lead, no widget, and the one
+      family `assert-prose.mjs` did not cover. Rewritten to the family standard (~1,100
+      rendered words each) and wired into `assertProse`
+- [x] QR homepage 343 → 847 rendered words, image homepage 456 → ~950, via `HOME_SECTIONS`
+      in each tool's `content.ts` so the depth assertion can see them
+- [x] `"What a AVIF file actually is"` — an `a`/`an` bug on 8 of 29 pair pages, which is
+      exactly the artefact that reads as unreviewed machine generation. `article()` in
+      `tools/image/src/content.ts` picks by spoken sound, not by letter
+- [x] The identical 54-word tail on all 29 pair intros is now target-specific.
+      Median pair similarity **11% → 7%**
+- [x] `/ai-information` — the RuntimeWire tactic we had not copied
+
+### Articles — markdown publishing on the apex (2026-08-08)
+
+Drop a `.md` file in `tools/hub/articles/`, deploy, done. Filename becomes the URL.
+
+- [x] `scripts/articles.mjs` — reads and parses the directory. Frontmatter is a YAML
+      subset parsed in ~15 lines rather than with a dependency; markdown goes through
+      `marked` (root **devDependency** — it runs at build time and never ships to the Worker)
+- [x] `scripts/build-articles.mjs` → `tools/hub/src/articles.gen.ts`, wired into
+      `build:articles` so it runs on every `dev` and `deploy`. Workers have no filesystem,
+      so nothing can be globbed at request time — it has to be baked in
+- [x] `/articles` index + `/articles/<slug>`, `BlogPosting` + `Blog` JSON-LD referencing
+      `#organization` by `@id`, breadcrumbs, reading time, tags, related posts
+- [x] Homepage section, header nav, footer, sitemap and `llms.txt` all pick articles up
+      automatically. Sitemap **16 → 20 URLs**
+- [x] `.prose-md` styling in `tools/hub/src/styles.css` for the rendered markdown
+- [x] Three seed articles, 1,026-1,125 words each, none overlapping the eight guides
+- [x] **Guards** (`tools/hub/tests/content.test.mjs`): ≥700 words, 90-190 word opening
+      paragraph, `##` structure required and `#` rejected, title ≤75, description ≤160,
+      valid dates, URL-safe unique slugs, <40% cross-article similarity, dead internal
+      links, and a staleness check against the generated module. Tests read the `.md`
+      files directly, so a new article is checked the moment it is written rather than
+      after somebody remembers to rebuild
+- [x] Verified: a 7-word post fails the depth guard; a dropped-in file is live at its
+      route with the sitemap updated after one build
+
+**Frontmatter:** `title`, `description`, `date` required; `updated`, `tags` optional.
+Body starts at `##` — the page renders the frontmatter title as the `<h1>`.
+
+### Open — blocking the review request
+
+- [ ] **Set `OPERATOR` in `packages/seo/src/site.ts`.** It is still `SET_OPERATOR_NAME` and
+      `tools/hub/tests/content.test.mjs` fails until it is a real name or registered entity.
+      This is deliberate: an /about page with no identifiable publisher does not do the job
+      it exists to do, and a failing test is harder to forget than a comment
+- [ ] Confirm `CONTACT_EMAIL` in the same file. Defaults to the Gmail so nothing is a false
+      promise; `hello@toolsbay.app` needs Cloudflare Email Routing on the zone first
+- [ ] Deploy all five Workers, then **request the AdSense review from the apex**. Not before —
+      a second failed review is materially harder to recover from than a slow first fix
+- [ ] Dashboard: confirm Auto ads are OFF and enable the GDPR consent message
+- [ ] Hub renders no ad unit today; the `AdSlot` is in the new Layout, so it will once deployed
+
+### Not done, deliberately
+
+- Extracting a shared `Layout` into `packages/seo`. Five near-identical copies is real
+  duplication, and collapsing them touches all 150 pages while fixing nothing AdSense cares
+  about. Debt, not a blocker
+- Tightening `maxSimilarity` below 0.5. Same-_target_ pair clusters (`png-to-jpg` vs
+  `svg-to-jpg`) sit at ~47%: pages about converting _to_ JPG legitimately share what they say
+  about JPG. Median is 7% and every page carries 700+ words of its own; forcing 0.4 would mean
+  rewriting 29 pages for a metric, not for a reader
+- Rewriting the 145 tool pages. They already pass on depth and uniqueness, the flag was not
+  about them, and churning them risks the guardrails that currently hold

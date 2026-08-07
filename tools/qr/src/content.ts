@@ -618,6 +618,11 @@ export type Guide = {
   title: string;
   desc: string;
   h1: string;
+  // 120-190 words: the self-contained block AI answers can quote. These four
+  // pages were 183-286 words end to end and carried no lead at all, which made
+  // them the thinnest thing on the estate — pure prose with no widget. They are
+  // now held to the same bar as every other page by assertProse.
+  intro: string;
   sections: { h: string; body: string[] }[];
   faq: Faq[];
 };
@@ -628,142 +633,266 @@ export const PAYMENT_GUIDES: Guide[] = [
     title: "DuitNow QR Code — How to Get and Use One (Malaysia)",
     desc: "What a DuitNow QR is, how Malaysian businesses get an official one from their bank or e-wallet, and how to print and display it properly.",
     h1: "DuitNow QR: How to Get and Use One",
+    intro:
+      "DuitNow QR is Malaysia’s national QR payment standard, operated by PayNet, and the practical thing to know before you go looking for a generator is that you cannot make one. A merchant DuitNow QR encodes a registered merchant identifier issued by a bank or e-wallet provider against a settlement account, and no third-party tool can allocate that. What you can do is get one free from your bank, re-print a payload your bank has already issued you at a larger size, and pair it with QR codes you generate yourself for things that are not payments — your menu, your ordering page, your review link, your WiFi. This page covers how to obtain the official code, what the difference between a personal and a merchant code actually is, and the display mistakes that cost real scans at a counter.",
     sections: [
       {
-        h: "What is DuitNow QR?",
+        h: "What DuitNow QR is",
         body: [
-          "DuitNow QR is Malaysia’s national QR payment standard, operated by PayNet. One code accepts payments from any participating bank app or e-wallet — Maybank, CIMB, Touch ’n Go eWallet, GrabPay, Boost and dozens more — with money arriving directly in your account.",
+          "DuitNow QR is the interoperable standard that replaced a fragmented set of wallet-specific codes: one code accepts payment from any participating Malaysian bank app or e-wallet — Maybank, CIMB, Public Bank, Touch ’n Go eWallet, GrabPay, Boost, ShopeePay and dozens more — with funds arriving in your account rather than in a wallet balance you then have to withdraw.",
+          "It follows the EMVCo QR specification, which is why it looks like the payment codes used in Singapore, Thailand and Indonesia, and why cross-border acceptance is possible where PayNet has established a link with the other country’s operator.",
         ],
       },
       {
-        h: "How do I get an official DuitNow QR?",
+        h: "Personal versus merchant codes",
         body: [
-          "Merchant DuitNow QR codes are issued by your bank or e-wallet provider, because the code encodes your registered account inside a signed EMVCo payload. Apply through your business banking app or portal (most Malaysian banks issue one free), or through e-wallet merchant programmes.",
-          'Personal users can generate a receive-money DuitNow QR inside their own banking app — look for "Receive" or "My QR".',
+          "A personal DuitNow QR lives inside your own banking app under a heading like “Receive” or “My QR”. It is free, instant, and intended for transfers between individuals — splitting a bill, paying a friend. It is not intended for trade, and using one to run a business creates problems at reconciliation time and with your bank’s terms.",
+          "A merchant DuitNow QR is issued by your bank or acquirer after a merchant application, settles to a business account, and comes with the transaction reporting a business actually needs. Most Malaysian banks issue one free to small businesses, and the application is usually handled inside the business banking app or portal.",
         ],
       },
       {
-        h: "Can an online QR generator create a DuitNow QR?",
+        h: "Can a QR generator create one?",
         body: [
-          "Not from scratch — the payment payload must reference your registered bank account and follow the EMVCo/PayNet specification, which only issuers produce. What a generator like our free QR tool can do is re-encode a payload you already have (banks let you download it) at higher resolution, or create a URL QR that links to your payment page.",
+          "Not from scratch. The payload has to carry a merchant identifier that only an issuer can allocate, so any tool offering to build a DuitNow QR from your name and phone number is producing something that will not work — or worse, something that scans and points at nothing.",
+          "What a general-purpose generator is legitimately for: re-encoding a payload your bank has already given you at a higher resolution for a large print run, and making the non-payment codes that sit alongside it. A counter card carrying the bank-issued payment QR plus a self-made QR for your menu or Google review page covers what most small businesses need.",
         ],
       },
       {
-        h: "Display tips that increase scans",
+        h: "Printing and display",
         body: [
-          "Print at least 8×8 cm at the counter, keep strong contrast (dark modules on white), laminate against glare, and show the DuitNow logo so customers recognise it. Test with two different bank apps before printing in bulk.",
+          "Print at least 8 × 8 cm for a counter code and considerably larger for anything scanned from a distance. Keep dark modules on a white background — inverted or low-contrast codes fail on older phone cameras — and leave the quiet zone, the blank margin around the pattern, completely clear. Crowding it with a border or a logo is the most common reason a technically valid code will not scan.",
+          "Laminate or use a matte finish: glare from overhead lighting on a glossy card is the second most common failure. Show the DuitNow logo so customers recognise what they are scanning, and test with at least two different bank apps before committing to a print run.",
+        ],
+      },
+      {
+        h: "Watch for sticker replacement",
+        body: [
+          "Pasting a different QR over a merchant’s code is a well-documented fraud across every market that uses payment QRs, and it costs the merchant the sale as well as the customer the money. The defence on the customer side is simply reading the payee name the app displays before confirming — it comes from the code, and it will be wrong if the sticker was swapped.",
+          "On the merchant side, check the code on your counter periodically against your own, and prefer a fixed, tamper-evident mounting to a loose card that can be covered in a moment.",
         ],
       },
     ],
     faq: [
       {
         q: "Is DuitNow QR free for merchants?",
-        a: "Most banks currently waive merchant fees for small businesses on DuitNow QR transactions, but confirm the fee schedule with your own bank as policies differ.",
+        a: "Most banks currently waive merchant fees for small businesses on DuitNow QR transactions, but fee schedules differ by bank and by transaction type, and they change. Confirm with your own bank rather than relying on a general statement.",
       },
       {
         q: "Can foreigners pay a DuitNow QR?",
-        a: "Yes — cross-border linkages let users of participating apps from Singapore (NETS), Thailand (PromptPay), Indonesia and others scan DuitNow QR codes in Malaysia.",
+        a: "Where PayNet has a cross-border link with the visitor’s home scheme, yes — arrangements exist with schemes in Singapore, Thailand, Indonesia and others. It depends on the specific bilateral link and the visitor’s bank participating, not on the QR format, so do not assume it works for every tourist.",
+      },
+      {
+        q: "Can I generate a DuitNow QR with an online tool?",
+        a: "No. The payload must carry a merchant identifier issued by a bank or licensed provider against a settlement account. Apply through your bank. A generator can re-print a payload you already have, and can make non-payment codes for your menu or ordering page.",
+      },
+      {
+        q: "What is the difference between a static and a dynamic DuitNow QR?",
+        a: "A static code identifies you but carries no amount, so the customer types it in. A dynamic code is generated per transaction with the amount and a reference already encoded, which removes typing errors and makes reconciliation automatic. Dynamic codes come from a terminal or a payment SDK.",
+      },
+      {
+        q: "Does my DuitNow QR expire?",
+        a: "A static merchant code stays valid while your merchant registration and settlement account remain active. It is not a subscription-backed redirect, so there is nothing to lapse — unlike a marketing QR from a dynamic QR vendor, which stops working if you stop paying.",
       },
     ],
   },
   {
     slug: "paynow-qr-code",
     title: "PayNow QR Code — How to Get and Use One (Singapore)",
-    desc: "What a PayNow QR is, how Singapore businesses and individuals get one, and how SGQR fits in. Practical display tips included.",
+    desc: "What a PayNow QR is, how Singapore individuals and businesses get one, how SGQR fits in, and why a generator cannot make one for you.",
     h1: "PayNow QR: How to Get and Use One",
+    intro:
+      "PayNow is Singapore’s instant transfer service, and a PayNow QR is unusual among payment codes in that it routes to a proxy rather than to an account number: a mobile number, an NRIC, or a business UEN that you have registered with your bank. That indirection is the useful part — you can give someone a code without giving them your account details, and you can change the underlying account without changing the code. In practice most merchant codes arrive as part of SGQR, the unified label that combines PayNow with the other schemes a shop accepts on one sticker, which is why a Singapore counter usually shows one code rather than a wall of them. Official codes come from your bank; a general-purpose generator is for everything on the counter that is not a payment.",
     sections: [
       {
-        h: "What is PayNow QR?",
+        h: "How PayNow routes a payment",
         body: [
-          "PayNow is Singapore’s national instant-payment service. A PayNow QR encodes your proxy — mobile number, NRIC or business UEN — so payers in any participating bank app (DBS, OCBC, UOB and others) can scan and transfer directly to your account. Merchant PayNow QRs are usually presented inside the combined SGQR label.",
+          "Rather than encoding an account number, a PayNow QR carries a proxy you have registered — your mobile number or NRIC as an individual, or your UEN as a business — and the banking system resolves that to the account currently linked to it. Payers in any participating bank app scan and transfer directly, and funds move immediately rather than clearing overnight.",
+          "The practical benefit of the proxy model is portability: change the account behind your proxy and every code you have already given out keeps working, because the code never named the account in the first place.",
         ],
       },
       {
-        h: "How do I get an official PayNow QR?",
+        h: "SGQR: one sticker, several schemes",
         body: [
-          'Individuals: open your banking app, link your mobile or NRIC to PayNow, and use the "My QR" screen to show or export your personal code.',
-          "Businesses: register your UEN with your corporate bank, which issues a PayNow Corporate QR or an SGQR sticker combining PayNow with other schemes.",
+          "SGQR is the national unified label. Because the underlying EMVCo format allows a code to carry several merchant identifiers at once, one SGQR sticker can present PayNow alongside other accepted schemes, and each payer’s app reads the identifier it recognises and ignores the rest.",
+          "This is why Singapore merchants generally display a single code rather than a row of wallet-specific ones, and it is a good illustration of what the EMVCo format is for. It also means you cannot meaningfully assemble an SGQR yourself: the combination is registered, not concatenated.",
         ],
       },
       {
-        h: "Can an online generator create a PayNow QR?",
+        h: "Getting your code",
         body: [
-          "The payment payload follows the EMVCo SGQR specification tied to your registered proxy, so official codes come from your bank. A general-purpose generator is still useful for re-printing an exported payload at larger sizes, or for URL codes that link to an invoice or payment page.",
+          "Individuals: open your banking app, link your mobile number or NRIC to PayNow, and use the “My QR” screen to display or export a personal receiving code. It costs nothing and takes a minute.",
+          "Businesses: register your UEN with your corporate bank, which issues a PayNow Corporate QR or arranges an SGQR label combining PayNow with your other accepted schemes. Business codes settle to a corporate account and give you the transaction references that make reconciliation possible.",
+        ],
+      },
+      {
+        h: "What a generator can and cannot do",
+        body: [
+          "It cannot create a valid PayNow payload, because the payload is tied to a proxy registered in the banking system and, for merchants, to a registration only your bank can make. A tool that claims otherwise is producing a pattern that will not resolve.",
+          "It is genuinely useful for the rest of the counter: a QR to your online ordering page, your menu, a feedback form, or your WiFi credentials. Those are static codes in the ordinary sense — the data is in the pattern, nothing expires and no intermediary is involved.",
+        ],
+      },
+      {
+        h: "Printing that actually scans",
+        body: [
+          "Print large enough for the distance it will be scanned from, keep dark modules on white, and leave the quiet zone around the pattern clear. Avoid glossy laminate under bright ceiling lights; a matte finish removes most glare failures.",
+          "Test with more than one bank app before a print run — cameras and decoders differ, and a code that scans on one phone at arm’s length can fail on another in poor light.",
         ],
       },
     ],
     faq: [
       {
         q: "Does a PayNow QR expire?",
-        a: "A static PayNow QR tied to your mobile, NRIC or UEN keeps working while the proxy stays registered. Dynamic QRs generated per-transaction (with a fixed amount) expire after the session.",
+        a: "A static code tied to your mobile, NRIC or UEN keeps working as long as that proxy stays registered. Dynamic codes generated per transaction with a fixed amount are session-bound and do expire, which is intended — they represent one bill.",
       },
       {
-        q: "Can tourists use PayNow QR?",
-        a: "Cross-border links let users of partner schemes — such as Thailand’s PromptPay and Malaysia’s DuitNow — scan PayNow/SGQR codes at participating merchants.",
+        q: "Can tourists pay a PayNow or SGQR code?",
+        a: "Where a cross-border link exists with the visitor’s home scheme and their bank participates, yes. It depends on the specific arrangement rather than on the QR format, so it is not safe to assume it works for every visitor.",
+      },
+      {
+        q: "Can I make a PayNow QR with an online generator?",
+        a: "No. The payload references a proxy registered in the banking system, and merchant codes additionally require a bank registration. Get the code from your banking app or your corporate bank; use a generator for non-payment codes.",
+      },
+      {
+        q: "What is the difference between PayNow and SGQR?",
+        a: "PayNow is the payment service. SGQR is the unified label standard that can carry PayNow together with other accepted schemes in a single code, so a merchant displays one sticker instead of several.",
+      },
+      {
+        q: "Can I change the bank account behind my PayNow QR?",
+        a: "Yes — that is the advantage of the proxy model. Re-link the proxy to a different account and codes already in circulation continue to work, because they encode the proxy rather than the account.",
       },
     ],
   },
   {
     slug: "upi-qr-code",
     title: "UPI QR Code — How to Get and Use One (India)",
-    desc: "What a UPI QR is, how to get an official one via GPay, PhonePe, Paytm or your bank, and how UPI IDs work in the QR payload.",
+    desc: "What a UPI QR encodes, how to get an official one from GPay, PhonePe, Paytm or your bank, and why UPI codes work differently from EMVCo ones.",
     h1: "UPI QR: How to Get and Use One",
+    intro:
+      "UPI is India’s instant payment system and the busiest retail payment rail in the world, and its QR codes are built differently from the ones used elsewhere in Asia. Where DuitNow, PayNow, PromptPay and QRIS follow the EMVCo tag format, a UPI QR encodes a plain URI — upi://pay with query parameters — naming a Virtual Payment Address such as name@bank. Because it is a URI rather than a proprietary payload, scanning it fires an app intent on the phone, which is why India has a genuinely competitive app market on one shared rail rather than a single dominant wallet. It also means a simple person-to-person UPI code is technically something you can construct yourself, with a caveat about business use that is worth reading before you do.",
     sections: [
       {
-        h: "What is a UPI QR code?",
+        h: "What is inside a UPI QR",
         body: [
-          "UPI (Unified Payments Interface) is India’s instant payment system, processing over ten billion transactions a month. A UPI QR encodes a upi:// payment link with your Virtual Payment Address (VPA, e.g. name@bank), so any UPI app — Google Pay, PhonePe, Paytm, BHIM — can scan it and pay you directly.",
+          "A UPI QR carries a URI of the form upi://pay?pa=…&pn=…, where pa is the payee address (the VPA, such as name@bank), pn is the payee name shown to the payer, and optional parameters can carry an amount (am), a currency (cu) and a transaction note (tn).",
+          "Because the phone treats it as a link rather than as a payment blob, scanning opens whichever UPI app the user has installed and prefills the payment. This is the structural reason UPI feels different from the EMVCo schemes, and why the same code works across Google Pay, PhonePe, Paytm, BHIM and bank apps without anything being registered per-app.",
         ],
       },
       {
-        h: "How do I get an official UPI QR?",
+        h: "Getting an official code",
         body: [
-          'Every UPI app shows a personal receive QR under "Receive" or "My QR" — free and instant. Merchants get a printed QR standee by registering as a business with any UPI app or their bank; merchant QRs settle to a current account and support unlimited receiving.',
+          "Every UPI app shows a personal receiving QR under “Receive” or “My QR”, free and instantly. That is the right code for splitting bills and paying individuals.",
+          "Merchants register as a business with a UPI app or through their bank, which issues a merchant QR — usually as a printed standee — that settles to a current account, displays a verified trading name to payers, and supports the transaction volumes and reporting a business needs. Running trade through a personal VPA causes problems with limits and with reconciliation.",
         ],
       },
       {
-        h: "Can a generic generator create a UPI QR?",
+        h: "Can you generate one yourself?",
         body: [
-          "Technically the static format is documented (upi://pay?pa=VPA&pn=Name), so a URL-type QR with a upi:// link can work for simple person-to-person payments. For business use, always take the QR issued by your UPI provider — it is verified, shows your trading name to payers, and avoids typos in the VPA that would send money elsewhere.",
+          "For simple person-to-person payments, yes in principle: the URI format is documented, so encoding upi://pay?pa=yourvpa@bank&pn=Your%20Name as a plain URL QR will open a UPI app correctly.",
+          "For business use, do not. A typo in the VPA produces a code that silently sends money to whoever owns the address you mistyped, with no error and no recourse. A bank-issued merchant code is verified, shows your registered trading name so payers can confirm they are paying the right business, and removes that entire class of error. If you do encode one yourself, scan and test it with a small real payment before it goes anywhere near a print run.",
+        ],
+      },
+      {
+        h: "Static and dynamic in practice",
+        body: [
+          "A static UPI QR carries no amount and the payer enters it. A dynamic one includes the amount and often a transaction reference, generated per bill, which removes typing errors and makes reconciliation automatic.",
+          "For a shop with any volume, dynamic codes from a merchant app or a billing integration are worth the setup. For a stall, a market trader or a service provider issuing occasional invoices, a static code plus a spoken amount is entirely normal and works.",
+        ],
+      },
+      {
+        h: "Verifying before you pay",
+        body: [
+          "The payee name your app shows before confirming comes from the code and from the resolved VPA. Read it. QR sticker replacement — pasting one code over another — is the common fraud across every QR payment market, and the displayed name is the check that catches it.",
+          "For merchants, inspect the standee periodically and prefer fixed mountings to loose cards. A swapped sticker can operate for a full day before anyone notices the money is missing.",
         ],
       },
     ],
     faq: [
       {
         q: "Is there a fee for UPI QR payments?",
-        a: "Person-to-person UPI payments and merchant payments below common thresholds are free; interchange applies only in limited wallet cases. Check current NPCI rules if you process large volumes.",
+        a: "Person-to-person UPI transfers and ordinary merchant payments are generally free to both parties, with interchange applying only in specific wallet-funded cases. Rules are set by NPCI and change, so check the current position if you process significant volume.",
+      },
+      {
+        q: "Can I create a UPI QR with a generic QR generator?",
+        a: "Technically yes for personal use, by encoding a upi://pay URI as a URL QR. For business, take the merchant code from your UPI provider — it is verified, displays your registered trading name, and avoids a mistyped VPA silently paying a stranger.",
+      },
+      {
+        q: "Why does scanning a UPI QR open a choice of apps?",
+        a: "Because a UPI QR is a URI rather than a proprietary payload, so the phone treats it as a link and offers the apps registered to handle upi:// intents. That is by design and is why one code works with every UPI app.",
+      },
+      {
+        q: "Can a UPI QR include the amount?",
+        a: "Yes — the am parameter carries an amount, and tn carries a note or reference. Merchant systems generate these per transaction so the payer cannot mistype, and the reference ties the payment to the bill.",
+      },
+      {
+        q: "Do UPI QR codes work for international payers?",
+        a: "Increasingly, through specific cross-border arrangements with partner countries and for NRI accounts with linked international numbers. It depends on the arrangement and the payer’s provider, not on the code, so verify rather than assume.",
       },
     ],
   },
   {
     slug: "promptpay-qr-code",
     title: "PromptPay QR Code — How to Get and Use One (Thailand)",
-    desc: "What a PromptPay QR is, how Thai individuals and merchants get one, and what tourists need to know about scanning it.",
+    desc: "What a PromptPay QR is, how Thai individuals and merchants get one, what tourists can and cannot do with it, and how to print one that scans.",
     h1: "PromptPay QR: How to Get and Use One",
+    intro:
+      "PromptPay is Thailand’s national payment rail, and its QR codes are the reason a Bangkok street stall can take a cashless payment without a card terminal. Like Singapore’s PayNow it routes to a registered proxy — a mobile number, a national ID, or an e-wallet identifier — rather than to an account number, and like Malaysia’s DuitNow it follows the EMVCo specification, which is what makes cross-border scanning possible where the operators have linked their networks. The one point that catches visitors is asymmetric: tourists from linked countries can often pay a PromptPay code with their home app, but receiving money through PromptPay requires a Thai bank account or licensed e-wallet, and no amount of generator software substitutes for that registration.",
     sections: [
       {
-        h: "What is PromptPay QR?",
+        h: "How PromptPay works",
         body: [
-          "PromptPay is Thailand’s national payment rail. A PromptPay QR encodes your registered proxy — mobile number, national ID or e-wallet ID — in an EMVCo payload, letting anyone with a Thai banking app scan and transfer instantly.",
+          "You register a proxy — most commonly your Thai mobile number or your national ID number — against a bank account. A PromptPay QR encodes that proxy in an EMVCo payload, and anyone with a Thai banking app can scan it and transfer instantly, with the funds arriving in seconds rather than clearing later.",
+          "Because the code names a proxy rather than an account, you can move the underlying account without invalidating codes already printed or shared. That is the same design PayNow uses, and it is a meaningful practical advantage over encoding account numbers directly.",
         ],
       },
       {
-        h: "How do I get one?",
+        h: "Getting your code",
         body: [
-          'Register your mobile number or ID with your Thai bank account, then use the bank app’s "My QR" to display or download your code. Merchants apply through their bank for a shop QR that can include a fixed amount per bill (dynamic QR).',
+          "Individuals: register your mobile number or ID with your Thai bank, then use the bank app’s “My QR” screen to display or download the code. There is no charge and it is available immediately.",
+          "Merchants: apply through your bank for a shop code. Merchant setups can issue dynamic codes carrying a fixed amount per bill, which removes the customer-typing step and gives you a reference on each transaction for reconciliation.",
         ],
       },
       {
-        h: "Notes for generators and tourists",
+        h: "What tourists can and cannot do",
         body: [
-          "Static personal PromptPay payloads follow a published EMVCo format, so re-encoding an existing payload for print is fine; creating one from scratch still requires your registered proxy to be correct, so verify with a test scan. Tourists from Singapore, Malaysia and other linked countries can pay PromptPay QRs through their home apps via ASEAN cross-border links.",
+          "Paying: visitors from countries whose payment operator has an active link with Thailand — arrangements exist with Singapore, Malaysia and others — can often scan a PromptPay code directly in their home banking app, with the currency conversion handled between the two schemes. This depends on the specific link and on your bank participating, so confirm before travelling rather than assuming.",
+          "Receiving: not possible without local registration. A PromptPay proxy must be linked to a Thai bank account or a licensed Thai e-wallet, so a visitor cannot set themselves up to receive PromptPay payments, and no generator changes that.",
+        ],
+      },
+      {
+        h: "Re-encoding an existing payload",
+        body: [
+          "Because the static payload format is a published EMVCo standard, re-encoding a payload your bank has already issued you — to print it larger, or to place it in a design — is legitimate and works, provided the payload string is copied exactly. A single altered character invalidates the checksum at the end of the payload and the code stops resolving.",
+          "Building one from scratch is a different matter: the proxy has to be genuinely registered for the code to resolve to anything, so verify with a small real payment before printing at volume. A code that looks correct and pays nobody is an expensive thing to discover after the standees arrive.",
+        ],
+      },
+      {
+        h: "Printing and safety",
+        body: [
+          "Print large, keep dark modules on white, leave the quiet zone clear, and prefer matte to glossy so the code survives overhead lighting. Test on more than one phone before a print run.",
+          "Read the payee name before confirming a payment — swapped stickers are the standard fraud in every QR payment market, and the displayed name is what catches them. Merchants should check their own standee regularly.",
         ],
       },
     ],
     faq: [
       {
         q: "Can I receive PromptPay payments without a Thai bank account?",
-        a: "No — PromptPay proxies must be linked to a Thai bank account or licensed e-wallet. Visitors can pay, but receiving requires local registration.",
+        a: "No. PromptPay proxies must be linked to a Thai bank account or a licensed Thai e-wallet. Visitors can pay where a cross-border link exists, but receiving requires local registration.",
+      },
+      {
+        q: "Can I make a PromptPay QR with an online generator?",
+        a: "You can re-encode a payload your bank has already issued, exactly as given, to print it at a different size. Creating one from scratch only works if the proxy is genuinely registered, and the payload carries a checksum that fails if a single character is altered. Test with a real payment first.",
+      },
+      {
+        q: "What is the difference between a static and a dynamic PromptPay QR?",
+        a: "A static code carries your proxy and no amount, so the payer enters it. A dynamic code is generated per bill with the amount and a reference included, which removes typing errors and lets you reconcile payments against sales automatically.",
+      },
+      {
+        q: "Does a PromptPay QR expire?",
+        a: "A static code keeps working while the proxy stays registered to an active account. Dynamic per-transaction codes are session-bound by design, because each one represents a single bill.",
+      },
+      {
+        q: "Which proxy should I register?",
+        a: "A mobile number is the usual choice for individuals and is easy to share verbally as a fallback. National ID is also supported. Businesses should register through the bank as a merchant rather than using a personal proxy, so transactions settle correctly and carry references.",
       },
     ],
   },
@@ -1179,6 +1308,35 @@ export const COMPARISONS: Comparison[] = [
         q: "Do you offer dynamic QR codes or scan tracking?",
         a: "No. Dynamic codes require a server to own the redirect and count the scans, which would mean the destination lives with us rather than in your code. We have chosen not to do that, so if scan analytics are a requirement, you need a paid product — from QRCode Monkey PRO or elsewhere.",
       },
+    ],
+  },
+];
+
+// Prose for the homepage. It lives here rather than inline in index.tsx so the
+// depth assertion can see it: the homepage is the landing page for "qr code
+// generator" and was the thinnest page on this Worker at ~340 rendered words,
+// most of which were navigation links rather than anything a reader learns from.
+export const HOME_SECTIONS: Section[] = [
+  {
+    h: "Which type of code do you need?",
+    body: [
+      "A QR code is a container for text, and the type you pick decides what the phone does with that text once it has read it. A URL code opens a link. A WiFi code joins a network without anyone reading a password aloud. A vCard code adds a full contact entry — name, phone, email, company, address — in one scan rather than eight fields of typing. Email, SMS and phone codes pre-fill a message or a number so the recipient only has to press send.",
+      "The mistake worth avoiding is putting a plain URL in a code that should carry structured data. A link to a page that displays your phone number makes the reader do the copying; a phone or vCard code does it for them. The structured types cost nothing extra and work offline, because the data is in the pattern rather than at the other end of a network request.",
+    ],
+  },
+  {
+    h: "Error correction, size and the quiet zone",
+    body: [
+      "QR codes carry Reed–Solomon error correction at one of four levels. Level L recovers from about 7% damage and produces the smallest, simplest pattern; level H recovers from around 30% but needs considerably more modules for the same data. Higher is not automatically better: more modules at the same printed size means smaller modules, which is harder for a camera to resolve, so a high correction level on a small print can scan worse than a low one.",
+      "For a screen or a clean printed card, L or M is right. Reserve Q and H for codes that will be scanned in poor light, from an angle, or printed on something that will get scuffed — a sticker on a machine, a label on packaging, anything outdoors.",
+      "The quiet zone is the blank margin around the pattern, and it is part of the code rather than decoration. Crowding it with a border, a logo or text is the single most common reason a technically valid code refuses to scan.",
+    ],
+  },
+  {
+    h: "Printing codes that work",
+    body: [
+      "Keep dark modules on a light background. Inverted codes — light on dark — are readable by some decoders and not others, and there is no benefit worth that risk. Contrast matters more than colour: a dark blue on white scans fine, while a mid-grey on light grey fails on older cameras.",
+      "Size follows scanning distance. A rough working rule is that the printed code should be about a tenth of the distance it will be scanned from, so a code read at a metre wants roughly ten centimetres. Download SVG for anything going to print, since it scales without the soft edges a stretched PNG produces, and test with more than one phone before committing to a print run.",
     ],
   },
 ];

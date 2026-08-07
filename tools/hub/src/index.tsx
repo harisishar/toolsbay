@@ -13,71 +13,27 @@ import {
   type Entry,
 } from "./catalogue.js";
 import {
-  ADSENSE_CLIENT,
-  GA_ID,
-  GA_INIT,
+  articleJsonLd,
+  ORG_ID,
+  breadcrumbJsonLd,
+  faqJsonLd,
   privacySections,
   PRIVACY_UPDATED,
   robotsTxt,
   sitemapXml,
 } from "@claudetools/seo";
+import { Layout, Prose, FaqSection } from "./layout.js";
+import { SITE, TOOLS, ACCENT_BG, ACCENT_TEXT } from "./site-meta.js";
+import { TRUST_PAGES, type Page } from "./pages.js";
+import { GUIDES, GUIDES_INDEX } from "./guides.js";
+import { ARTICLES } from "./articles.gen.js";
 
 // Sitemap lastmod for the directory page — bump when the catalogue changes.
 const CATALOGUE_UPDATED = "2026-08-01";
 
-const SITE = {
-  name: "ToolsBay",
-  tagline: "Free online tools — no signup, nothing uploaded",
-  desc: `${TOTAL_PAGES} free online tools that run in your browser: calculators, image compression, PDF utilities, QR codes and barcodes. No signup, nothing uploaded.`,
-};
-
-const TOOLS = [
-  {
-    name: "CalcHub",
-    url: "https://calc.toolsbay.app",
-    host: "calc.toolsbay.app",
-    tagline: "Free online calculators",
-    desc: `${CALC.length} calculators — finance, health, math, dates and everyday, plus take-home salary after tax for 8 countries and Malaysian EPF/KWSP, SOCSO/EIS and PCB.`,
-    accent: "calc",
-  },
-  {
-    name: "ImgSquash",
-    url: "https://image.toolsbay.app",
-    host: "image.toolsbay.app",
-    tagline: "Compress, resize & convert images",
-    desc: `Compress, resize, crop and remove backgrounds, plus ${IMAGE_PAIRS.length} format converters across JPG, PNG, WebP, HEIC, AVIF, GIF, BMP and SVG. Photos never leave your device.`,
-    accent: "image",
-  },
-  {
-    name: "PaperKit",
-    url: "https://pdf.toolsbay.app",
-    host: "pdf.toolsbay.app",
-    tagline: "Every PDF tool in one kit",
-    desc: `${PDF.length} PDF tools — merge, split, compress, sign, redact, organise, OCR and convert to Word, Excel, PowerPoint or Markdown.`,
-    accent: "pdf",
-  },
-  {
-    name: "MakeQR",
-    url: "https://qr.toolsbay.app",
-    host: "qr.toolsbay.app",
-    tagline: "QR codes & barcodes",
-    desc: `${QR_TYPES.length} QR types — links, WiFi, vCards, SMS and more — plus CODE128, EAN-13, UPC-A and CODE39 barcodes. Static codes that never expire.`,
-    accent: "qr",
-  },
-];
-
-const ACCENT_TEXT: Record<string, string> = {
-  calc: "text-calc",
-  image: "text-image",
-  pdf: "text-pdf",
-  qr: "text-qr",
-};
-const ACCENT_BG: Record<string, string> = {
-  calc: "bg-calc",
-  image: "bg-image",
-  pdf: "bg-pdf",
-  qr: "bg-qr",
-};
+// The four tool Workers publish their own sitemaps; the apex robots.txt points
+// at all of them so one fetch reaches all 150 URLs.
+const TOOL_SITEMAPS = TOOLS.map((t) => `https://${t.host}/sitemap.xml`);
 
 // Preserve the source order of `entries` while splitting them into the
 // categories the tool itself uses, so the hub reads the same way the tool does.
@@ -137,18 +93,10 @@ function Group({
   );
 }
 
-const websiteLd = (origin: string) => ({
-  "@context": "https://schema.org",
-  "@type": "WebSite",
-  name: SITE.name,
-  description: SITE.desc,
-  url: origin + "/",
-  publisher: { "@type": "Organization", name: SITE.name, url: origin },
-});
-
 const itemListLd = () => ({
   "@context": "https://schema.org",
   "@type": "ItemList",
+  name: `All ${TOTAL_PAGES} ToolsBay tools`,
   itemListElement: TOOLS.map((t, i) => ({
     "@type": "ListItem",
     position: i + 1,
@@ -176,172 +124,569 @@ app.get("/", (c) => {
   return c.html(
     "<!doctype html>" +
     (
-      <html lang="en">
-        <head>
-          <meta charset="utf-8" />
-          <meta name="viewport" content="width=device-width, initial-scale=1" />
-          <title>{title}</title>
-          <meta name="description" content={SITE.desc} />
-          <link rel="canonical" href={origin + "/"} />
-          <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-          <meta property="og:type" content="website" />
-          <meta property="og:site_name" content={SITE.name} />
-          <meta property="og:title" content={title} />
-          <meta property="og:description" content={SITE.desc} />
-          <meta property="og:url" content={origin + "/"} />
-          <meta property="og:image" content={origin + "/og.png"} />
-          <meta name="twitter:card" content="summary_large_image" />
-          <meta name="twitter:title" content={title} />
-          <meta name="twitter:description" content={SITE.desc} />
-          <meta name="twitter:image" content={origin + "/og.png"} />
-          <link rel="stylesheet" href="/styles.css" />
-          <script
-            async
-            src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
-          />
-          <script dangerouslySetInnerHTML={{ __html: GA_INIT }} />
-          <script
-            async
-            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`}
-            crossorigin="anonymous"
-          />
-          {[websiteLd(origin), itemListLd()].map((ld) => (
-            <script
-              type="application/ld+json"
-              dangerouslySetInnerHTML={{ __html: JSON.stringify(ld) }}
-            />
-          ))}
-        </head>
-        <body class="chart-bg bg-paper font-sans text-ink antialiased">
-          <main class="mx-auto max-w-3xl px-5 pt-16 pb-24 sm:pt-24">
-            <header class="mb-16 sm:mb-20">
-              <p class="mb-3 flex items-center gap-2 text-sm font-semibold tracking-wide text-ink-soft uppercase">
-                <span aria-hidden="true" class="flex gap-1">
-                  <span class="h-2.5 w-2.5 bg-calc" />
-                  <span class="h-2.5 w-2.5 bg-image" />
-                  <span class="h-2.5 w-2.5 bg-pdf" />
-                  <span class="h-2.5 w-2.5 bg-qr" />
-                </span>
-                toolsbay.app
-              </p>
-              <h1 class="font-display text-5xl leading-none tracking-tight sm:text-7xl">
-                A bay of free tools.
-              </h1>
-              <p class="mt-5 max-w-xl text-lg leading-relaxed text-ink-soft">
-                {TOTAL_PAGES} tools that run entirely in your browser — no
-                signup, no accounts, and nothing you open is ever uploaded. Pick
-                a dock:
-              </p>
-            </header>
+      <Layout
+        title={title}
+        desc={SITE.desc}
+        path="/"
+        origin={origin}
+        jsonLd={[itemListLd()]}
+        bare
+      >
+        <div class="mx-auto max-w-3xl px-5 pt-16 sm:pt-24">
+          <header class="mb-16 sm:mb-20">
+            <p class="mb-3 flex items-center gap-2 text-sm font-semibold tracking-wide text-ink-soft uppercase">
+              <span aria-hidden="true" class="flex gap-1">
+                <span class="h-2.5 w-2.5 bg-calc" />
+                <span class="h-2.5 w-2.5 bg-image" />
+                <span class="h-2.5 w-2.5 bg-pdf" />
+                <span class="h-2.5 w-2.5 bg-qr" />
+              </span>
+              toolsbay.app
+            </p>
+            <h1 class="font-display text-5xl leading-none tracking-tight sm:text-7xl">
+              A bay of free tools.
+            </h1>
+            <p class="mt-5 max-w-xl text-lg leading-relaxed text-ink-soft">
+              {TOTAL_PAGES} tools that run entirely in your browser — no signup,
+              no accounts, and nothing you open is ever uploaded. Pick a dock:
+            </p>
+          </header>
 
-            <nav aria-label="Tools">
-              <ol class="divide-y divide-line border-y border-line">
-                {TOOLS.map((t, i) => (
-                  <li>
-                    <a href={t.url} class="tool-row group block py-7 sm:py-8">
-                      <div class="flex items-baseline gap-4 sm:gap-6">
-                        <span
-                          aria-hidden="true"
-                          class={`font-display text-sm ${ACCENT_TEXT[t.accent]}`}
-                        >
-                          0{i + 1}
-                        </span>
-                        <div class="min-w-0 flex-1">
-                          <div class="flex items-baseline justify-between gap-4">
-                            <h2 class="font-display text-3xl tracking-tight group-hover:underline sm:text-4xl">
-                              {t.name}
-                            </h2>
-                            <span
-                              aria-hidden="true"
-                              class={`arrow font-display text-2xl ${ACCENT_TEXT[t.accent]}`}
-                            >
-                              &rarr;
-                            </span>
-                          </div>
+          <nav aria-label="Tools">
+            <ol class="divide-y divide-line border-y border-line">
+              {TOOLS.map((t, i) => (
+                <li>
+                  <a href={t.url} class="tool-row group block py-7 sm:py-8">
+                    <div class="flex items-baseline gap-4 sm:gap-6">
+                      <span
+                        aria-hidden="true"
+                        class={`font-display text-sm ${ACCENT_TEXT[t.accent]}`}
+                      >
+                        0{i + 1}
+                      </span>
+                      <div class="min-w-0 flex-1">
+                        <div class="flex items-baseline justify-between gap-4">
+                          <h2 class="font-display text-3xl tracking-tight group-hover:underline sm:text-4xl">
+                            {t.name}
+                          </h2>
                           <span
                             aria-hidden="true"
-                            class={`bar mt-2 block h-1 w-8 ${ACCENT_BG[t.accent]}`}
-                          />
-                          <p class="mt-3 font-semibold">{t.tagline}</p>
-                          <p class="mt-1 max-w-xl text-sm leading-relaxed text-ink-soft">
-                            {t.desc}
-                          </p>
-                          <p class="mt-2 text-xs font-semibold tracking-wide text-ink-soft">
-                            {t.host}
-                          </p>
+                            class={`arrow font-display text-2xl ${ACCENT_TEXT[t.accent]}`}
+                          >
+                            &rarr;
+                          </span>
                         </div>
+                        <span
+                          aria-hidden="true"
+                          class={`bar mt-2 block h-1 w-8 ${ACCENT_BG[t.accent]}`}
+                        />
+                        <p class="mt-3 font-semibold">{t.tagline}</p>
+                        <p class="mt-1 max-w-xl text-sm leading-relaxed text-ink-soft">
+                          {t.desc}
+                        </p>
+                        <p class="mt-2 text-xs font-semibold tracking-wide text-ink-soft">
+                          {t.host}
+                        </p>
                       </div>
+                    </div>
+                  </a>
+                </li>
+              ))}
+            </ol>
+          </nav>
+
+          <section class="mt-20" aria-labelledby="guides">
+            <h2
+              id="guides"
+              class="font-display text-3xl tracking-tight sm:text-4xl"
+            >
+              Guides
+            </h2>
+            <p class="mt-3 max-w-xl text-sm leading-relaxed text-ink-soft">
+              The parts that do not fit on a tool page — how to check whether a
+              site is uploading your files, what really comes out of a Malaysian
+              salary, and why some PDFs refuse to shrink.
+            </p>
+            <ul class="mt-5 divide-y divide-line border-y border-line">
+              {GUIDES.map((g) => (
+                <li>
+                  <a href={`/guides/${g.slug}`} class="group block py-4">
+                    <h3 class="font-semibold group-hover:underline">{g.h1}</h3>
+                    <p class="mt-1 text-sm leading-relaxed text-ink-soft">
+                      {g.desc}
+                    </p>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </section>
+
+          {ARTICLES.length > 0 && (
+            <section class="mt-20" aria-labelledby="articles">
+              <h2
+                id="articles"
+                class="font-display text-3xl tracking-tight sm:text-4xl"
+              >
+                Articles
+              </h2>
+              <p class="mt-3 max-w-xl text-sm leading-relaxed text-ink-soft">
+                Shorter, more practical write-ups on the problems people arrive
+                here with.
+              </p>
+              <ul class="mt-5 divide-y divide-line border-y border-line">
+                {ARTICLES.slice(0, 5).map((a) => (
+                  <li>
+                    <a href={`/articles/${a.slug}`} class="group block py-4">
+                      <h3 class="font-semibold group-hover:underline">
+                        {a.title}
+                      </h3>
+                      <p class="mt-1 text-sm leading-relaxed text-ink-soft">
+                        {a.description}
+                      </p>
                     </a>
                   </li>
                 ))}
-              </ol>
-            </nav>
-
-            <section class="mt-20" aria-labelledby="directory">
-              <h2
-                id="directory"
-                class="font-display text-3xl tracking-tight sm:text-4xl"
-              >
-                All {TOTAL_PAGES} tools
-              </h2>
-              <p class="mt-3 max-w-xl text-sm leading-relaxed text-ink-soft">
-                Every tool, linked directly. All of them are free, none require
-                an account, and apart from a handful of PDF conversions that
-                need a rendering engine browsers do not have, none of them
-                upload your files anywhere.
-              </p>
-              <Group
-                title="Calculators"
-                host="calc.toolsbay.app"
-                accent="calc"
-                groups={groupBy(CALC, CALC_CATEGORY)}
-              />
-              <Group
-                title="Image tools"
-                host="image.toolsbay.app"
-                accent="image"
-                groups={[
-                  ["Edit & compress", IMAGE_CORE],
-                  ["Convert", IMAGE_PAIRS],
-                ]}
-              />
-              <Group
-                title="PDF tools"
-                host="pdf.toolsbay.app"
-                accent="pdf"
-                groups={groupBy(PDF, PDF_CATEGORY)}
-              />
-              <Group
-                title="QR codes & barcodes"
-                host="qr.toolsbay.app"
-                accent="qr"
-                groups={[
-                  ["QR codes", QR_TYPES],
-                  ["Barcodes", BARCODES],
-                  ["Payment QR guides", QR_GUIDES],
-                ]}
-              />
+              </ul>
+              {ARTICLES.length > 5 && (
+                <p class="mt-4 text-sm">
+                  <a href="/articles" class="underline">
+                    All {ARTICLES.length} articles
+                  </a>
+                </p>
+              )}
             </section>
+          )}
 
-            <footer class="mt-16 text-sm leading-relaxed text-ink-soft">
-              <p>
-                Your files and numbers stay on your device — every tool
-                processes data locally in your browser. Each tool has its own
-                privacy policy on its site.
-              </p>
-              <p class="mt-2">
-                &copy; {new Date().getFullYear()} {SITE.name} &middot;{" "}
-                <a href="/privacy-policy" class="underline">
-                  Privacy Policy
-                </a>
-              </p>
-            </footer>
-          </main>
-        </body>
-      </html>
+          <section class="mt-20" aria-labelledby="directory">
+            <h2
+              id="directory"
+              class="font-display text-3xl tracking-tight sm:text-4xl"
+            >
+              All {TOTAL_PAGES} tools
+            </h2>
+            <p class="mt-3 max-w-xl text-sm leading-relaxed text-ink-soft">
+              Every tool, linked directly. All of them are free, none require an
+              account, and apart from a handful of PDF conversions that need a
+              rendering engine browsers do not have, none of them upload your
+              files anywhere.
+            </p>
+            <Group
+              title="Calculators"
+              host="calc.toolsbay.app"
+              accent="calc"
+              groups={groupBy(CALC, CALC_CATEGORY)}
+            />
+            <Group
+              title="Image tools"
+              host="image.toolsbay.app"
+              accent="image"
+              groups={[
+                ["Edit & compress", IMAGE_CORE],
+                ["Convert", IMAGE_PAIRS],
+              ]}
+            />
+            <Group
+              title="PDF tools"
+              host="pdf.toolsbay.app"
+              accent="pdf"
+              groups={groupBy(PDF, PDF_CATEGORY)}
+            />
+            <Group
+              title="QR codes & barcodes"
+              host="qr.toolsbay.app"
+              accent="qr"
+              groups={[
+                ["QR codes", QR_TYPES],
+                ["Barcodes", BARCODES],
+                ["Payment QR guides", QR_GUIDES],
+              ]}
+            />
+          </section>
+        </div>
+      </Layout>
     ),
   );
 });
+
+// --- Trust pages: about, how-we-build, contact, terms, ai-information --------
+
+const pageLd = (origin: string, p: Page) => {
+  const type =
+    p.slug === "about"
+      ? "AboutPage"
+      : p.slug === "contact"
+        ? "ContactPage"
+        : "WebPage";
+  return [
+    {
+      "@context": "https://schema.org",
+      "@type": type,
+      name: p.h1,
+      description: p.desc,
+      url: `${origin}/${p.slug}`,
+      isPartOf: { "@id": `${origin}/#website` },
+      dateModified: p.updated,
+    },
+    ...(p.faq?.length ? [faqJsonLd(p.faq)] : []),
+    breadcrumbJsonLd(origin, [
+      ["ToolsBay", "/"],
+      [p.h1, `/${p.slug}`],
+    ]),
+  ];
+};
+
+for (const p of TRUST_PAGES) {
+  app.get(`/${p.slug}`, (c) => {
+    const origin = new URL(c.req.url).origin;
+    return c.html(
+      "<!doctype html>" +
+      (
+        <Layout
+          title={p.title}
+          desc={p.desc}
+          path={`/${p.slug}`}
+          origin={origin}
+          jsonLd={pageLd(origin, p)}
+          crumbs={[
+            ["ToolsBay", "/"],
+            [p.h1, `/${p.slug}`],
+          ]}
+        >
+          <Prose
+            title={p.h1}
+            lead={p.lead}
+            sections={p.sections}
+            updated={p.updated}
+          />
+          {p.faq && <FaqSection faq={p.faq} />}
+        </Layout>
+      ),
+    );
+  });
+}
+
+// --- Guides ------------------------------------------------------------------
+
+app.get("/guides", (c) => {
+  const origin = new URL(c.req.url).origin;
+  return c.html(
+    "<!doctype html>" +
+    (
+      <Layout
+        title={GUIDES_INDEX.title}
+        desc={GUIDES_INDEX.desc}
+        path="/guides"
+        origin={origin}
+        crumbs={[
+          ["ToolsBay", "/"],
+          ["Guides", "/guides"],
+        ]}
+        jsonLd={[
+          {
+            "@context": "https://schema.org",
+            "@type": "CollectionPage",
+            name: GUIDES_INDEX.h1,
+            description: GUIDES_INDEX.desc,
+            url: origin + "/guides",
+            isPartOf: { "@id": `${origin}/#website` },
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "ItemList",
+            itemListElement: GUIDES.map((g, i) => ({
+              "@type": "ListItem",
+              position: i + 1,
+              name: g.h1,
+              url: `${origin}/guides/${g.slug}`,
+            })),
+          },
+          breadcrumbJsonLd(origin, [
+            ["ToolsBay", "/"],
+            ["Guides", "/guides"],
+          ]),
+        ]}
+      >
+        <div class="mx-auto max-w-3xl px-5 pt-10">
+          <h1 class="font-display text-4xl tracking-tight sm:text-5xl">
+            {GUIDES_INDEX.h1}
+          </h1>
+          <p class="mt-5 text-lg leading-relaxed text-ink-soft">
+            {GUIDES_INDEX.lead}
+          </p>
+          <ul class="mt-10 divide-y divide-line border-y border-line">
+            {GUIDES.map((g) => (
+              <li>
+                <a href={`/guides/${g.slug}`} class="group block py-5">
+                  <h2 class="font-display text-xl tracking-tight group-hover:underline">
+                    {g.h1}
+                  </h2>
+                  <p class="mt-1.5 text-sm leading-relaxed text-ink-soft">
+                    {g.desc}
+                  </p>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </Layout>
+    ),
+  );
+});
+
+for (const g of GUIDES) {
+  app.get(`/guides/${g.slug}`, (c) => {
+    const origin = new URL(c.req.url).origin;
+    const path = `/guides/${g.slug}`;
+    return c.html(
+      "<!doctype html>" +
+      (
+        <Layout
+          title={g.title}
+          desc={g.desc}
+          path={path}
+          origin={origin}
+          crumbs={[
+            ["ToolsBay", "/"],
+            ["Guides", "/guides"],
+            [g.h1, path],
+          ]}
+          jsonLd={[
+            articleJsonLd({
+              origin,
+              path,
+              headline: g.h1,
+              description: g.desc,
+              siteName: SITE.name,
+              updated: g.updated,
+            }),
+            faqJsonLd(g.faq),
+            breadcrumbJsonLd(origin, [
+              ["ToolsBay", "/"],
+              ["Guides", "/guides"],
+              [g.h1, path],
+            ]),
+          ]}
+        >
+          <article>
+            <Prose
+              title={g.h1}
+              lead={g.lead}
+              sections={g.sections}
+              updated={g.updated}
+            />
+            <div class="mx-auto mt-10 max-w-3xl px-5">
+              <div class="border border-line bg-paper p-5">
+                <p class="text-xs font-semibold tracking-wide text-ink-soft uppercase">
+                  Next
+                </p>
+                <a
+                  href={g.cta.href}
+                  class="mt-1 block font-display text-xl tracking-tight underline"
+                >
+                  {g.cta.label}
+                </a>
+                <p class="mt-1.5 text-sm leading-relaxed text-ink-soft">
+                  {g.cta.note}
+                </p>
+              </div>
+            </div>
+            <FaqSection faq={g.faq} />
+          </article>
+        </Layout>
+      ),
+    );
+  });
+}
+
+// --- Articles ----------------------------------------------------------------
+//
+// Authored as markdown in tools/hub/articles/ and baked into articles.gen.ts by
+// scripts/build-articles.mjs at build time — Workers have no filesystem, so
+// nothing can be read from disk here. Adding a .md file and deploying is the
+// whole publishing workflow.
+
+const ARTICLES_INDEX = {
+  title: "Articles — ToolsBay",
+  desc: "Practical write-ups on the problems these tools exist for: upload limits, attachment sizes, document specifications and file formats.",
+  h1: "Articles",
+  lead: "Shorter, more practical pieces than the guides: the specific problems people arrive here with — an upload form rejecting a photo, an attachment that will not send, a portal demanding an exact pixel size — written out properly rather than answered in a sentence.",
+};
+
+const dateLabel = (iso: string) =>
+  new Date(iso + "T00:00:00Z").toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: "UTC",
+  });
+
+function ArticleCard({ a }: { a: (typeof ARTICLES)[number] }) {
+  return (
+    <li>
+      <a href={`/articles/${a.slug}`} class="group block py-5">
+        <h2 class="font-display text-xl tracking-tight group-hover:underline">
+          {a.title}
+        </h2>
+        <p class="mt-1.5 text-sm leading-relaxed text-ink-soft">
+          {a.description}
+        </p>
+        <p class="mt-2 text-xs tracking-wide text-ink-soft uppercase">
+          <time datetime={a.date}>{dateLabel(a.date)}</time> ·{" "}
+          {a.readingMinutes} min read
+        </p>
+      </a>
+    </li>
+  );
+}
+
+app.get("/articles", (c) => {
+  const origin = new URL(c.req.url).origin;
+  return c.html(
+    "<!doctype html>" +
+    (
+      <Layout
+        title={ARTICLES_INDEX.title}
+        desc={ARTICLES_INDEX.desc}
+        path="/articles"
+        origin={origin}
+        crumbs={[
+          ["ToolsBay", "/"],
+          ["Articles", "/articles"],
+        ]}
+        jsonLd={[
+          {
+            "@context": "https://schema.org",
+            "@type": "Blog",
+            name: ARTICLES_INDEX.h1,
+            description: ARTICLES_INDEX.desc,
+            url: origin + "/articles",
+            isPartOf: { "@id": `${origin}/#website` },
+            publisher: { "@id": ORG_ID },
+            blogPost: ARTICLES.map((a) => ({
+              "@type": "BlogPosting",
+              headline: a.title,
+              description: a.description,
+              url: `${origin}/articles/${a.slug}`,
+              datePublished: a.date,
+              dateModified: a.updated,
+            })),
+          },
+          breadcrumbJsonLd(origin, [
+            ["ToolsBay", "/"],
+            ["Articles", "/articles"],
+          ]),
+        ]}
+      >
+        <div class="mx-auto max-w-3xl px-5 pt-10">
+          <h1 class="font-display text-4xl tracking-tight sm:text-5xl">
+            {ARTICLES_INDEX.h1}
+          </h1>
+          <p class="mt-5 text-lg leading-relaxed text-ink-soft">
+            {ARTICLES_INDEX.lead}
+          </p>
+          {ARTICLES.length ? (
+            <ul class="mt-10 divide-y divide-line border-y border-line">
+              {ARTICLES.map((a) => (
+                <ArticleCard a={a} />
+              ))}
+            </ul>
+          ) : (
+            <p class="mt-10 text-ink-soft">Nothing published yet.</p>
+          )}
+          <p class="mt-8 text-sm leading-relaxed text-ink-soft">
+            Looking for something longer? The{" "}
+            <a href="/guides" class="underline">
+              guides
+            </a>{" "}
+            cover the underlying subjects — file privacy, take-home pay, image
+            formats, PDF internals and QR codes — in more depth.
+          </p>
+        </div>
+      </Layout>
+    ),
+  );
+});
+
+for (const a of ARTICLES) {
+  const path = `/articles/${a.slug}`;
+  app.get(path, (c) => {
+    const origin = new URL(c.req.url).origin;
+    const related = ARTICLES.filter((x) => x.slug !== a.slug).slice(0, 3);
+    return c.html(
+      "<!doctype html>" +
+      (
+        <Layout
+          title={`${a.title} — ToolsBay`}
+          desc={a.description}
+          path={path}
+          origin={origin}
+          crumbs={[
+            ["ToolsBay", "/"],
+            ["Articles", "/articles"],
+            [a.title, path],
+          ]}
+          jsonLd={[
+            {
+              ...articleJsonLd({
+                origin,
+                path,
+                headline: a.title,
+                description: a.description,
+                siteName: SITE.name,
+              }),
+              "@type": "BlogPosting",
+              datePublished: a.date,
+              dateModified: a.updated,
+              wordCount: a.words,
+              ...(a.tags.length ? { keywords: a.tags.join(", ") } : {}),
+            },
+            breadcrumbJsonLd(origin, [
+              ["ToolsBay", "/"],
+              ["Articles", "/articles"],
+              [a.title, path],
+            ]),
+          ]}
+        >
+          <article class="mx-auto max-w-3xl px-5 pt-10">
+            <h1 class="font-display text-4xl tracking-tight sm:text-5xl">
+              {a.title}
+            </h1>
+            <p class="mt-4 text-xs tracking-wide text-ink-soft uppercase">
+              <time datetime={a.date}>{dateLabel(a.date)}</time> ·{" "}
+              {a.readingMinutes} min read
+              {a.updated !== a.date && <> · updated {dateLabel(a.updated)}</>}
+            </p>
+            <div
+              class="prose-md mt-8"
+              dangerouslySetInnerHTML={{ __html: a.html }}
+            />
+            {a.tags.length > 0 && (
+              <p class="mt-10 flex flex-wrap gap-2 text-xs text-ink-soft">
+                {a.tags.map((t) => (
+                  <span class="border border-line px-2 py-1">{t}</span>
+                ))}
+              </p>
+            )}
+            {related.length > 0 && (
+              <section class="mt-12">
+                <h2 class="font-display text-2xl tracking-tight">
+                  More articles
+                </h2>
+                <ul class="mt-3 divide-y divide-line border-y border-line">
+                  {related.map((r) => (
+                    <ArticleCard a={r} />
+                  ))}
+                </ul>
+              </section>
+            )}
+          </article>
+        </Layout>
+      ),
+    );
+  });
+}
+
+// --- Privacy policy ----------------------------------------------------------
 
 app.get("/privacy-policy", (c) => {
   const origin = new URL(c.req.url).origin;
@@ -354,84 +699,49 @@ app.get("/privacy-policy", (c) => {
   return c.html(
     "<!doctype html>" +
     (
-      <html lang="en">
-        <head>
-          <meta charset="utf-8" />
-          <meta name="viewport" content="width=device-width, initial-scale=1" />
-          <title>{title}</title>
-          <meta name="description" content={desc} />
-          <link rel="canonical" href={origin + "/privacy-policy"} />
-          <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-          <meta property="og:type" content="website" />
-          <meta property="og:site_name" content={SITE.name} />
-          <meta property="og:title" content={title} />
-          <meta property="og:description" content={desc} />
-          <meta property="og:url" content={origin + "/privacy-policy"} />
-          <meta property="og:image" content={origin + "/og.png"} />
-          <meta name="twitter:card" content="summary_large_image" />
-          <meta name="twitter:title" content={title} />
-          <meta name="twitter:description" content={desc} />
-          <meta name="twitter:image" content={origin + "/og.png"} />
-          <link rel="stylesheet" href="/styles.css" />
-          <script
-            async
-            src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
-          />
-          <script dangerouslySetInnerHTML={{ __html: GA_INIT }} />
-          <script
-            async
-            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`}
-            crossorigin="anonymous"
-          />
-          <script
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{
-              __html: JSON.stringify({
-                "@context": "https://schema.org",
-                "@type": "WebPage",
-                name: title,
-                url: origin + "/privacy-policy",
-                dateModified: PRIVACY_UPDATED,
-              }),
-            }}
-          />
-        </head>
-        <body class="chart-bg bg-paper font-sans text-ink antialiased">
-          <main class="mx-auto max-w-3xl px-5 pt-16 pb-24">
-            <p class="mb-3 text-sm font-semibold tracking-wide text-ink-soft uppercase">
-              <a href="/">&larr; toolsbay.app</a>
-            </p>
-            <h1 class="font-display text-4xl tracking-tight sm:text-5xl">
-              Privacy Policy
-            </h1>
-            <p class="mt-4 max-w-xl text-lg leading-relaxed text-ink-soft">
-              Privacy here is not a policy promise — it is how the tools are
-              built: your data is processed in your browser and never reaches
-              our servers.
-            </p>
-            {sections.map((s) => (
-              <section class="mt-10">
-                <h2 class="font-display text-2xl tracking-tight">{s.h}</h2>
-                {s.body.map((p) => (
-                  <p class="mt-3 leading-relaxed text-ink-soft">{p}</p>
-                ))}
-              </section>
-            ))}
-            <p class="mt-10 text-sm text-ink-soft">
-              Last updated: {PRIVACY_UPDATED}
-            </p>
-          </main>
-        </body>
-      </html>
+      <Layout
+        title={title}
+        desc={desc}
+        path="/privacy-policy"
+        origin={origin}
+        crumbs={[
+          ["ToolsBay", "/"],
+          ["Privacy Policy", "/privacy-policy"],
+        ]}
+        jsonLd={[
+          {
+            "@context": "https://schema.org",
+            "@type": "WebPage",
+            name: title,
+            url: origin + "/privacy-policy",
+            isPartOf: { "@id": `${origin}/#website` },
+            dateModified: PRIVACY_UPDATED,
+          },
+          breadcrumbJsonLd(origin, [
+            ["ToolsBay", "/"],
+            ["Privacy Policy", "/privacy-policy"],
+          ]),
+        ]}
+      >
+        <Prose
+          title="Privacy Policy"
+          lead="Privacy here is not a policy promise — it is how the tools are built: your data is processed in your browser and never reaches our servers."
+          sections={sections}
+          updated={PRIVACY_UPDATED}
+        />
+      </Layout>
     ),
   );
 });
 
-app.get("/robots.txt", (c) => c.text(robotsTxt(new URL(c.req.url).origin)));
+app.get("/robots.txt", (c) =>
+  c.text(robotsTxt(new URL(c.req.url).origin, { sitemaps: TOOL_SITEMAPS })),
+);
 
 // The four tool Workers each serve their own llms.txt; this is the only place an
 // AI crawler can see the whole catalogue in one fetch.
 app.get("/llms.txt", (c) => {
+  const origin = new URL(c.req.url).origin;
   const section = (title: string, host: string, entries: Entry[]) =>
     `## ${title} (${host})\n${entries.map(([s, n]) => `- https://${host}/${s}: ${n}`).join("\n")}`;
   return c.text(
@@ -442,6 +752,18 @@ ${SITE.desc}
 Every tool is free and needs no account. All processing is client-side except a
 few PDF conversions (Office formats, OCR, PDF/A, repair, URL-to-PDF) that need a
 rendering engine browsers lack — those stream through a server and store nothing.
+
+How to cite and describe ToolsBay accurately: ${origin}/ai-information
+
+## About ToolsBay (${origin.replace(/^https?:\/\//, "")})
+${TRUST_PAGES.map((p) => `- ${origin}/${p.slug}: ${p.desc}`).join("\n")}
+- ${origin}/privacy-policy: How ToolsBay handles data — processing is client-side and files are not uploaded.
+
+## Guides (${origin.replace(/^https?:\/\//, "")})
+${GUIDES.map((g) => `- ${origin}/guides/${g.slug}: ${g.desc}`).join("\n")}
+
+## Articles (${origin.replace(/^https?:\/\//, "")})
+${ARTICLES.map((a) => `- ${origin}/articles/${a.slug}: ${a.description}`).join("\n")}
 
 ${section("Calculators", "calc.toolsbay.app", CALC)}
 
@@ -458,6 +780,19 @@ app.get("/sitemap.xml", (c) =>
   c.body(
     sitemapXml(new URL(c.req.url).origin, [
       { path: "/", lastmod: CATALOGUE_UPDATED },
+      { path: "/guides", lastmod: GUIDES_INDEX.updated },
+      ...(ARTICLES.length
+        ? [{ path: "/articles", lastmod: ARTICLES[0]!.updated }]
+        : []),
+      ...ARTICLES.map((a) => ({
+        path: `/articles/${a.slug}`,
+        lastmod: a.updated,
+      })),
+      ...GUIDES.map((g) => ({
+        path: `/guides/${g.slug}`,
+        lastmod: g.updated,
+      })),
+      ...TRUST_PAGES.map((p) => ({ path: `/${p.slug}`, lastmod: p.updated })),
       { path: "/privacy-policy", lastmod: PRIVACY_UPDATED },
     ]),
     200,

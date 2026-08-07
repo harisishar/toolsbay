@@ -5,6 +5,15 @@ export {
   PRIVACY_UPDATED,
   type PrivacySection,
 } from "./privacy.ts";
+export {
+  PUBLISHER_ORIGIN,
+  PUBLISHER_NAME,
+  CONTACT_EMAIL,
+  OPERATOR,
+  OPERATOR_LOCATION,
+  SITES,
+} from "./site.ts";
+import { PUBLISHER_ORIGIN } from "./site.ts";
 
 export type Faq = { q: string; a: string };
 
@@ -44,6 +53,65 @@ export type Comparison = {
   faq: Faq[];
 };
 
+// ---------------------------------------------------------------------------
+// Publisher identity
+//
+// CalcHub / ImgSquash / PaperKit / MakeQR are sub-brands of one operator, not
+// four sites. The @id is absolute and apex-anchored on purpose: derived from the
+// requesting origin it would declare four separate organizations, which is
+// exactly the "network of thin sites" reading we are trying to avoid.
+// ---------------------------------------------------------------------------
+
+export const ORG_ID = `${PUBLISHER_ORIGIN}/#organization`;
+export const websiteId = (origin: string) => `${origin}/#website`;
+
+// Real profiles only. An invented sameAs is a structured-data policy violation,
+// and an empty array is dropped rather than emitted.
+const SAME_AS: string[] = [];
+
+/**
+ * The sitewide @graph, emitted once per page from every Layout. Page-level
+ * blocks reference these nodes by @id instead of redeclaring the organization,
+ * so Google resolves one entity across all 150 pages.
+ */
+export function siteGraph(o: {
+  origin: string;
+  siteName: string;
+  description: string;
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": ORG_ID,
+        name: "ToolsBay",
+        url: PUBLISHER_ORIGIN + "/",
+        description:
+          "ToolsBay builds free browser-based tools for files, images, PDFs and numbers. Processing happens on your device, not on a server.",
+        // ponytail: the 1200x630 social card doubles as the logo. Replace with a
+        // dedicated square wordmark if a knowledge panel ever matters.
+        logo: {
+          "@type": "ImageObject",
+          url: PUBLISHER_ORIGIN + "/og.png",
+          width: 1200,
+          height: 630,
+        },
+        ...(SAME_AS.length ? { sameAs: SAME_AS } : {}),
+      },
+      {
+        "@type": "WebSite",
+        "@id": websiteId(o.origin),
+        name: o.siteName,
+        description: o.description,
+        url: o.origin + "/",
+        publisher: { "@id": ORG_ID },
+        inLanguage: "en",
+      },
+    ],
+  };
+}
+
 export function webAppJsonLd(o: {
   origin: string;
   path: string;
@@ -60,7 +128,8 @@ export function webAppJsonLd(o: {
     applicationCategory: "UtilitiesApplication",
     operatingSystem: "Any",
     offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
-    publisher: { "@type": "Organization", name: o.siteName, url: o.origin },
+    isPartOf: { "@id": websiteId(o.origin) },
+    publisher: { "@id": ORG_ID },
   };
 }
 
@@ -84,15 +153,18 @@ export function articleJsonLd(o: {
   siteName: string;
   updated?: string;
 }) {
-  const org = { "@type": "Organization", name: o.siteName, url: o.origin };
   return {
     "@context": "https://schema.org",
     "@type": "Article",
     headline: o.headline,
     description: o.description,
     url: o.origin + o.path,
-    author: org,
-    publisher: org,
+    mainEntityOfPage: { "@type": "WebPage", "@id": o.origin + o.path },
+    isPartOf: { "@id": websiteId(o.origin) },
+    // Attributed to the organization until a named operator exists. Naming a
+    // person we cannot back with real profiles would be worse than this.
+    author: { "@id": ORG_ID },
+    publisher: { "@id": ORG_ID },
     ...(o.updated ? { datePublished: o.updated, dateModified: o.updated } : {}),
   };
 }
@@ -140,8 +212,16 @@ export function breadcrumbJsonLd(
 
 // Explicitly welcome AI search crawlers (GEO): being listed by name is the
 // recommended signal even though `*` already allows them.
-export function robotsTxt(origin: string, opts?: { disallow?: string[] }) {
+export function robotsTxt(
+  origin: string,
+  opts?: { disallow?: string[]; sitemaps?: string[] },
+) {
   const dis = (opts?.disallow ?? []).map((d) => `Disallow: ${d}`).join("\n");
+  // The apex lists the four subdomain sitemaps too, so one robots.txt fetch
+  // reaches all 150 URLs instead of 15.
+  const maps = [`${origin}/sitemap.xml`, ...(opts?.sitemaps ?? [])]
+    .map((s) => `Sitemap: ${s}`)
+    .join("\n");
   return `User-agent: *
 Allow: /
 ${dis ? dis + "\n" : ""}
@@ -160,7 +240,7 @@ Allow: /
 User-agent: PerplexityBot
 Allow: /
 
-Sitemap: ${origin}/sitemap.xml`;
+${maps}`;
 }
 
 // Accepts a bare path or a { path, lastmod } pair so pages that track an

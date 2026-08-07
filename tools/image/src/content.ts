@@ -186,6 +186,17 @@ export const TARGETS: Record<string, TargetMeta> = {
   },
 };
 
+// The closing lines of every pair-page intro used to be one 54-word paragraph
+// repeated verbatim on all 29 URLs. Identical across the whole family, it did
+// nothing but inflate the cross-page similarity score that assert-prose exists
+// to hold down. Keyed on the target, it says something specific instead.
+const OUTRO: Record<string, string> = {
+  jpg: "Drop your files below and the conversion runs here, in this tab, through the Canvas API — nothing is uploaded, so there is no size cap, no watermark and no sign-up. Pick a quality level before you convert: 80% is the usual sweet spot, and dropping below about 60% starts to show around hard edges and in flat areas of sky.",
+  png: "Drop your files below and the work happens on your own machine — the conversion runs in the browser through the Canvas API, so nothing is uploaded and nothing is capped. PNG is lossless, so the file you get back is bigger than a JPEG of the same picture and identical in quality no matter how many times you re-save it.",
+  webp: "Drop your files below; everything runs locally through the Canvas API, with no upload, no size limit and no account. Check where the result has to open before you commit to a batch — every current browser reads WebP, but desktop and office software is patchier, so it is a format to publish in rather than to hand to somebody.",
+  ico: "Drop your files below and the icon is built in your browser, with nothing uploaded. Start from a square image: anything else gets letterboxed or cropped to fit, and ICO caps out at 256×256. Test the result at 16 pixels — detail that reads perfectly at full size disappears entirely at favicon scale.",
+};
+
 export type Pair = {
   slug: string;
   src: string;
@@ -304,6 +315,31 @@ function conversionNote(src: string, tgt: string): string[] {
   return out;
 }
 
+// "What a AVIF file actually is" shipped on 8 of the 29 pair pages. It is a
+// trivial slip and it reads as unreviewed machine generation, which is exactly
+// the impression these pages cannot afford to give.
+//
+// The article follows the sound the label starts with, not the letter: format
+// names are initialisms (SVG is "ess-vee-gee", HEIC is "aitch-eik") except AVIF
+// and WEBP, which are read as words. These are the letters whose spoken name
+// begins with a vowel sound.
+const VOWEL_SOUND = new Set([
+  "A",
+  "E",
+  "F",
+  "H",
+  "I",
+  "L",
+  "M",
+  "N",
+  "O",
+  "R",
+  "S",
+  "X",
+]);
+export const article = (label: string) =>
+  VOWEL_SOUND.has(label[0]!.toUpperCase()) ? "an" : "a";
+
 export const PAIRS: Pair[] = Object.keys(SOURCES).flatMap((src) =>
   Object.keys(TARGETS)
     .filter((tgt) => tgt !== src)
@@ -418,10 +454,10 @@ export const PAIRS: Pair[] = Object.keys(SOURCES).flatMap((src) =>
         title: `${s.label} to ${t.label} Converter — Free, Private, No Upload`,
         desc: `Convert ${s.label} to ${t.label} free in your browser — no upload, no watermark, batch supported. ${s.short}.`,
         h1: `${s.label} to ${t.label} Converter`,
-        intro: `${s.blurb}. Converting to ${t.long} gives you ${t.pros}. ${s.limit} ${t.bestFor} Drop your files below and the work happens on your own machine: the conversion runs in the browser through the Canvas API, so nothing is uploaded, there is no file-size cap, no watermark and no sign-up. Batches are fine — drop a folder's worth and take them back as a single ZIP.`,
+        intro: `${s.blurb}. Converting to ${t.long} gives you ${t.pros}. ${s.limit} ${t.bestFor} ${OUTRO[tgt]}`,
         sections: [
           {
-            h: `What a ${s.label} file actually is`,
+            h: `What ${article(s.label)} ${s.label} file actually is`,
             body: [s.what, s.origin],
           },
           {
@@ -867,6 +903,34 @@ export const COMPARISONS: Comparison[] = [
         q: "Can I convert HEIC photos from my iPhone?",
         a: "Yes, and it is the most common reason people arrive here. HEIC decoding runs in your browser alongside everything else, and you can convert to JPG, PNG or WebP in batches.",
       },
+    ],
+  },
+];
+
+// Prose for the homepage — kept here rather than inline in index.tsx so the
+// depth assertion covers it. This is the landing page for "image compressor",
+// and it was carrying about fifty words of prose around a widget and a link grid.
+export const HOME_SECTIONS: Section[] = [
+  {
+    h: "Compress, resize and convert solve different problems",
+    body: [
+      "Compressing reduces file size while keeping the same pixel dimensions: the image still measures 4000 × 3000, it just stores those pixels more economically by discarding detail your eye does not miss. Resizing changes the dimensions themselves, which reduces file size as a side effect and is the right tool when a form asks for a maximum width or a photo is simply larger than anything will ever display it.",
+      "Converting changes the format without necessarily changing either. Most people arriving at a compressor actually need one of the other two: if an upload form rejects your photo for being 8 MB, compression usually fixes it, but if it rejects it for being 6000 pixels wide, no amount of compression will help. Check which limit you have hit before choosing a tool.",
+    ],
+  },
+  {
+    h: "Choosing a format",
+    body: [
+      "For photographs, JPEG remains the safest choice for anything going to somebody else — an upload form, an email, a print order — because it opens absolutely everywhere. WebP produces meaningfully smaller files at the same visual quality and is the better default for images on a website you control.",
+      "For anything with flat colour, sharp edges or text — logos, screenshots, diagrams — use PNG. It is lossless, so edges stay crisp and text stays legible, and it keeps a full transparency channel. Using PNG for a photograph is the most common format mistake there is: the file comes out several times larger than a JPEG with no visible benefit at all.",
+      "iPhone photos arrive as HEIC, which compresses well and opens almost nowhere outside Apple. Converting to JPEG is usually what people want; the photograph itself converts faithfully, but Live Photo motion, depth data and edit history live in the HEIC container and do not survive.",
+    ],
+  },
+  {
+    h: "Why none of this uploads",
+    body: [
+      "Every tool on this site reads your file into the browser tab and works on it there, using the Canvas API and the codecs the browser already ships. Nothing is sent anywhere, which is why there is no file-size cap, no queue, no watermark and no account.",
+      "You can verify it rather than taking our word for it: open your browser's Network tab while compressing an image and watch for an upload request that never appears, or simply load the page, disconnect from the internet, and use the tool anyway. It keeps working, because after the page has loaded there is nothing left for it to talk to.",
     ],
   },
 ];

@@ -523,6 +523,7 @@ app.get("/privacy-policy", (c) => {
       title={`Privacy Policy — ${SITE.name}`}
       desc={desc}
       path="/privacy-policy"
+      canonicalUrl="https://toolsbay.app/privacy-policy"
       origin={origin}
       jsonLd={[privacyLd(origin)]}
     >

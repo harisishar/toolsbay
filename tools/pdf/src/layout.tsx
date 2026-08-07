@@ -1,5 +1,11 @@
 import type { Child } from "hono/jsx";
-import { ADSENSE_CLIENT, AD_SLOTS, GA_ID, GA_INIT } from "@claudetools/seo";
+import {
+  ADSENSE_CLIENT,
+  AD_SLOTS,
+  GA_ID,
+  GA_INIT,
+  siteGraph,
+} from "@claudetools/seo";
 import { SITE } from "./seo.js";
 import { TOOLS, CATEGORIES } from "./content.js";
 
@@ -34,6 +40,9 @@ type LayoutProps = {
   desc: string;
   path: string;
   origin: string;
+  // Overrides the self-canonical. Used by /privacy-policy, which is the same
+  // copy on five hostnames and canonicalises to the apex.
+  canonicalUrl?: string;
   jsonLd?: object[];
   // [label, href] including the current page as the last entry.
   crumbs?: [string, string][];
@@ -45,11 +54,12 @@ export function Layout({
   desc,
   path,
   origin,
+  canonicalUrl,
   jsonLd = [],
   crumbs,
   children,
 }: LayoutProps) {
-  const canonical = origin + path;
+  const canonical = canonicalUrl ?? origin + path;
   return (
     <html lang="en">
       <head>
@@ -80,7 +90,14 @@ export function Layout({
           src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`}
           crossorigin="anonymous"
         />
-        {jsonLd.map((ld) => (
+        {[
+          siteGraph({
+            origin,
+            siteName: SITE.name,
+            description: `${SITE.name} — ${SITE.tagline}`,
+          }),
+          ...jsonLd,
+        ].map((ld) => (
           <script
             type="application/ld+json"
             dangerouslySetInnerHTML={{ __html: JSON.stringify(ld) }}
@@ -176,15 +193,91 @@ export function Layout({
               >
                 Read our privacy policy
               </a>
-              . Part of{" "}
-              <a
-                href="https://toolsbay.app"
-                class="font-semibold text-ink hover:text-brick-deep"
-              >
-                ToolsBay
-              </a>
-              — free browser-based tools for files, images, PDFs and numbers.
+              .
             </p>
+          </div>
+          <div class="border-t border-line">
+            <div class="mx-auto max-w-5xl px-4 py-5 text-xs leading-5 text-muted">
+              <p>
+                Published by{" "}
+                <a
+                  href="https://toolsbay.app"
+                  class="font-semibold text-ink hover:text-brick-deep"
+                >
+                  ToolsBay
+                </a>{" "}
+                — free browser-based tools for files, images, PDFs and numbers.
+                Who runs it, where the figures come from and how to report an
+                error are on the{" "}
+                <a
+                  href="https://toolsbay.app/about"
+                  class="hover:text-brick-deep underline"
+                >
+                  about
+                </a>{" "}
+                and{" "}
+                <a
+                  href="https://toolsbay.app/how-we-build"
+                  class="hover:text-brick-deep underline"
+                >
+                  how we build
+                </a>{" "}
+                pages.
+              </p>
+              <nav
+                aria-label="ToolsBay"
+                class="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1.5"
+              >
+                <a
+                  href="https://calc.toolsbay.app"
+                  class="hover:text-brick-deep"
+                >
+                  Calculators
+                </a>
+                <a
+                  href="https://image.toolsbay.app"
+                  class="hover:text-brick-deep"
+                >
+                  Image tools
+                </a>
+                <a href="https://qr.toolsbay.app" class="hover:text-brick-deep">
+                  QR codes
+                </a>
+                <a
+                  href="https://toolsbay.app/about"
+                  class="hover:text-brick-deep"
+                >
+                  About
+                </a>
+                <a
+                  href="https://toolsbay.app/how-we-build"
+                  class="hover:text-brick-deep"
+                >
+                  How we build
+                </a>
+                <a
+                  href="https://toolsbay.app/guides"
+                  class="hover:text-brick-deep"
+                >
+                  Guides
+                </a>
+                <a
+                  href="https://toolsbay.app/contact"
+                  class="hover:text-brick-deep"
+                >
+                  Contact
+                </a>
+                <a
+                  href="https://toolsbay.app/terms"
+                  class="hover:text-brick-deep"
+                >
+                  Terms
+                </a>
+                <a href="/privacy-policy" class="hover:text-brick-deep">
+                  Privacy
+                </a>
+              </nav>
+            </div>
           </div>
         </footer>
         <script type="module" src="/js/app.js" />

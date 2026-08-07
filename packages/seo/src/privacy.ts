@@ -2,6 +2,8 @@
 // layout. Honest and tool-accurate: client-side processing is the default;
 // the PDF tool's approved server path is disclosed explicitly.
 
+import { CONTACT_EMAIL, PUBLISHER_ORIGIN } from "./site.ts";
+
 export type PrivacySection = { h: string; body: string[] };
 
 export const PRIVACY_UPDATED = "2026-07-29";
@@ -51,7 +53,7 @@ export function privacySections(o: {
       h: "Changes and contact",
       body: [
         `This policy was last updated on ${PRIVACY_UPDATED}. If the way ${o.siteName} handles data ever changes, this page will change first — and the privacy-first rule above is the product’s core promise, not a temporary policy.`,
-        "Questions about privacy? Contact the site operator via the contact details on the homepage of this site.",
+        `Questions about privacy, or a correction to report? Write to ${CONTACT_EMAIL}, or use the contact page at ${PUBLISHER_ORIGIN}/contact. ToolsBay is the publisher of ${o.siteName}; who runs it and how the tools are built and checked is set out at ${PUBLISHER_ORIGIN}/about and ${PUBLISHER_ORIGIN}/how-we-build.`,
       ],
     },
   ];
