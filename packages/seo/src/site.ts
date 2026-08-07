@@ -7,16 +7,17 @@
 export const PUBLISHER_ORIGIN = "https://toolsbay.app";
 export const PUBLISHER_NAME = "ToolsBay";
 
-// The intended address is hello@toolsbay.app, but Cloudflare Email Routing is
-// not enabled on the zone yet — toolsbay.app publishes no MX records, so mail
-// to it bounces. Switching is this one line plus a redeploy, once routing is on
-// and a destination address is verified.
+// The published contact address, used by /contact, /about, /ai-information and
+// the privacy policy on all five hostnames.
 //
-// Whatever is here must be a mailbox somebody actually reads. The previous copy
+// REQUIRES Cloudflare Email Routing on the toolsbay.app zone: enable it (which
+// adds the MX records) and verify a destination address, or mail here bounces.
+// Check with `dig +short MX toolsbay.app` — an empty answer means it is off.
+//
+// This has to be a mailbox somebody actually reads. The copy this replaced
 // pointed at "contact details on the homepage" that never existed, and a policy
 // page that breaks its own promise is the worst thing to put in front of a
-// policy reviewer — shipping an address that bounces would be the same defect
-// wearing a nicer domain.
+// policy reviewer.
 export const CONTACT_EMAIL = "hello@toolsbay.app";
 
 // The named operator, used by /about and /ai-information and emitted as the
